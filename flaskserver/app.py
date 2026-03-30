@@ -7,6 +7,8 @@ import sys
 import joblib
 from datetime import datetime, timedelta
 import traceback
+from dotenv import load_dotenv
+import requests
 
 # MongoDB imports
 from config.database import init_database
@@ -20,6 +22,13 @@ from services.database_service import (
 
 app = Flask(__name__)
 CORS(app)
+
+# Load environment variables from .env (if present)
+load_dotenv()
+
+# GROQ configuration
+GROQ_API_KEY = os.getenv('GROQ_API_KEY')
+GROQ_API_URL = os.getenv('GROQ_API_URL', 'https://api.groq.ai/v1')
 
 # Initialize database
 print("Initializing MongoDB connection...")
@@ -388,6 +397,32 @@ def create_field_map():
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+# GROQ test endpoint
+@app.route('/api/groq-test', methods=['GET'])
+def groq_test():
+    """Check that GROQ_API_KEY is available and optionally probe GROQ API URL."""
+    key = GROQ_API_KEY
+    if not key:
+        return jsonify({'success': False, 'error': 'GROQ_API_KEY not set in environment'}), 500
+
+    # Try a simple GET probe to the GROQ API URL (may return 404/405 depending on API).
+    try:
+        headers = {'Authorization': f'Bearer {key}'}
+        resp = requests.get(GROQ_API_URL, headers=headers, timeout=5)
+        return jsonify({
+            'success': True,
+            'groq_url': GROQ_API_URL,
+            'status_code': resp.status_code,
+            'note': 'Request completed (status code returned).'
+        })
+    except Exception as e:
+        return jsonify({
+            'success': True,
+            'groq_url': GROQ_API_URL,
+            'note': f'Could not reach GROQ URL: {e}'
+        })
 
 @app.route('/api/fields', methods=['GET'])
 def get_user_fields():

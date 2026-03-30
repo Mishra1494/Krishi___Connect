@@ -11,3 +11,5 @@ matplotlib
 pymongo
 dnspython
 gunicorn
+python-dotenv
+requests

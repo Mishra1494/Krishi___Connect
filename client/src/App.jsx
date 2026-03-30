@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import GovernmentDashboard from './pages/GovernmentDashboard';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
+import Landing from './pages/Landing';
 import ClimateAnalysis from './pages/ClimateAnalysis';
 import FarmConsole from './pages/FarmConsole';
 import AIAssistant from './pages/AIAssistant';
@@ -58,7 +59,14 @@ function App() {
               }
             />
 
-            <Route path="/" element={wrapProtected(<Dashboard />)} />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute requireAuth={false}>
+                  <Landing />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/dashboard" element={wrapProtected(<Dashboard />, 'farmer')} />
             <Route
               path="/government-dashboard"
