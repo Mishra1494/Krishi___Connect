@@ -271,7 +271,7 @@ function App() {
             <Route path="*" element={<h1>Page Not Found</h1>} />
           </Routes>
         </Router>
-      </AppProvider>
+        </AppProvider>
     </AuthProvider>
   );
 }

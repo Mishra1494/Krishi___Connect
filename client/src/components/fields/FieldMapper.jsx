@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faMap, 
@@ -24,6 +25,7 @@ import googleMapsLoader from '../../utils/googleMapsLoader';
 import './FieldMapper.css';
 
 const FieldMapper = () => {
+  const { t } = useTranslation();
   const mapRef = useRef(null);
   const [map, setMap] = useState(null);
   const [drawingManager, setDrawingManager] = useState(null);
@@ -54,7 +56,7 @@ const FieldMapper = () => {
       } catch (error) {
         setMessage({
           show: true,
-          text: "Failed to load Google Maps. Please check your internet connection.",
+          text: t('pages.createField.mapsNotLoaded'),
           type: 'error'
         });
       }
@@ -70,7 +72,7 @@ const FieldMapper = () => {
     if (!window.google || !window.google.maps) {
       setMessage({
         show: true,
-        text: "Google Maps API not loaded properly. Please refresh the page.",
+        text: t('pages.createField.mapsApiError'),
         type: 'error'
       });
       return;
@@ -140,7 +142,7 @@ const FieldMapper = () => {
     if (!window.google.maps.drawing || !window.google.maps.drawing.DrawingManager) {
       setMessage({
         show: true,
-        text: "Google Maps Drawing library not loaded. Please refresh the page.",
+        text: t('pages.createField.drawingLibError'),
         type: 'error'
       });
       return;
@@ -218,7 +220,7 @@ const FieldMapper = () => {
     // Display success message
     setMessage({
       show: true,
-      text: "Field boundary drawn successfully! Fill in the details and save.",
+      text: t('pages.createField.boundaryDrawnSuccess'),
       type: 'success'
     });
     
@@ -260,7 +262,7 @@ const FieldMapper = () => {
     
     setMessage({
       show: true,
-      text: "Map cleared. Draw a new field boundary.",
+      text: t('pages.createField.mapCleared'),
       type: 'info'
     });
   };
@@ -286,7 +288,7 @@ const FieldMapper = () => {
     if (!fieldName.trim()) {
       setMessage({
         show: true,
-        text: "Please enter a field name.",
+        text: t('pages.createField.emptyFieldName'),
         type: 'error'
       });
       return;
@@ -295,7 +297,7 @@ const FieldMapper = () => {
     if (!fieldLocation.trim()) {
       setMessage({
         show: true,
-        text: "Please enter a field location.",
+        text: t('pages.createField.emptyFieldLocation'),
         type: 'error'
       });
       return;
@@ -304,7 +306,7 @@ const FieldMapper = () => {
     if (!selectedCrop) {
       setMessage({
         show: true,
-        text: "Please select a crop for this field.",
+        text: t('pages.createField.selectCrop'),
         type: 'error'
       });
       return;
@@ -360,7 +362,7 @@ const FieldMapper = () => {
       
       setMessage({
         show: true,
-        text: `Field "${fieldName}" saved successfully! Your farm plot has been added to the database.`,
+        text: t('pages.createField.fieldSavedSuccess'),
         type: 'success'
       });
       
@@ -386,7 +388,7 @@ const FieldMapper = () => {
       console.error('Error saving field:', error);
       setMessage({
         show: true,
-        text: `Error: ${error.message}. Please try again.`,
+        text: t('pages.createField.fieldSaveError'),
         type: 'error'
       });
     } finally {

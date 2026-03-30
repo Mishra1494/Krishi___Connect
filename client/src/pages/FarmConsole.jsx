@@ -1,4 +1,5 @@
 const FarmConsole = () => {
+  const { t } = useTranslation();
   return (
     <div>
       <div className="flex items-center mb-6">

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faRobot,
@@ -33,6 +34,7 @@ const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
 const GROQ_API_URL = import.meta.env.VITE_GROQ_API_URL || "https://api.groq.com/openai/v1/chat/completions";
 
 const CropPrediction = () => {
+  const { t } = useTranslation();
   const [selectedLocation, setSelectedLocation] = useState('current-location');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [predictions, setPredictions] = useState([]);

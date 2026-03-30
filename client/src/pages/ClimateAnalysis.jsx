@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faCloudSunRain, 
@@ -52,6 +53,7 @@ ChartJS.register(
 );
 
 const ClimateAnalysis = () => {
+  const { t } = useTranslation();
   const { selectedField, selectedLocation } = useAppContext();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('weather');

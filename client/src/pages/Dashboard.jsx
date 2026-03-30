@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faPlus,
@@ -17,6 +18,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Dashboard = () => {
+  const { t } = useTranslation();
   const { user, isFarmer } = useAuth();
   
   const [recentFields] = useState([
@@ -43,14 +45,14 @@ const Dashboard = () => {
       <div className="bg-white border-b border-gray-200 px-6 py-4 mb-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Farm Dashboard</h1>
+            <h1 className="text-2xl font-bold text-gray-900">{t('pages.dashboard.title')}</h1>
             <p className="text-gray-600 mt-1">
-              Welcome back, {user?.name} | Manage your fields and track crop performance
+              {t('pages.dashboard.welcomeBack')} {user?.name} | {t('pages.dashboard.manageFieldsSubtitle')}
             </p>
           </div>
           <div className="flex items-center space-x-2 bg-green-50 px-4 py-2 rounded-lg">
             <FontAwesomeIcon icon={faUser} className="text-green-600" />
-            <span className="text-green-700 font-medium">Farmer Dashboard</span>
+            <span className="text-green-700 font-medium">{t('pages.dashboard.farmerDashboard')}</span>
           </div>
         </div>
       </div>
@@ -58,7 +60,7 @@ const Dashboard = () => {
       <div className="px-6 space-y-6">
         {/* Quick Actions */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('pages.dashboard.quickActions')}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <Link
               to="/create-field"
@@ -68,8 +70,8 @@ const Dashboard = () => {
                 <FontAwesomeIcon icon={faPlus} className="text-white" />
               </div>
               <div>
-                <h3 className="font-medium text-gray-900">Create New Field</h3>
-                <p className="text-sm text-gray-600">Add a new field to your farm</p>
+                <h3 className="font-medium text-gray-900">{t('pages.dashboard.createNewField')}</h3>
+                <p className="text-sm text-gray-600">{t('pages.dashboard.addNewFieldDesc')}</p>
               </div>
               <FontAwesomeIcon icon={faArrowRight} className="ml-auto text-blue-500 group-hover:translate-x-1 transition-transform" />
             </Link>
@@ -82,8 +84,8 @@ const Dashboard = () => {
                 <FontAwesomeIcon icon={faSeedling} className="text-white" />
               </div>
               <div>
-                <h3 className="font-medium text-gray-900">Crop Lifecycle</h3>
-                <p className="text-sm text-gray-600">Track crop growth stages</p>
+                <h3 className="font-medium text-gray-900">{t('pages.dashboard.cropLifecycle')}</h3>
+                <p className="text-sm text-gray-600">{t('pages.dashboard.trackGrowthStages')}</p>
               </div>
               <FontAwesomeIcon icon={faArrowRight} className="ml-auto text-green-500 group-hover:translate-x-1 transition-transform" />
             </Link>
@@ -96,8 +98,8 @@ const Dashboard = () => {
                 <FontAwesomeIcon icon={faChartLine} className="text-white" />
               </div>
               <div>
-                <h3 className="font-medium text-gray-900">Crop Prediction</h3>
-                <p className="text-sm text-gray-600">AI-powered crop suggestions</p>
+                <h3 className="font-medium text-gray-900">{t('pages.dashboard.cropPrediction')}</h3>
+                <p className="text-sm text-gray-600">{t('pages.dashboard.aiPoweredSuggestions')}</p>
               </div>
               <FontAwesomeIcon icon={faArrowRight} className="ml-auto text-purple-500 group-hover:translate-x-1 transition-transform" />
             </Link>
@@ -110,8 +112,8 @@ const Dashboard = () => {
                 <FontAwesomeIcon icon={faWheatAwn} className="text-white" />
               </div>
               <div>
-                <h3 className="font-medium text-gray-900">Yield Prediction</h3>
-                <p className="text-sm text-gray-600">Predict harvest amounts</p>
+                <h3 className="font-medium text-gray-900">{t('pages.dashboard.yieldPrediction')}</h3>
+                <p className="text-sm text-gray-600">{t('pages.dashboard.predictHarvest')}</p>
               </div>
               <FontAwesomeIcon icon={faArrowRight} className="ml-auto text-orange-500 group-hover:translate-x-1 transition-transform" />
             </Link>
@@ -121,9 +123,9 @@ const Dashboard = () => {
         {/* Field Overview */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Recent Fields</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t('pages.dashboard.recentFields')}</h2>
             <Link to="/create-field" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
-              + Add New Field
+              + {t('pages.dashboard.addNewField')}
             </Link>
           </div>
           
@@ -137,7 +139,7 @@ const Dashboard = () => {
                   </div>
                   <div className="mb-3">
                     <div className="flex justify-between text-sm text-gray-600 mb-1">
-                      <span>Growth Stage: {field.stage}</span>
+                      <span>{t('pages.dashboard.growthStage')}: {field.stage}</span>
                       <span>{field.progress}%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
@@ -151,7 +153,7 @@ const Dashboard = () => {
                     to="/crop-lifecycle" 
                     className="text-blue-600 hover:text-blue-700 text-sm font-medium"
                   >
-                    View Details →
+                    {t('pages.dashboard.viewDetails')} →
                   </Link>
                 </div>
               ))}
@@ -159,9 +161,9 @@ const Dashboard = () => {
           ) : (
             <div className="text-center py-8 text-gray-500">
               <FontAwesomeIcon icon={faMapMarkedAlt} className="text-4xl mb-3 text-gray-300" />
-              <p>No fields created yet</p>
+              <p>{t('pages.dashboard.noFieldsCreated')}</p>
               <Link to="/create-field" className="text-blue-600 hover:text-blue-700 font-medium">
-                Create your first field
+                {t('pages.dashboard.createFirstField')}
               </Link>
             </div>
           )}
@@ -170,9 +172,9 @@ const Dashboard = () => {
         {/* Crop Predictions */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">AI Crop Recommendations</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t('pages.dashboard.aiCropRecommendations')}</h2>
             <Link to="/crop-prediction" className="text-purple-600 hover:text-purple-700 text-sm font-medium">
-              View All →
+              {t('pages.dashboard.viewAll')} →
             </Link>
           </div>
           
@@ -182,13 +184,13 @@ const Dashboard = () => {
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-medium text-gray-900">{prediction.crop}</h3>
                   <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">
-                    {prediction.confidence}% confidence
+                    {prediction.confidence}% {t('pages.dashboard.confidence')}
                   </span>
                 </div>
                 <p className="text-sm text-gray-600 mb-2">{prediction.recommendedAction}</p>
                 <div className="text-xs text-gray-500">
                   <FontAwesomeIcon icon={faCalendarAlt} className="mr-1" />
-                  Best for: {prediction.optimalSeason}
+                  {t('pages.dashboard.bestFor')}: {prediction.optimalSeason}
                 </div>
               </div>
             ))}
@@ -198,9 +200,9 @@ const Dashboard = () => {
         {/* Yield Predictions */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Yield Predictions</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t('pages.dashboard.yieldPredictions')}</h2>
             <Link to="/yield-prediction" className="text-orange-600 hover:text-orange-700 text-sm font-medium">
-              View Details →
+              {t('pages.dashboard.viewDetails')} →
             </Link>
           </div>
           
@@ -210,20 +212,20 @@ const Dashboard = () => {
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-medium text-gray-900">{prediction.field}</h3>
                   <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded-full">
-                    {prediction.confidence}% accuracy
+                    {prediction.confidence}% {t('pages.dashboard.accuracy')}
                   </span>
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Crop:</span>
+                    <span className="text-gray-600">{t('pages.dashboard.crop')}:</span>
                     <span className="font-medium">{prediction.crop}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Predicted Yield:</span>
+                    <span className="text-gray-600">{t('pages.dashboard.predictedYield')}:</span>
                     <span className="font-medium text-green-600">{prediction.predictedYield}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Harvest Date:</span>
+                    <span className="text-gray-600">{t('pages.dashboard.harvestDate')}:</span>
                     <span className="font-medium">{new Date(prediction.harvestDate).toLocaleDateString()}</span>
                   </div>
                 </div>

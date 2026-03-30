@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faArrowDown,
@@ -47,6 +48,7 @@ const OverviewCard = ({ icon, label, value, caption }) => (
 );
 
 const YieldPrediction = () => {
+  const { t } = useTranslation();
   const [selectedField, setSelectedField] = useState('');
   const [predictionPeriod, setPredictionPeriod] = useState('current-season');
   const [fields, setFields] = useState([]);

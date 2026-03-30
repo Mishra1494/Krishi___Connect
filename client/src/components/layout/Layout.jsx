@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import ChatbotButton from '../common/ChatbotButton';
+import LanguageSwitcher from '../common/LanguageSwitcher';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
 
@@ -69,6 +70,11 @@ const Layout = ({ children }) => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-100 to-gray-100 border-r border-blue-200 shadow-sm overflow-hidden">
+      
+      {/* Top Header Bar with Language Switcher */}
+      <div className="fixed top-0 right-0 z-40 p-4 bg-white/80 backdrop-blur-sm border-b border-gray-200">
+        <LanguageSwitcher />
+      </div>
       
       {/* Mobile Menu Button */}
       <button

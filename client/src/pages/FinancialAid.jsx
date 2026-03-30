@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faMoneyBill, 
@@ -25,36 +26,37 @@ import SupportGuide from '../components/financial-aid/SupportGuide';
  * - Support and application guides
  */
 const FinancialAid = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('schemes');
 
   const tabs = [
     {
       id: 'schemes',
-      label: 'Government Schemes',
+      label: t('pages.financialAid.governmentSchemes'),
       icon: faHandshake,
       component: SchemeEligibilityRecommender
     },
     {
       id: 'loans',
-      label: 'Banks & Loans',
+      label: t('pages.financialAid.banksLoans'),
       icon: faUniversity,
       component: LoanBankFinder
     },
     {
       id: 'subsidies',
-      label: 'Subsidies & Freebies',
+      label: t('pages.financialAid.subsidiesFreebies'),
       icon: faGift,
       component: SubsidiesFreebies
     },
     {
       id: 'notifications',
-      label: 'Notifications',
+      label: t('pages.financialAid.notifications'),
       icon: faBell,
       component: NotificationCenter
     },
     {
       id: 'support',
-      label: 'Support Guide',
+      label: t('pages.financialAid.supportGuide'),
       icon: faQuestionCircle,
       component: SupportGuide
     }
@@ -66,9 +68,9 @@ const FinancialAid = () => {
     <div className="p-6 max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Financial Aid & Support</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('pages.financialAid.title')}</h1>
         <p className="text-gray-600">
-          Access government schemes, compare loans, find subsidies, and get financial support for your agricultural needs
+          {t('pages.financialAid.subtitle')}
         </p>
       </div>
 

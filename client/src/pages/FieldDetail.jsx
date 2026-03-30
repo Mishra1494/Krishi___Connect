@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMap, faArrowLeft, faEdit, faTrash, faSpinner, faExclamationTriangle, faSeedling } from '@fortawesome/free-solid-svg-icons';
@@ -7,6 +8,7 @@ import googleMapsLoader from '../utils/googleMapsLoader';
 import '../components/fields/Fields.css';
 
 const FieldDetail = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const [field, setField] = useState(null);
   const [loading, setLoading] = useState(true);

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faDroplet,
@@ -25,6 +26,7 @@ import {
 import { getUserFields } from '../services/dataService';
 
 const IrrigationManagement = () => {
+  const { t } = useTranslation();
   const [fields, setFields] = useState([]);
   const [loading, setLoading] = useState(true);
   const [waterTankLevel, setWaterTankLevel] = useState(75); // Percentage

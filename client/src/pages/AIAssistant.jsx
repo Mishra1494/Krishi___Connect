@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPaperPlane, faSpinner, faRobot, faLeaf,
@@ -22,6 +23,7 @@ const SUGGESTIONS = [
 ];
 
 const AIAssistant = () => {
+  const { t } = useTranslation();
   const { selectedField, fields } = useAppContext();
   const [fieldData, setFieldData] = useState(null);
   const [message, setMessage] = useState('');

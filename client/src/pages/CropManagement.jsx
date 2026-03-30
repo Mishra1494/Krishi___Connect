@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faWheatAwn, 
@@ -11,6 +12,7 @@ import CropLifecycleTracking from '../components/crop/CropLifecycleTracking';
 import InventoryManagement from '../components/crop/InventoryManagement';
 
 const CropManagement = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('lifecycle');
 
   // Sample data - this would come from backend

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMap, faEdit, faTrash, faSearch, faExclamationTriangle, faSpinner, faTimes, faSeedling } from '@fortawesome/free-solid-svg-icons';
@@ -6,6 +7,7 @@ import { getUserFields, deleteField } from '../services/dataService';
 import '../components/fields/Fields.css';
 
 const Fields = () => {
+  const { t } = useTranslation();
   const [fields, setFields] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

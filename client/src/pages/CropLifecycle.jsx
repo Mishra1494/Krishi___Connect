@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faArrowTrendUp,
@@ -28,6 +29,7 @@ const formatDate = (d) =>
   d ? new Date(d).toLocaleDateString() : '—';
 
 const CropLifecycle = () => {
+  const { t } = useTranslation();
   const [selectedField, setSelectedField] = useState('');
   const [fields, setFields] = useState([]);
   const [crops, setCrops] = useState([]);
@@ -57,7 +59,7 @@ const CropLifecycle = () => {
       setFields(mapped);
       if (mapped.length) setSelectedField(mapped[0].id);
     } catch {
-      setError('Failed to load fields');
+      setError(t('pages.cropLifecycle.failedLoadFields'));
     } finally {
       setFieldsLoading(false);
     }
@@ -77,7 +79,7 @@ const CropLifecycle = () => {
 
   const handleCreate = async () => {
     if (!cropName || !sowingDate) {
-      setError('Fill all fields');
+      setError(t('pages.cropLifecycle.fillAllFields'));
       return;
     }
 
@@ -89,13 +91,13 @@ const CropLifecycle = () => {
         sowing_date: sowingDate
       });
 
-      setSuccess('Saved successfully');
+      setSuccess(t('pages.cropLifecycle.savedSuccessfully'));
       setCropName('');
       setSowingDate('');
       setShowForm(false);
       fetchCrops(selectedField);
     } catch {
-      setError('Save failed');
+      setError(t('pages.cropLifecycle.saveFailed'));
     } finally {
       setSaving(false);
     }
@@ -119,7 +121,7 @@ const CropLifecycle = () => {
   return (
     <div className="p-6 space-y-6">
 
-      <h1 className="text-2xl font-bold">Crop Lifecycle</h1>
+      <h1 className="text-2xl font-bold">{t('pages.cropLifecycle.title')}</h1>
 
       {/* Select Field */}
       <select
@@ -157,13 +159,13 @@ const CropLifecycle = () => {
         onClick={() => setShowForm(!showForm)}
         className="bg-green-600 text-white px-4 py-2 rounded"
       >
-        <FontAwesomeIcon icon={faPlus} /> Add Crop
+        <FontAwesomeIcon icon={faPlus} /> {t('pages.cropLifecycle.addCrop')}
       </button>
 
       {showForm && (
         <div className={surfaceCard + " p-4 space-y-4"}>
           <input
-            placeholder="Crop Name"
+            placeholder={t('pages.cropLifecycle.cropName')}
             value={cropName}
             onChange={(e) => setCropName(e.target.value)}
             className="border p-2 w-full"
@@ -180,7 +182,7 @@ const CropLifecycle = () => {
             onClick={handleCreate}
             className="bg-green-600 text-white px-4 py-2 rounded"
           >
-            {saving ? 'Saving...' : 'Save'}
+            {saving ? t('pages.cropLifecycle.saving') : t('pages.cropLifecycle.save')}
           </button>
         </div>
       )}
@@ -193,13 +195,13 @@ const CropLifecycle = () => {
         {cropLoading ? (
           <FontAwesomeIcon icon={faSpinner} spin />
         ) : !crops.length ? (
-          <p>No crops yet</p>
+          <p>{t('pages.cropLifecycle.noCrops')}</p>
         ) : (
           crops.map((c) => (
             <div key={c._id} className={surfaceCard + " p-4"}>
               <h3 className="font-bold">{c.crop_name}</h3>
-              <p>Sown: {formatDate(c.sowing_date)}</p>
-              <p>Harvest: {formatDate(c.expected_harvest_date)}</p>
+              <p>{t('pages.cropLifecycle.sown')}: {formatDate(c.sowing_date)}</p>
+              <p>{t('pages.cropLifecycle.harvest')}: {formatDate(c.expected_harvest_date)}</p>
             </div>
           ))
         )}
@@ -208,7 +210,7 @@ const CropLifecycle = () => {
       {/* Latest */}
       {latestCrop && (
         <div className={surfaceCard + " p-4"}>
-          <h2 className="font-bold">Latest Crop</h2>
+          <h2 className="font-bold">{t('pages.cropLifecycle.latestCrop')}</h2>
           <p>{latestCrop.crop_name}</p>
         </div>
       )}

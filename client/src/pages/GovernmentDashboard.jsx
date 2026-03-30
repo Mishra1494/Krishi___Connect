@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChartLine, faUsers, faBuilding, faClipboardList,
@@ -8,6 +9,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 
 const GovernmentDashboard = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [currentTime, setCurrentTime] = useState(new Date());
 
