@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faWater, 
@@ -33,30 +34,13 @@ import IrrigationNotifications from '../components/irrigation/IrrigationNotifica
  * - Notifications and alerts
  */
 const WaterManagement = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('control');
   const [notifications, setNotifications] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Text constants for translation support
-  const TEXT_CONSTANTS = {
-    TITLE: 'Water Management & Irrigation Control',
-    SUBTITLE: 'Smart irrigation system with zone-based control and automated scheduling',
-    TABS: {
-      CONTROL: 'Zone Control',
-      SCHEDULE: 'Schedule',
-      SENSORS: 'Sensors',
-      HISTORY: 'History',
-      SUGGESTIONS: 'Smart Suggestions',
-      NOTIFICATIONS: 'Notifications'
-    },
-    NOTIFICATIONS: {
-      IRRIGATION_STARTED: 'Irrigation started successfully',
-      IRRIGATION_STOPPED: 'Irrigation stopped',
-      SCHEDULE_UPDATED: 'Irrigation schedule updated',
-      SENSOR_WARNING: 'Sensor reading requires attention',
-      SYSTEM_ERROR: 'System error occurred'
-    }
-  };
+  // Text constants for translation support are now handled by i18n
+  // Use t('pages.waterManagement.*') for all string translations
 
   useEffect(() => {
     // Initialize component data
@@ -83,7 +67,7 @@ const WaterManagement = () => {
       await new Promise(resolve => setTimeout(resolve, 1000));
     } catch (error) {
       console.error('Error loading irrigation data:', error);
-      addNotification('error', TEXT_CONSTANTS.NOTIFICATIONS.SYSTEM_ERROR);
+      addNotification('error', t('pages.waterManagement.systemError'));
     } finally {
       setIsLoading(false);
     }
@@ -142,10 +126,10 @@ const WaterManagement = () => {
       // Mock API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      addNotification('success', TEXT_CONSTANTS.NOTIFICATIONS.SCHEDULE_UPDATED);
+      addNotification('success', t('pages.waterManagement.scheduleUpdated'));
     } catch (error) {
       console.error('Error updating schedule:', error);
-      addNotification('error', TEXT_CONSTANTS.NOTIFICATIONS.SYSTEM_ERROR);
+      addNotification('error', t('pages.waterManagement.systemError'));
     } finally {
       setIsLoading(false);
     }
@@ -155,7 +139,7 @@ const WaterManagement = () => {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-        <span className="ml-3 text-gray-600">Loading irrigation system...</span>
+        <span className="ml-3 text-gray-600">{t('pages.waterManagement.loadingIrrigation')}</span>
       </div>
     );
   }
@@ -164,8 +148,8 @@ const WaterManagement = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg p-6">
-        <h1 className="text-3xl font-bold mb-2">{TEXT_CONSTANTS.TITLE}</h1>
-        <p className="text-blue-100 text-lg">{TEXT_CONSTANTS.SUBTITLE}</p>
+        <h1 className="text-3xl font-bold mb-2">{t('pages.waterManagement.title')}</h1>
+        <p className="text-blue-100 text-lg">{t('pages.waterManagement.subtitle')}</p>
       </div>
 
       {/* Quick Status Cards */}
@@ -176,7 +160,7 @@ const WaterManagement = () => {
               <FontAwesomeIcon icon={faWater} className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Active Zones</p>
+              <p className="text-sm text-gray-600">{t('pages.waterManagement.activeZones')}</p>
               <p className="text-lg font-semibold">2/4</p>
             </div>
           </div>
@@ -187,7 +171,7 @@ const WaterManagement = () => {
               <FontAwesomeIcon icon={faCalendarAlt} className="w-5 h-5 text-green-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Scheduled Today</p>
+              <p className="text-sm text-gray-600">{t('pages.waterManagement.scheduledToday')}</p>
               <p className="text-lg font-semibold">6</p>
             </div>
           </div>
@@ -198,7 +182,7 @@ const WaterManagement = () => {
               <FontAwesomeIcon icon={faGaugeHigh} className="w-5 h-5 text-yellow-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Avg Soil Moisture</p>
+              <p className="text-sm text-gray-600">{t('pages.waterManagement.avgSoilMoisture')}</p>
               <p className="text-lg font-semibold">68%</p>
             </div>
           </div>
@@ -209,7 +193,7 @@ const WaterManagement = () => {
               <FontAwesomeIcon icon={faBell} className="w-5 h-5 text-red-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Alerts</p>
+              <p className="text-sm text-gray-600">{t('pages.waterManagement.alerts')}</p>
               <p className="text-lg font-semibold">{notifications.filter(n => n.type === 'warning' || n.type === 'error').length}</p>
             </div>
           </div>
@@ -221,12 +205,12 @@ const WaterManagement = () => {
         <div className="border-b border-gray-200">
           <nav className="flex space-x-8 px-6">
             {[
-              { id: 'control', label: TEXT_CONSTANTS.TABS.CONTROL, icon: faWater },
-              { id: 'schedule', label: TEXT_CONSTANTS.TABS.SCHEDULE, icon: faCalendarAlt },
-              { id: 'sensors', label: TEXT_CONSTANTS.TABS.SENSORS, icon: faGaugeHigh },
-              { id: 'history', label: TEXT_CONSTANTS.TABS.HISTORY, icon: faHistory },
-              { id: 'suggestions', label: TEXT_CONSTANTS.TABS.SUGGESTIONS, icon: faExclamationTriangle },
-              { id: 'notifications', label: TEXT_CONSTANTS.TABS.NOTIFICATIONS, icon: faBell }
+              { id: 'control', label: t('pages.waterManagement.zoneControl'), icon: faWater },
+              { id: 'schedule', label: t('pages.waterManagement.schedule'), icon: faCalendarAlt },
+              { id: 'sensors', label: t('pages.waterManagement.sensors'), icon: faGaugeHigh },
+              { id: 'history', label: t('pages.waterManagement.history'), icon: faHistory },
+              { id: 'suggestions', label: t('pages.waterManagement.smartSuggestions'), icon: faExclamationTriangle },
+              { id: 'notifications', label: t('pages.waterManagement.notifications'), icon: faBell }
             ].map((tab) => (
               <button
                 key={tab.id}

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -9,6 +10,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 
 const SignUp = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { signup } = useAuth();
   

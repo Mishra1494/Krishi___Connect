@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -8,6 +9,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { login } = useAuth();
   
@@ -53,7 +55,7 @@ const Login = () => {
         navigate('/government-dashboard');
       }
     } else {
-      setError(result.error || 'Login failed. Please try again.');
+      setError(result.error || t('pages.login.loginFailed'));
     }
     
     setIsLoading(false);
@@ -67,15 +69,15 @@ const Login = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full mb-4">
             <FontAwesomeIcon icon={faLeaf} className="text-white text-2xl" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-          <p className="text-gray-600">Sign in to your Krishi Connect account</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('pages.login.welcomeBack')}</h1>
+          <p className="text-gray-600">{t('pages.login.subtitle')}</p>
         </div>
 
         {/* Login Form */}
         <div className="bg-white rounded-2xl shadow-xl p-8">
           {/* User Type Selection */}
           <div className="mb-6">
-            <p className="text-sm font-medium text-gray-700 mb-3">Login as:</p>
+            <p className="text-sm font-medium text-gray-700 mb-3">{t('pages.login.loginAs')}:</p>
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
@@ -87,7 +89,7 @@ const Login = () => {
                 }`}
               >
                 <FontAwesomeIcon icon={faUser} className="text-2xl mb-2" />
-                <div className="text-sm font-medium">Farmer</div>
+                <div className="text-sm font-medium">{t('pages.login.farmer')}</div>
               </button>
               <button
                 type="button"
@@ -99,7 +101,7 @@ const Login = () => {
                 }`}
               >
                 <FontAwesomeIcon icon={faBuilding} className="text-2xl mb-2" />
-                <div className="text-sm font-medium">Government</div>
+                <div className="text-sm font-medium">{t('pages.login.government')}</div>
               </button>
             </div>
           </div>
@@ -108,7 +110,7 @@ const Login = () => {
             {/* Email Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
+                {t('pages.login.emailLabel')}
               </label>
               <div className="relative">
                 <FontAwesomeIcon 
@@ -121,7 +123,7 @@ const Login = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition"
-                  placeholder="Enter your email"
+                  placeholder={t('pages.login.emailPlaceholder')}
                   required
                 />
               </div>
@@ -130,7 +132,7 @@ const Login = () => {
             {/* Password Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Password
+                {t('pages.login.passwordLabel')}
               </label>
               <div className="relative">
                 <FontAwesomeIcon 
@@ -143,7 +145,7 @@ const Login = () => {
                   value={formData.password}
                   onChange={handleInputChange}
                   className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition"
-                  placeholder="Enter your password"
+                  placeholder={t('pages.login.passwordPlaceholder')}
                   required
                 />
                 <button
@@ -176,10 +178,10 @@ const Login = () => {
               {isLoading ? (
                 <div className="flex items-center justify-center">
                   <FontAwesomeIcon icon={faSpinner} className="animate-spin mr-2" />
-                  Signing in...
+                  {t('pages.login.signingIn')}
                 </div>
               ) : (
-                `Sign in as ${formData.userType === 'farmer' ? 'Farmer' : 'Government Official'}`
+                `${t('pages.login.signInAs')} ${formData.userType === 'farmer' ? t('pages.login.farmer') : t('pages.login.government')}`
               )}
             </button>
           </form>
@@ -187,12 +189,12 @@ const Login = () => {
           {/* Footer */}
           <div className="mt-6 text-center">
             <p className="text-gray-600">
-              Don't have an account?{' '}
+              {t('pages.login.noAccount')}{' '}
               <Link 
                 to="/signup" 
                 className="text-green-600 hover:text-green-700 font-medium"
               >
-                Sign up here
+                {t('pages.login.signUpHere')}
               </Link>
             </p>
           </div>
@@ -201,7 +203,7 @@ const Login = () => {
         {/* Demo Credentials */}
         <div className="mt-4 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
           <p className="text-xs text-yellow-800 text-center">
-            <strong>Demo:</strong> Use any email and password to login
+            <strong>{t('pages.login.demo')}:</strong> {t('pages.login.demoNote')}
           </p>
         </div>
       </div>
