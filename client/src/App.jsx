@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import GovernmentDashboard from './pages/GovernmentDashboard';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
+import Landing from './pages/Landing';
 import ClimateAnalysis from './pages/ClimateAnalysis';
 import FarmConsole from './pages/FarmConsole';
 import AIAssistant from './pages/AIAssistant';
@@ -13,6 +14,7 @@ import CreateField from './pages/CreateField';
 import Fields from './pages/Fields';
 import FieldDetail from './pages/FieldDetail';
 import FinancialAid from './pages/FinancialAid';
+import CropInsuranceSuggestions from './pages/CropInsuranceSuggestions';
 import ClimateDamageClaim from './pages/ClimateDamageClaim';
 import WaterManagement from './pages/WaterManagement';
 import PlantDiseaseDetection from './pages/PlantDiseaseDetection';
@@ -22,6 +24,7 @@ import YieldPrediction from './pages/YieldPrediction';
 import IrrigationManagement from './pages/IrrigationManagement';
 import Profile from './pages/Profile';
 import Reports from './pages/Reports';
+import VoiceAssistant from './pages/VoiceAssistant';
 import { AppProvider } from './context/AppContext';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -57,7 +60,14 @@ function App() {
               }
             />
 
-            <Route path="/" element={wrapProtected(<Dashboard />)} />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute requireAuth={false}>
+                  <Landing />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/dashboard" element={wrapProtected(<Dashboard />, 'farmer')} />
             <Route
               path="/government-dashboard"
@@ -72,6 +82,10 @@ function App() {
             <Route path="/crop-health" element={wrapProtected(<PlantDiseaseDetection />, 'farmer')} />
             <Route path="/financial-aid" element={wrapProtected(<FinancialAid />, 'farmer')} />
             <Route
+              path="/crop-insurance-suggestions"
+              element={wrapProtected(<CropInsuranceSuggestions />, 'farmer')}
+            />
+            <Route
               path="/climate-damage-claim"
               element={wrapProtected(<ClimateDamageClaim />, 'farmer')}
             />
@@ -82,6 +96,7 @@ function App() {
               element={wrapProtected(<IrrigationManagement />, 'farmer')}
             />
             <Route path="/ai-assistant" element={wrapProtected(<AIAssistant />)} />
+            <Route path="/voice-assistant" element={wrapProtected(<VoiceAssistant />, 'farmer')} />
 
             <Route path="/create-field" element={wrapProtected(<CreateField />, 'farmer')} />
             <Route path="/fields" element={wrapProtected(<Fields />, 'farmer')} />

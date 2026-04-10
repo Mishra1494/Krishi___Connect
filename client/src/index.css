@@ -1,9 +1,32 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-heading: 'Outfit', system-ui, sans-serif;
+
+  --color-brand-50: #ecfdf5;
+  --color-brand-100: #d1fae5;
+  --color-brand-200: #a7f3d0;
+  --color-brand-300: #6ee7b7;
+  --color-brand-400: #34d399;
+  --color-brand-500: #10b981;
+  --color-brand-600: #059669;
+  --color-brand-700: #047857;
+  --color-brand-800: #065f46;
+  --color-brand-900: #064e3b;
+  
+  --color-glass-border: rgba(255, 255, 255, 0.2);
+  --color-glass-bg: rgba(255, 255, 255, 0.7);
+}
+
 :root {
-  font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: var(--font-sans);
   color: #0f172a;
-  background-color: #f1f5f9;
+  background-color: #f8fafc;
+}
+
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: var(--font-heading);
 }
 
 * {
@@ -18,7 +41,40 @@ body,
 }
 
 body {
-  background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  background-attachment: fixed;
+}
+
+/* Glassmorphism Utilities */
+@layer utilities {
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-md border border-white/40 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] rounded-2xl;
+  }
+  .glass-panel {
+    @apply bg-white/50 backdrop-blur-lg border border-white/30 shadow-[0_4px_16px_0_rgba(31,38,135,0.05)] rounded-xl;
+  }
+  .glass-button {
+    @apply bg-brand-600/90 hover:bg-brand-600 backdrop-blur-sm text-white shadow-lg shadow-brand-500/30 transition-all duration-300 rounded-lg font-medium;
+  }
+  .glass-input {
+    @apply bg-white/60 border border-slate-200/60 focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 backdrop-blur-sm rounded-lg transition-all duration-300;
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 .scrollbar-none {

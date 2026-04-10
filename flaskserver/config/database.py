@@ -1,15 +1,17 @@
 from pymongo import MongoClient
 from datetime import datetime
 import os
+from dotenv import load_dotenv
 try:
     from bson import ObjectId
 except ImportError:
-    # Fallback if there's a conflicting bson package
     from pymongo.objectid import ObjectId
 
-# MongoDB Configuration
-MONGODB_URI = "mongodb+srv://kumbharkartik150_db_user:Mp4BkzLcWv5xiQeq@cluster0.hq9jlm5.mongodb.net/?appName=Cluster0"
-DATABASE_NAME = "agriculture"
+load_dotenv()
+
+# MongoDB Configuration — read from .env file
+MONGODB_URI = os.environ.get("MONGODB_URI", "")
+DATABASE_NAME = os.environ.get("DATABASE_NAME", "agriculture")
 
 class DatabaseConfig:
     def __init__(self):

@@ -49,7 +49,9 @@ import {
   faCloudShowersHeavy,
   faMapMarkedAlt,
   faSearchDollar,
-  faFileInvoiceDollar
+  faFileInvoiceDollar,
+  faShieldAlt,
+  faMicrophoneAlt
 } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../../context/AuthContext';
 
@@ -149,7 +151,7 @@ useEffect(() => {
   return (
     <aside 
       id="sidebar"
-      className={`fixed top-0 left-0 z-40 h-screen transition-all duration-300 ease-in-out bg-white border-r border-blue-200 shadow-xl ${
+      className={`fixed top-0 left-0 z-40 h-screen transition-all duration-300 ease-in-out glass-card rounded-l-none border-r border-white/40 shadow-2xl ${
         isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
       } ${
         screenSize.isMobile 
@@ -163,15 +165,15 @@ useEffect(() => {
       <div className="h-full flex flex-col justify-between overflow-y-auto pb-20 md:pb-0 overscroll-contain scroll-smooth scrollbar-none">
         <div>
           {/* Top section with logo & collapse button */}
-          <div className="flex items-center justify-between py-3 px-3 md:py-4 md:px-4 border-b border-blue-200 sticky top-0 bg-blue-600 z-10 shadow-md">
+          <div className="flex items-center justify-between py-3 px-3 md:py-4 md:px-4 border-b border-white/30 sticky top-0 bg-white/40 backdrop-blur-md z-10">
             {!isCollapsed && (
               <div className="flex items-center space-x-2 md:space-x-3 min-w-0 flex-1">
-                <div className="w-7 h-7 md:w-8 md:h-8 bg-white rounded-lg flex items-center justify-center shadow-md flex-shrink-0">
-                  <FontAwesomeIcon icon={faLeaf} className="text-blue-600 text-base md:text-lg" />
+                <div className="w-7 h-7 md:w-8 md:h-8 bg-brand-500 rounded-lg flex items-center justify-center shadow-md flex-shrink-0">
+                  <FontAwesomeIcon icon={faLeaf} className="text-white text-base md:text-lg" />
                 </div>
                 <div className="flex flex-col min-w-0">
-                  <span className="font-bold text-white text-lg md:text-xl truncate">Krishi Mitra</span>
-                  <span className="text-xs text-blue-100 hidden sm:block">Smart Farming Assistant</span>
+                  <span className="font-heading font-bold text-slate-900 text-lg md:text-xl truncate">KrishiConnect</span>
+                  <span className="text-xs text-slate-500 hidden sm:block">Smart Farming</span>
                 </div>
               </div>
             )}
@@ -194,7 +196,7 @@ useEffect(() => {
             {/* Main Dashboard */}
             <div className={screenSize.isMobile ? 'mb-3' : 'mb-4'}>
               {!isCollapsed && (
-                <h3 className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2 px-2">
+                <h3 className="text-xs font-semibold text-brand-600 uppercase tracking-wider mb-2 px-2">
                   Main
                 </h3>
               )}
@@ -204,8 +206,8 @@ useEffect(() => {
                     to="/"
                     className={`flex items-center rounded-lg ${isCollapsed ? 'justify-center' : ''} ${
                       isActive('/') 
-                        ? 'bg-blue-500 text-white font-medium shadow-sm' 
-                        : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700'
+                        ? 'bg-brand-600 text-white font-medium shadow-md shadow-brand-500/30' 
+                        : 'text-slate-700 hover:bg-white/60 hover:text-brand-700'
                     } group transition-all duration-200 touch-manipulation ${
                       screenSize.isMobile 
                         ? 'px-2 py-3 min-h-[44px]' 
@@ -218,7 +220,7 @@ useEffect(() => {
                       icon={faHome}
                       className={`${
                         screenSize.isMobile ? 'w-4 h-4' : 'w-5 h-5'
-                      } ${isActive('/') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`}
+                      } ${isActive('/') ? 'text-white' : 'text-gray-500 group-hover:text-brand-600'}`}
                     />
                     {!isCollapsed && (
                       <span className={`whitespace-nowrap ${
@@ -234,7 +236,7 @@ useEffect(() => {
             {/* Field Management */}
             <div className={screenSize.isMobile ? 'mb-3' : 'mb-4'}>
               {!isCollapsed && (
-                <h3 className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2 px-2">
+                <h3 className="text-xs font-semibold text-brand-600 uppercase tracking-wider mb-2 px-2">
                   Field Management
                 </h3>
               )}
@@ -244,8 +246,8 @@ useEffect(() => {
                     to="/create-field"
                     className={`flex items-center rounded-lg ${isCollapsed ? 'justify-center' : ''} ${
                       isActive('/create-field') 
-                        ? 'bg-blue-500 text-white font-medium shadow-sm' 
-                        : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700'
+                        ? 'bg-brand-600 text-white font-medium shadow-md shadow-brand-500/30' 
+                        : 'text-slate-700 hover:bg-white/60 hover:text-brand-700'
                     } group transition-all duration-200 touch-manipulation ${
                       screenSize.isMobile 
                         ? 'px-2 py-3 min-h-[44px]' 
@@ -258,7 +260,7 @@ useEffect(() => {
                       icon={faDraftingCompass}
                       className={`${
                         screenSize.isMobile ? 'w-4 h-4' : 'w-5 h-5'
-                      } ${isActive('/create-field') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`}
+                      } ${isActive('/create-field') ? 'text-white' : 'text-gray-500 group-hover:text-brand-600'}`}
                     />
                     {!isCollapsed && (
                       <span className={`whitespace-nowrap ${
@@ -274,8 +276,8 @@ useEffect(() => {
                     to="/fields"
                     className={`flex items-center rounded-lg ${isCollapsed ? 'justify-center' : ''} ${
                       isActive('/fields') 
-                        ? 'bg-blue-500 text-white font-medium shadow-sm' 
-                        : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700'
+                        ? 'bg-brand-600 text-white font-medium shadow-md shadow-brand-500/30' 
+                        : 'text-slate-700 hover:bg-white/60 hover:text-brand-700'
                     } group transition-all duration-200 touch-manipulation ${
                       screenSize.isMobile 
                         ? 'px-2 py-3 min-h-[44px]' 
@@ -288,7 +290,7 @@ useEffect(() => {
                       icon={faMap}
                       className={`${
                         screenSize.isMobile ? 'w-4 h-4' : 'w-5 h-5'
-                      } ${isActive('/fields') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`}
+                      } ${isActive('/fields') ? 'text-white' : 'text-gray-500 group-hover:text-brand-600'}`}
                     />
                     {!isCollapsed && (
                       <span className={`whitespace-nowrap ${
@@ -305,7 +307,7 @@ useEffect(() => {
             {/* Crop Management */}
             <div className="mb-4">
               {!isCollapsed && (
-                <h3 className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2 px-2">
+                <h3 className="text-xs font-semibold text-brand-600 uppercase tracking-wider mb-2 px-2">
                   Crop Management
                 </h3>
               )}
@@ -315,13 +317,13 @@ useEffect(() => {
                     to="/crop-lifecycle"
                     className={`flex items-center px-2 md:px-3 py-2 md:py-2.5 rounded-lg ${isCollapsed ? 'justify-center' : ''} ${
                       isActive('/crop-lifecycle') 
-                        ? 'bg-blue-500 text-white font-medium shadow-sm' 
-                        : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700'
+                        ? 'bg-brand-600 text-white font-medium shadow-md shadow-brand-500/30' 
+                        : 'text-slate-700 hover:bg-white/60 hover:text-brand-700'
                     } group transition-all duration-200 touch-manipulation`}
                   >
                     <FontAwesomeIcon
                       icon={faSeedling}
-                      className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/crop-lifecycle') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`}
+                      className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/crop-lifecycle') ? 'text-white' : 'text-gray-500 group-hover:text-brand-600'}`}
                     />
                     {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">Crop Lifecycle</span>}
                   </Link>
@@ -331,13 +333,13 @@ useEffect(() => {
                     to="/crop-prediction"
                     className={`flex items-center px-2 md:px-3 py-2 md:py-2.5 rounded-lg ${isCollapsed ? 'justify-center' : ''} ${
                       isActive('/crop-prediction') 
-                        ? 'bg-blue-500 text-white font-medium shadow-sm' 
-                        : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700'
+                        ? 'bg-brand-600 text-white font-medium shadow-md shadow-brand-500/30' 
+                        : 'text-slate-700 hover:bg-white/60 hover:text-brand-700'
                     } group transition-all duration-200 touch-manipulation`}
                   >
                     <FontAwesomeIcon
                       icon={faChartLine}
-                      className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/crop-prediction') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`}
+                      className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/crop-prediction') ? 'text-white' : 'text-gray-500 group-hover:text-brand-600'}`}
                     />
                     {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">Crop Prediction</span>}
                   </Link>
@@ -347,13 +349,13 @@ useEffect(() => {
                     to="/yield-prediction"
                     className={`flex items-center px-2 md:px-3 py-2 md:py-2.5 rounded-lg ${isCollapsed ? 'justify-center' : ''} ${
                       isActive('/yield-prediction') 
-                        ? 'bg-blue-500 text-white font-medium shadow-sm' 
-                        : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700'
+                        ? 'bg-brand-600 text-white font-medium shadow-md shadow-brand-500/30' 
+                        : 'text-slate-700 hover:bg-white/60 hover:text-brand-700'
                     } group transition-all duration-200 touch-manipulation`}
                   >
                     <FontAwesomeIcon
                       icon={faWheatAwn}
-                      className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/yield-prediction') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`}
+                      className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/yield-prediction') ? 'text-white' : 'text-gray-500 group-hover:text-brand-600'}`}
                     />
                     {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">Yield Prediction</span>}
                   </Link>
@@ -363,13 +365,13 @@ useEffect(() => {
                     to="/irrigation-management"
                     className={`flex items-center px-2 md:px-3 py-2 md:py-2.5 rounded-lg ${isCollapsed ? 'justify-center' : ''} ${
                       isActive('/irrigation-management') 
-                        ? 'bg-blue-500 text-white font-medium shadow-sm' 
-                        : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700'
+                        ? 'bg-brand-600 text-white font-medium shadow-md shadow-brand-500/30' 
+                        : 'text-slate-700 hover:bg-white/60 hover:text-brand-700'
                     } group transition-all duration-200 touch-manipulation`}
                   >
                     <FontAwesomeIcon
                       icon={faDroplet}
-                      className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/irrigation-management') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`}
+                      className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/irrigation-management') ? 'text-white' : 'text-gray-500 group-hover:text-brand-600'}`}
                     />
                     {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">Irrigation Management</span>}
                   </Link>
@@ -381,7 +383,7 @@ useEffect(() => {
             {isFarmer && (
               <div className="mb-4">
                 {!isCollapsed && (
-                  <h3 className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2 px-2">
+                  <h3 className="text-xs font-semibold text-brand-600 uppercase tracking-wider mb-2 px-2">
                     Financial Aid
                   </h3>
                 )}
@@ -391,13 +393,13 @@ useEffect(() => {
                       to="/climate-damage-claim"
                       className={`flex items-center px-2 md:px-3 py-2 md:py-2.5 rounded-lg ${isCollapsed ? 'justify-center' : ''} ${
                         isActive('/climate-damage-claim') 
-                          ? 'bg-blue-500 text-white font-medium shadow-sm' 
-                          : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700'
+                          ? 'bg-brand-600 text-white font-medium shadow-md shadow-brand-500/30' 
+                          : 'text-slate-700 hover:bg-white/60 hover:text-brand-700'
                       } group transition-all duration-200 touch-manipulation`}
                     >
                       <FontAwesomeIcon
                         icon={faFileInvoiceDollar}
-                        className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/climate-damage-claim') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`}
+                        className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/climate-damage-claim') ? 'text-white' : 'text-gray-500 group-hover:text-brand-600'}`}
                       />
                       {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">Climate Damage Claim</span>}
                     </Link>
@@ -407,15 +409,35 @@ useEffect(() => {
                       to="/financial-aid"
                       className={`flex items-center px-2 md:px-3 py-2 md:py-2.5 rounded-lg ${isCollapsed ? 'justify-center' : ''} ${
                         isActive('/financial-aid') 
-                          ? 'bg-blue-500 text-white font-medium shadow-sm' 
-                          : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700'
+                          ? 'bg-brand-600 text-white font-medium shadow-md shadow-brand-500/30' 
+                          : 'text-slate-700 hover:bg-white/60 hover:text-brand-700'
                       } group transition-all duration-200 touch-manipulation`}
                     >
                       <FontAwesomeIcon
                         icon={faHandHoldingDollar}
-                        className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/financial-aid') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`}
+                        className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/financial-aid') ? 'text-white' : 'text-gray-500 group-hover:text-brand-600'}`}
                       />
                       {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">Financial Aid</span>}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/crop-insurance-suggestions"
+                      className={`flex items-center px-2 md:px-3 py-2 md:py-2.5 rounded-lg ${isCollapsed ? 'justify-center' : ''} ${
+                        isActive('/crop-insurance-suggestions')
+                          ? 'bg-brand-600 text-white font-medium shadow-md shadow-brand-500/30'
+                          : 'text-slate-700 hover:bg-white/60 hover:text-brand-700'
+                      } group transition-all duration-200 touch-manipulation`}
+                    >
+                      <FontAwesomeIcon
+                        icon={faShieldAlt}
+                        className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/crop-insurance-suggestions') ? 'text-white' : 'text-gray-500 group-hover:text-brand-600'}`}
+                      />
+                      {!isCollapsed && (
+                        <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">
+                          Crop Insurance
+                        </span>
+                      )}
                     </Link>
                   </li>
                 </ul>
@@ -425,7 +447,7 @@ useEffect(() => {
             {/* AI Tools */}
             <div className="mb-4">
               {!isCollapsed && (
-                <h3 className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2 px-2">
+                <h3 className="text-xs font-semibold text-brand-600 uppercase tracking-wider mb-2 px-2">
                   Tools
                 </h3>
               )}
@@ -435,15 +457,31 @@ useEffect(() => {
                     to="/ai-assistant"
                     className={`flex items-center px-2 md:px-3 py-2 md:py-2.5 rounded-lg ${isCollapsed ? 'justify-center' : ''} ${
                       isActive('/ai-assistant') 
-                        ? 'bg-blue-500 text-white font-medium shadow-sm' 
-                        : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700'
+                        ? 'bg-brand-600 text-white font-medium shadow-md shadow-brand-500/30' 
+                        : 'text-slate-700 hover:bg-white/60 hover:text-brand-700'
                     } group transition-all duration-200 touch-manipulation`}
                   >
                     <FontAwesomeIcon
                       icon={faRobot}
-                      className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/ai-assistant') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`}
+                      className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/ai-assistant') ? 'text-white' : 'text-gray-500 group-hover:text-brand-600'}`}
                     />
                     {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">AI Assistant</span>}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/voice-assistant"
+                    className={`flex items-center px-2 md:px-3 py-2 md:py-2.5 rounded-lg ${isCollapsed ? 'justify-center' : ''} ${
+                      isActive('/voice-assistant') 
+                        ? 'bg-brand-600 text-white font-medium shadow-md shadow-brand-500/30' 
+                        : 'text-slate-700 hover:bg-white/60 hover:text-brand-700'
+                    } group transition-all duration-200 touch-manipulation`}
+                  >
+                    <FontAwesomeIcon
+                      icon={faMicrophoneAlt}
+                      className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/voice-assistant') ? 'text-white' : 'text-gray-500 group-hover:text-brand-600'}`}
+                    />
+                    {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">Voice Assistant</span>}
                   </Link>
                 </li>
               </ul>
@@ -455,7 +493,7 @@ useEffect(() => {
         <div className="mt-auto border-t border-blue-200 pt-3 md:pt-4">
           <div className="px-2 md:px-3">
             {!isCollapsed && (
-              <h3 className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2 px-2">
+              <h3 className="text-xs font-semibold text-brand-600 uppercase tracking-wider mb-2 px-2">
                 Account
               </h3>
             )}
@@ -465,13 +503,13 @@ useEffect(() => {
                   to="/profile"
                   className={`flex items-center px-2 md:px-3 py-2 md:py-2.5 rounded-lg ${isCollapsed ? 'justify-center' : ''} ${
                     isActive('/profile') 
-                      ? 'bg-blue-500 text-white font-medium shadow-sm' 
-                      : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700'
+                      ? 'bg-brand-600 text-white font-medium shadow-md shadow-brand-500/30' 
+                      : 'text-slate-700 hover:bg-white/60 hover:text-brand-700'
                   } group transition-all duration-200 touch-manipulation`}
                 >
                   <FontAwesomeIcon
                     icon={faUser}
-                    className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/profile') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`}
+                    className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/profile') ? 'text-white' : 'text-gray-500 group-hover:text-brand-600'}`}
                   />
                   {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">Profile</span>}
                 </Link>

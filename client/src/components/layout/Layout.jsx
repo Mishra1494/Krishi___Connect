@@ -76,7 +76,7 @@ const Layout = ({ children }) => {
           .join(' ') || 'Dashboard';
 
   return (
-    <div className="flex min-h-screen bg-slate-100">
+    <div className="flex min-h-screen bg-transparent">
       <Sidebar isSidebarOpen={sidebarOpen} isCollapsed={isCollapsed} toggleSidebar={toggleSidebar} />
 
       {sidebarOpen && isMobile && (
@@ -92,25 +92,25 @@ const Layout = ({ children }) => {
           isMobile ? 'ml-0' : isCollapsed ? 'md:ml-20' : 'md:ml-64'
         }`}
       >
-        <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
+        <header className="sticky top-0 z-20 border-b border-white/40 glass-panel !rounded-none backdrop-blur-md">
           <div className="flex items-center justify-between gap-3 px-4 py-3 md:px-6">
             <div className="flex items-center gap-3 min-w-0">
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
                 type="button"
-                className="md:hidden inline-flex items-center p-2 text-sm rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 w-10 h-10 justify-center shadow"
+                className="md:hidden inline-flex items-center p-2 text-sm rounded-xl bg-brand-600 text-white hover:bg-brand-700 w-10 h-10 justify-center shadow"
                 aria-controls="sidebar"
                 aria-expanded={sidebarOpen}
                 aria-label="Toggle sidebar"
               >
                 <FontAwesomeIcon icon={sidebarOpen ? faXmark : faBars} className="text-base" />
               </button>
-              <div className="hidden sm:flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+              <div className="hidden sm:flex h-9 w-9 items-center justify-center rounded-xl bg-brand-100 text-brand-700">
                 <FontAwesomeIcon icon={faSeedling} />
               </div>
               <div className="min-w-0">
-                <p className="text-xs uppercase tracking-wider text-slate-500">Krishi Connect</p>
-                <h1 className="truncate text-base font-semibold text-slate-800 md:text-lg">{pageTitle}</h1>
+                <p className="text-xs uppercase tracking-wider text-slate-500 font-medium">Krishi Connect</p>
+                <h1 className="truncate text-base font-heading font-semibold text-slate-900 md:text-lg">{pageTitle}</h1>
               </div>
             </div>
 
