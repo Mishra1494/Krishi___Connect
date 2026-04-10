@@ -16,6 +16,7 @@ const climateClaimRoutes = require('./routes/climateClaims');
 const dashboardRoutes = require('./routes/dashboard');
 const governmentSchemeRoutes = require('./routes/governmentSchemes');
 const healthRoutes = require('./routes/health');
+const voiceProxyRoutes = require('./routes/voiceProxy');
 
 // Import database initialization
 const { initializeDatabase, checkDatabaseStatus } = require('./scripts/initDatabase');
@@ -113,6 +114,9 @@ app.use('/api/crops', cropRoutes);
 app.use('/api/climate-damage-claims', climateClaimRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/government-schemes', governmentSchemeRoutes);
+
+// Voice Assistant proxy (forwards /api/voice/* to Flask on port 5002)
+app.use('/api/voice', voiceProxyRoutes);
 
 // Root route
 app.get('/', (req, res) => {
@@ -265,27 +269,46 @@ async function startServer() {
     // Start server
     const server = app.listen(PORT, HOST, () => {
       console.log('\n🚀 SERVER STARTED SUCCESSFULLY!');
-      console.log('=' * 50);
       console.log(`🌐 Server URL: http://${HOST}:${PORT}`);
       console.log(`🏥 Health Check: http://${HOST}:${PORT}/health`);
       console.log(`📚 API Documentation: http://${HOST}:${PORT}/api`);
       console.log(`🔧 Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`💾 Database: PostgreSQL (Connected)`);
-      console.log(`📊 Tables: ${dbStatus.tables_exist}/${dbStatus.expected_tables} ready`);
-      console.log('=' * 50);
-      console.log('✅ Ready to accept requests!');
-      console.log('\n📝 Available endpoints:');
-      console.log('   • POST /api/auth/register - User registration');
-      console.log('   • POST /api/auth/login - User login');
-      console.log('   • GET  /api/fields - Field management');
-      console.log('   • GET  /api/crops - Crop lifecycle');
-      console.log('   • GET  /api/climate-damage-claims - Climate claims');
-      console.log('   • GET  /api/dashboard/farmer - Farmer dashboard');
-      console.log('   • GET  /api/dashboard/government - Government dashboard');
-      console.log('   • GET  /api/government-schemes - Government schemes');
-      console.log('\n🛠️ Use Ctrl+C to stop the server');
-      console.log('=' * 80);
+      console.log(`🎤 Voice Assistant: http://${HOST}:${PORT}/api/voice/* → Flask:5002`);
     });
+
+    // === WebSocket Proxy for Voice Assistant ===
+    // Upgrades WS connections at /api/voice/ws and tunnels them to Flask
+    try {
+      const { createProxyMiddleware } = require('http-proxy-middleware');
+      const FLASK_WS_URL = (process.env.FLASK_SERVER_URL || 'http://localhost:5002').replace('http', 'ws');
+      const wsProxy = createProxyMiddleware({
+        target: FLASK_WS_URL,
+        changeOrigin: true,
+        ws: true,
+        on: {
+          error: (err) => console.error('[WS Proxy] error:', err.message),
+        }
+      });
+      server.on('upgrade', (req, socket, head) => {
+        if (req.url && req.url.startsWith('/api/voice/ws')) {
+          wsProxy.upgrade(req, socket, head);
+        }
+      });
+      console.log('🔊 WebSocket Proxy active for /api/voice/ws');
+    } catch (wsErr) {
+      console.warn('⚠️  WebSocket proxy setup failed (http-proxy-middleware not installed?):', wsErr.message);
+    }
+    
+    console.log('\n📝 Available endpoints:');
+    console.log('   • POST /api/auth/register - User registration');
+    console.log('   • POST /api/auth/login - User login');
+    console.log('   • GET  /api/fields - Field management');
+    console.log('   • GET  /api/crops - Crop lifecycle');
+    console.log('   • GET  /api/climate-damage-claims - Climate claims');
+    console.log('   • GET  /api/dashboard/farmer - Farmer dashboard');
+    console.log('   • WS   /api/voice/ws - Voice assistant (proxied to Flask)');
+    console.log('\n🛠️ Use Ctrl+C to stop the server');
     
     // Graceful shutdown
     process.on('SIGTERM', () => {

@@ -10,6 +10,19 @@ import traceback
 from dotenv import load_dotenv
 import requests
 
+# Load .env FIRST so all env vars are available during imports/init
+load_dotenv()
+
+# Voice Assistant — WebSocket support
+VOICE_ASSISTANT_AVAILABLE = False
+try:
+    from flask_sock import Sock
+    from voice_assistant.ws_handler import handle_voice_websocket, register_http_routes
+    VOICE_ASSISTANT_AVAILABLE = True
+    print("✅ Voice assistant modules imported successfully")
+except Exception as e:
+    print(f"⚠️ Voice assistant not available: {e}")
+
 # MongoDB imports
 from config.database import init_database
 from services.database_service import (
@@ -23,8 +36,28 @@ from services.database_service import (
 app = Flask(__name__)
 CORS(app)
 
-# Load environment variables from .env (if present)
-load_dotenv()
+# ── Voice Assistant Setup ───────────────────────────────────────
+if VOICE_ASSISTANT_AVAILABLE:
+    try:
+        # Create Sock instance directly on app
+        sock = Sock(app)
+
+        # Register the WebSocket route directly (not through blueprint)
+        @sock.route('/api/voice/ws')
+        def voice_websocket(ws):
+            handle_voice_websocket(ws)
+
+        # Register HTTP fallback routes (/api/voice/chat, /api/voice/tts etc.)
+        register_http_routes(app)
+
+        print("✅ Voice Assistant routes registered:")
+        print("   WS:   /api/voice/ws")
+        print("   HTTP: /api/voice/chat, /api/voice/tts, /api/voice/greeting, /api/voice/health")
+    except Exception as _va_err:
+        import traceback as _tb
+        print(f"⚠️ Voice Assistant registration failed: {_va_err}")
+        _tb.print_exc()
+        VOICE_ASSISTANT_AVAILABLE = False
 
 # GROQ configuration
 GROQ_API_KEY = os.getenv('GROQ_API_KEY')
@@ -33,6 +66,7 @@ GROQ_API_URL = os.getenv('GROQ_API_URL', 'https://api.groq.ai/v1')
 # Initialize database
 print("Initializing MongoDB connection...")
 mongodb_connected = init_database()
+
 
 # Initialize services (only if MongoDB is connected)
 field_service = None
@@ -845,4 +879,5 @@ def get_user_session():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=False, port=5002)
+    # Use threaded=True for WebSocket support with flask-sock
+    app.run(debug=False, port=5002, threaded=True)

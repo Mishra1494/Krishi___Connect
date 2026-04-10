@@ -50,7 +50,8 @@ import {
   faMapMarkedAlt,
   faSearchDollar,
   faFileInvoiceDollar,
-  faShieldAlt
+  faShieldAlt,
+  faMicrophoneAlt
 } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../../context/AuthContext';
 
@@ -465,6 +466,22 @@ useEffect(() => {
                       className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/ai-assistant') ? 'text-white' : 'text-gray-500 group-hover:text-brand-600'}`}
                     />
                     {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">AI Assistant</span>}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/voice-assistant"
+                    className={`flex items-center px-2 md:px-3 py-2 md:py-2.5 rounded-lg ${isCollapsed ? 'justify-center' : ''} ${
+                      isActive('/voice-assistant') 
+                        ? 'bg-brand-600 text-white font-medium shadow-md shadow-brand-500/30' 
+                        : 'text-slate-700 hover:bg-white/60 hover:text-brand-700'
+                    } group transition-all duration-200 touch-manipulation`}
+                  >
+                    <FontAwesomeIcon
+                      icon={faMicrophoneAlt}
+                      className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/voice-assistant') ? 'text-white' : 'text-gray-500 group-hover:text-brand-600'}`}
+                    />
+                    {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">Voice Assistant</span>}
                   </Link>
                 </li>
               </ul>

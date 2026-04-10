@@ -24,6 +24,7 @@ import YieldPrediction from './pages/YieldPrediction';
 import IrrigationManagement from './pages/IrrigationManagement';
 import Profile from './pages/Profile';
 import Reports from './pages/Reports';
+import VoiceAssistant from './pages/VoiceAssistant';
 import { AppProvider } from './context/AppContext';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -95,6 +96,7 @@ function App() {
               element={wrapProtected(<IrrigationManagement />, 'farmer')}
             />
             <Route path="/ai-assistant" element={wrapProtected(<AIAssistant />)} />
+            <Route path="/voice-assistant" element={wrapProtected(<VoiceAssistant />, 'farmer')} />
 
             <Route path="/create-field" element={wrapProtected(<CreateField />, 'farmer')} />
             <Route path="/fields" element={wrapProtected(<Fields />, 'farmer')} />
