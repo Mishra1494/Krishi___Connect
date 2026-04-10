@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../common/LanguageSwitcher';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faMicrophone, 
@@ -23,6 +25,7 @@ import { useAuth } from '../../context/AuthContext';
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   const mobileMenuRef = useRef(null);
   const menuButtonRef = useRef(null);
   
@@ -149,7 +152,7 @@ const Navbar = () => {
                 <FontAwesomeIcon icon={faLeaf} className="text-green-400 text-xl sm:text-2xl" />
               </div>
               <span className="text-lg sm:text-xl font-bold text-white whitespace-nowrap nav-logo-text">
-                {windowWidth < 480 ? "Smart Agri" : "Smart Agriculture"}
+                {windowWidth < 480 ? t('common.appName', "Smart Agri") : t('common.appName', "Smart Agriculture")}
               </span>
             </Link> 
             
@@ -172,7 +175,7 @@ const Navbar = () => {
                   <input 
                     type="text" 
                     id="searchInput" 
-                    placeholder="Search (/) tools, analytics..." 
+                    placeholder={t('pages.fields.searchPlaceholder', 'Search (/) tools, analytics...')}
                     className="w-full pl-3 pr-2 md:px-4 py-1.5 md:py-2 outline-none text-gray-700 bg-transparent text-sm"
                     autoComplete="off"
                     value={searchQuery}
@@ -203,7 +206,7 @@ const Navbar = () => {
                 className="flex items-center px-3 md:px-4 py-1.5 md:py-2 bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-md font-medium transition-all duration-200 shadow-sm hover:shadow active:shadow-inner text-sm whitespace-nowrap"
               >
                 <FontAwesomeIcon icon={faPlus} className="mr-1.5 md:mr-2 text-xs md:text-sm" />
-                <span>Create Field</span>
+                <span>{t('pages.dashboard.createNewField', 'Create Field')}</span>
               </button>
               
               {/* Field Selection */}
@@ -264,6 +267,7 @@ const Navbar = () => {
 
             {/* User Profile Section - Desktop */}
             <div className="hidden md:flex items-center space-x-3">
+              <LanguageSwitcher />
               <div className="flex items-center space-x-2 text-white">
                 <div className={`p-2 rounded-full ${isFarmer ? 'bg-green-600' : 'bg-blue-600'}`}>
                   <FontAwesomeIcon icon={isFarmer ? faUser : faBuilding} className="text-sm" />

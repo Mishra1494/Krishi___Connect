@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { MdDashboard } from "react-icons/md";
 import { MdOutlineStorage } from "react-icons/md";
@@ -58,6 +59,7 @@ import { useAuth } from '../../context/AuthContext';
 const Sidebar = ({ isSidebarOpen, isCollapsed, toggleSidebar }) => {
   const location = useLocation();
   const { user, isFarmer } = useAuth();
+  const { t } = useTranslation();
   const [expandedMenus, setExpandedMenus] = useState({
     analytics: false,
     pests: false,
@@ -197,7 +199,7 @@ useEffect(() => {
             <div className={screenSize.isMobile ? 'mb-3' : 'mb-4'}>
               {!isCollapsed && (
                 <h3 className="text-xs font-semibold text-brand-600 uppercase tracking-wider mb-2 px-2">
-                  Main
+                  {t('navigation.dashboard', 'Main')}
                 </h3>
               )}
               <ul className={screenSize.isMobile ? 'space-y-1' : 'space-y-1.5'}>
@@ -226,7 +228,7 @@ useEffect(() => {
                       <span className={`whitespace-nowrap ${
                         screenSize.isMobile ? 'ml-2 text-sm' : 'ml-3 text-base'
                       }`}>
-                        Dashboard
+                        {t('navigation.dashboard', 'Dashboard')}
                       </span>
                     )}
                   </Link>
@@ -237,7 +239,7 @@ useEffect(() => {
             <div className={screenSize.isMobile ? 'mb-3' : 'mb-4'}>
               {!isCollapsed && (
                 <h3 className="text-xs font-semibold text-brand-600 uppercase tracking-wider mb-2 px-2">
-                  Field Management
+                  {t('navigation.fields', 'Field Management')}
                 </h3>
               )}
               <ul className={screenSize.isMobile ? 'space-y-1' : 'space-y-1.5'}>
@@ -266,7 +268,7 @@ useEffect(() => {
                       <span className={`whitespace-nowrap ${
                         screenSize.isMobile ? 'ml-2 text-sm' : 'ml-3 text-base'
                       }`}>
-                        Create New Field
+                        {t('pages.dashboard.createNewField', 'Create New Field')}
                       </span>
                     )}
                   </Link>
@@ -296,7 +298,7 @@ useEffect(() => {
                       <span className={`whitespace-nowrap ${
                         screenSize.isMobile ? 'ml-2 text-sm' : 'ml-3 text-base'
                       }`}>
-                        Manage Fields
+                        {t('sidebar.manageFields', 'Manage Fields')}
                       </span>
                     )}
                   </Link>
@@ -308,7 +310,7 @@ useEffect(() => {
             <div className="mb-4">
               {!isCollapsed && (
                 <h3 className="text-xs font-semibold text-brand-600 uppercase tracking-wider mb-2 px-2">
-                  Crop Management
+                  {t('navigation.crops', 'Crop Management')}
                 </h3>
               )}
               <ul className="space-y-1">
@@ -325,7 +327,7 @@ useEffect(() => {
                       icon={faSeedling}
                       className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/crop-lifecycle') ? 'text-white' : 'text-gray-500 group-hover:text-brand-600'}`}
                     />
-                    {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">Crop Lifecycle</span>}
+                    {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">{t('pages.dashboard.cropLifecycle', 'Crop Lifecycle')}</span>}
                   </Link>
                 </li>
                 <li>
@@ -341,7 +343,7 @@ useEffect(() => {
                       icon={faChartLine}
                       className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/crop-prediction') ? 'text-white' : 'text-gray-500 group-hover:text-brand-600'}`}
                     />
-                    {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">Crop Prediction</span>}
+                    {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">{t('pages.dashboard.cropPrediction', 'Crop Prediction')}</span>}
                   </Link>
                 </li>
                 <li>
@@ -357,7 +359,7 @@ useEffect(() => {
                       icon={faWheatAwn}
                       className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/yield-prediction') ? 'text-white' : 'text-gray-500 group-hover:text-brand-600'}`}
                     />
-                    {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">Yield Prediction</span>}
+                    {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">{t('pages.dashboard.yieldPrediction', 'Yield Prediction')}</span>}
                   </Link>
                 </li>
                 <li>
@@ -373,7 +375,7 @@ useEffect(() => {
                       icon={faDroplet}
                       className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/irrigation-management') ? 'text-white' : 'text-gray-500 group-hover:text-brand-600'}`}
                     />
-                    {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">Irrigation Management</span>}
+                    {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">{t('navigation.irrigation', 'Irrigation Management')}</span>}
                   </Link>
                 </li>
               </ul>
@@ -384,7 +386,7 @@ useEffect(() => {
               <div className="mb-4">
                 {!isCollapsed && (
                   <h3 className="text-xs font-semibold text-brand-600 uppercase tracking-wider mb-2 px-2">
-                    Financial Aid
+                    {t('navigation.financial_aid', 'Financial Aid')}
                   </h3>
                 )}
                 <ul className="space-y-1">
@@ -401,7 +403,7 @@ useEffect(() => {
                         icon={faFileInvoiceDollar}
                         className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/climate-damage-claim') ? 'text-white' : 'text-gray-500 group-hover:text-brand-600'}`}
                       />
-                      {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">Climate Damage Claim</span>}
+                      {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">{t('pages.climateDamageClaim.title', 'Climate Damage Claim')}</span>}
                     </Link>
                   </li>
                   <li>
@@ -417,7 +419,7 @@ useEffect(() => {
                         icon={faHandHoldingDollar}
                         className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/financial-aid') ? 'text-white' : 'text-gray-500 group-hover:text-brand-600'}`}
                       />
-                      {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">Financial Aid</span>}
+                      {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">{t('navigation.financial_aid', 'Financial Aid')}</span>}
                     </Link>
                   </li>
                   <li>
@@ -435,7 +437,7 @@ useEffect(() => {
                       />
                       {!isCollapsed && (
                         <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">
-                          Crop Insurance
+                          {t('pages.financialAid.cropInsurance', 'Crop Insurance')}
                         </span>
                       )}
                     </Link>
@@ -448,7 +450,7 @@ useEffect(() => {
             <div className="mb-4">
               {!isCollapsed && (
                 <h3 className="text-xs font-semibold text-brand-600 uppercase tracking-wider mb-2 px-2">
-                  Tools
+                  {t('sidebar.tools', 'Tools')}
                 </h3>
               )}
               <ul className="space-y-1">
@@ -465,7 +467,7 @@ useEffect(() => {
                       icon={faRobot}
                       className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/ai-assistant') ? 'text-white' : 'text-gray-500 group-hover:text-brand-600'}`}
                     />
-                    {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">AI Assistant</span>}
+                    {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">{t('pages.aiAssistant.title', 'AI Assistant')}</span>}
                   </Link>
                 </li>
                 <li>
@@ -481,7 +483,7 @@ useEffect(() => {
                       icon={faMicrophoneAlt}
                       className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/voice-assistant') ? 'text-white' : 'text-gray-500 group-hover:text-brand-600'}`}
                     />
-                    {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">Voice Assistant</span>}
+                    {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">{t('sidebar.voiceAssistant', 'Voice Assistant')}</span>}
                   </Link>
                 </li>
               </ul>
@@ -494,7 +496,7 @@ useEffect(() => {
           <div className="px-2 md:px-3">
             {!isCollapsed && (
               <h3 className="text-xs font-semibold text-brand-600 uppercase tracking-wider mb-2 px-2">
-                Account
+                {t('sidebar.account', 'Account')}
               </h3>
             )}
             <ul className="space-y-1">
@@ -511,7 +513,7 @@ useEffect(() => {
                     icon={faUser}
                     className={`w-4 h-4 md:w-5 md:h-5 ${isActive('/profile') ? 'text-white' : 'text-gray-500 group-hover:text-brand-600'}`}
                   />
-                  {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">Profile</span>}
+                  {!isCollapsed && <span className="ml-2 md:ml-3 whitespace-nowrap text-sm md:text-base">{t('navigation.profile', 'Profile')}</span>}
                 </Link>
               </li>              
             </ul>
