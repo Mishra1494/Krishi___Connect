@@ -6,8 +6,7 @@ import HttpBackend from 'i18next-http-backend';
 // Import translation files
 import enCommon from './locales/en/common.json';
 import mrCommon from './locales/mr/common.json';
-import guCommon from './locales/gu/common.json';
-import taCommon from './locales/ta/common.json';
+import hiCommon from './locales/hi/common.json';
 
 const resources = {
   en: {
@@ -16,11 +15,8 @@ const resources = {
   mr: {
     translation: mrCommon
   },
-  gu: {
-    translation: guCommon
-  },
-  ta: {
-    translation: taCommon
+  hi: {
+    translation: hiCommon
   }
 };
 

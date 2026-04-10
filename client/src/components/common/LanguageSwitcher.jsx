@@ -12,9 +12,8 @@ const LanguageSwitcher = () => {
 
   const languages = [
     { code: 'en', name: t('common.english'), icon: '🌐' },
-    { code: 'mr', name: t('common.marathi'), icon: '🇮🇳' },
-    { code: 'gu', name: t('common.gujarati'), icon: '🇮🇳' },
-    { code: 'ta', name: t('common.tamil'), icon: '🇮🇳' }
+    { code: 'hi', name: 'हिंदी', icon: '🇮🇳' },
+    { code: 'mr', name: t('common.marathi'), icon: '🇮🇳' }
   ];
 
   const currentLangDisplay = languages.find(lang => lang.code === i18n.language);
