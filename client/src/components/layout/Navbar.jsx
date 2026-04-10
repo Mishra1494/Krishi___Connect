@@ -371,6 +371,15 @@ const Navbar = () => {
                 <div className="px-4 py-2">
                   <p className="text-xs font-semibold text-green-300 uppercase tracking-wide mb-1">Quick Navigation</p>
                 </div>
+                
+                {/* Language Switcher - Mobile */}
+                <div className="px-5 py-3 w-full border-b border-green-800/50 text-white">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">Language</span>
+                    <LanguageSwitcher />
+                  </div>
+                </div>
+
                 <button 
                   onClick={() => {
                     navigateToClimateAnalysis();
