@@ -86,7 +86,23 @@ if mongodb_connected:
         mongodb_connected = False
 
 # ML Model Functions
-def load_models(models_dir='../models/trained_models'):
+def load_models(models_dir=None):
+    if models_dir is None:
+        # Try environment variable first
+        models_dir = os.environ.get('MODELS_DIR')
+        
+    if not models_dir:
+        # Check standard locations (Docker vs Local)
+        local_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'models', 'trained_models')
+        parent_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'models', 'trained_models')
+        
+        if os.path.exists(local_path):
+            models_dir = local_path
+        elif os.path.exists(parent_path):
+            models_dir = parent_path
+        else:
+            models_dir = '../models/trained_models' # Fallback for error message output
+
     try:
         if not os.path.exists(models_dir):
             print(f"ERROR: Models directory not found at {models_dir}")
