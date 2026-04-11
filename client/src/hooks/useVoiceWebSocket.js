@@ -16,12 +16,12 @@ import { v4 as uuidv4 } from 'uuid';
 // WebSocket connects directly to Flask on dev; through Node proxy in production
 const WS_URL = import.meta.env.VITE_VOICE_WS_URL
   || (window.location.protocol === 'https:' ? 'wss://' : 'ws://')
-    + (import.meta.env.VITE_FLASK_URL
-        ? import.meta.env.VITE_FLASK_URL.replace(/^https?:\/\//, '')
+    + (import.meta.env.VITE_BACKEND_URL
+        ? import.meta.env.VITE_BACKEND_URL.replace(/^https?:\/\//, '')
         : 'localhost:5002')
     + '/api/voice/ws';
 
-const HTTP_BASE = import.meta.env.VITE_FLASK_URL || 'http://localhost:5002';
+const HTTP_BASE = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5002';
 
 const RECONNECT_DELAY_MS = 3000;
 const MAX_RECONNECTS = 5;
