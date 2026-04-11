@@ -301,7 +301,7 @@ const Navbar = () => {
                     type="text"
                     
                     className="text-white flex-1 px-4 py-2.5 outline-none border-2 border-green-100 focus:border-green-300 text-sm"
-                    placeholder="Search for tools, analytics..."
+                    placeholder={t('pages.dashboard.searchPlaceholder', 'Search for tools, analytics...')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -321,21 +321,21 @@ const Navbar = () => {
                   className="w-full flex items-center justify-center px-4 py-2.5 bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-md font-medium transition duration-200 text-sm shadow-sm active:shadow-inner"
                 >
                   <FontAwesomeIcon icon={faPlus} className="mr-2" />
-                  <span>Create Field</span>
+                  <span>{t('pages.dashboard.createNewField', 'Create Field')}</span>
                 </button>
               </div>
               
               {/* Mobile Field Selection */}
               <div className="mb-4 px-4">
-                <label className="block text-sm font-medium text-green-50 mb-1.5">Select Field</label>
+                <label className="block text-sm font-medium text-green-50 mb-1.5">{t('pages.dashboard.selectField', 'Select Field')}</label>
                 <div className="relative">
                   <select
                     className="w-full border border-green-100 rounded-md px-3 py-2.5 bg-white text-gray-700 appearance-none focus:outline-none focus:ring-2 focus:ring-green-400 text-sm shadow-sm"
                     onChange={handleFieldChange}
                     value={selectedField || ''}
                   >
-                    <option value="" disabled hidden>Select Field</option>
-                    <option value="new_field">Create New Field</option>
+                    <option value="" disabled hidden>{t('pages.dashboard.selectField', 'Select Field')}</option>
+                    <option value="new_field">{t('pages.dashboard.createNewField', 'Create New Field')}</option>
                     {fields.map(field => (
                       <option key={field.id} value={field.id}>{field.name}</option>
                     ))}
@@ -348,13 +348,13 @@ const Navbar = () => {
               
               {/* Mobile Location */}
               <div className="mb-4 px-4">
-                <label className="block text-sm font-medium text-green-50 mb-1.5">Location</label>
+                <label className="block text-sm font-medium text-green-50 mb-1.5">{t('pages.dashboard.location', 'Location')}</label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">📍</span>
                   <input 
                     list="mobile-location-options" 
                     className="w-full border border-green-100 rounded-md pl-9 pr-3 py-2.5 bg-white text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 shadow-sm"
-                    placeholder="Select Location"
+                    placeholder={t('pages.dashboard.selectLocation', 'Select Location')}
                     value={selectedLocation}
                     onChange={handleLocationChange}
                   />
@@ -369,8 +369,17 @@ const Navbar = () => {
               {/* Mobile Navigation Buttons */}
               <div className="space-y-0 divide-y divide-green-800/50 mt-2">
                 <div className="px-4 py-2">
-                  <p className="text-xs font-semibold text-green-300 uppercase tracking-wide mb-1">Quick Navigation</p>
+                  <p className="text-xs font-semibold text-green-300 uppercase tracking-wide mb-1">{t('sidebar.quickNavigation', 'Quick Navigation')}</p>
                 </div>
+                
+                {/* Language Switcher - Mobile */}
+                <div className="px-5 py-3 w-full border-b border-green-800/50 text-white">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">{t('sidebar.language', 'Language')}</span>
+                    <LanguageSwitcher />
+                  </div>
+                </div>
+
                 <button 
                   onClick={() => {
                     navigateToClimateAnalysis();
@@ -379,7 +388,7 @@ const Navbar = () => {
                   className="w-full text-left px-5 py-3 text-white hover:bg-green-800/50 active:bg-green-800/70 block transition-colors text-sm font-medium flex items-center mobile-nav-item smooth-transition"
                 >
                   <FontAwesomeIcon icon={faCloudSunRain} className="mr-3 text-green-300 w-4 h-4" />
-                  Climate Analysis
+                  {t('pages.climateAnalysis.title', 'Climate Analysis')}
                 </button>
                 <button 
                   onClick={() => {
@@ -389,7 +398,7 @@ const Navbar = () => {
                   className="w-full text-left px-5 py-3 text-white hover:bg-green-800/50 active:bg-green-800/70 block transition-colors text-sm font-medium flex items-center mobile-nav-item smooth-transition"
                 >
                   <FontAwesomeIcon icon={faLeaf} className="mr-3 text-green-300 w-4 h-4" />
-                  Farm Console
+                  {t('pages.farmConsole.title', 'Farm Console')}
                 </button>
                 <Link 
                   to="/reports"
@@ -397,7 +406,7 @@ const Navbar = () => {
                   className="w-full text-left px-5 py-3 text-white hover:bg-green-800/50 active:bg-green-800/70 block transition-colors text-sm font-medium flex items-center mobile-nav-item smooth-transition"
                 >
                   <FontAwesomeIcon icon={faMap} className="mr-3 text-green-300 w-4 h-4" />
-                  Reports
+                  {t('navigation.reports', 'Reports')}
                 </Link>
                 <Link 
                   to="/ai-assistant"
@@ -405,7 +414,7 @@ const Navbar = () => {
                   className="w-full text-left px-5 py-3 text-white hover:bg-green-800/50 active:bg-green-800/70 block transition-colors text-sm font-medium flex items-center mobile-nav-item smooth-transition"
                 >
                   <FontAwesomeIcon icon={faMicrophone} className="mr-3 text-green-300 w-4 h-4" />
-                  AI Assistant
+                  {t('pages.aiAssistant.title', 'AI Assistant')}
                 </Link>
                 <Link
                   to="/crop-insurance-suggestions"
@@ -413,7 +422,7 @@ const Navbar = () => {
                   className="w-full text-left px-5 py-3 text-white hover:bg-green-800/50 active:bg-green-800/70 block transition-colors text-sm font-medium flex items-center mobile-nav-item smooth-transition"
                 >
                   <FontAwesomeIcon icon={faShieldAlt} className="mr-3 text-green-300 w-4 h-4" />
-                  Crop Insurance
+                  {t('pages.financialAid.cropInsurance', 'Crop Insurance')}
                 </Link>
                 
                 {/* User Profile Section - Mobile */}
@@ -435,7 +444,7 @@ const Navbar = () => {
                     className="w-full flex items-center px-5 py-3 text-white hover:bg-red-600/50 active:bg-red-600/70 transition-colors text-sm font-medium rounded-lg"
                   >
                     <FontAwesomeIcon icon={faSignOutAlt} className="mr-3 text-red-300 w-4 h-4" />
-                    Logout
+                    {t('navigation.logout', 'Logout')}
                   </button>
                 </div>
               </div>

@@ -4,7 +4,7 @@ flask-sock
 tensorflow
 numpy
 pandas
-scikit-learn
+scikit-learn==1.7.0
 joblib
 h5py
 psutil

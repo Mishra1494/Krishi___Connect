@@ -175,7 +175,7 @@ useEffect(() => {
                 </div>
                 <div className="flex flex-col min-w-0">
                   <span className="font-heading font-bold text-slate-900 text-lg md:text-xl truncate">KrishiConnect</span>
-                  <span className="text-xs text-slate-500 hidden sm:block">Smart Farming</span>
+                  <span className="text-xs text-slate-500 hidden sm:block">{t('common.smartFarming', 'Smart Farming')}</span>
                 </div>
               </div>
             )}

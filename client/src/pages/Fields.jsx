@@ -36,9 +36,9 @@ const Fields = () => {
           id: field._id,
           name: field.field_name,
           location: field.field_name, // Using field_name as location since we don't have separate location field
-          crop: field.current_crop || 'Not specified',
+          crop: field.current_crop || t('pages.dashboard.notSpecified', 'Not specified'),
           area: field.area || 0,
-          soilType: field.soil_type || 'Unknown',
+          soilType: field.soil_type || t('pages.dashboard.unknown', 'Unknown'),
           createdAt: field.created_at,
           coordinates: field.coordinates || [],
           soilParameters: field.soil_parameters || {},
@@ -50,14 +50,14 @@ const Fields = () => {
         // If no data or unsuccessful response, show empty fields list
         setFields([]);
         if (!result.success) {
-          setError(result.error || 'Failed to load fields from database');
+          setError(result.error || t('pages.dashboard.failedLoading', 'Failed to load fields from database'));
         }
       }
     } catch (error) {
       console.error('Error fetching fields:', error);
       // Set empty array instead of dummy data when there's an error
       setFields([]);
-      setError(`Failed to connect to server: ${error.message}. Please check if the Flask server is running.`);
+      setError(t('pages.dashboard.connectionFailed', 'Failed to connect to server: {{message}}. Please check if the Flask server is running.', { message: error.message }));
     } finally {
       setLoading(false);
     }
@@ -79,11 +79,11 @@ const Fields = () => {
         // Show success message (optional)
         console.log('Field deleted successfully:', result.message);
       } else {
-        throw new Error(result.error || 'Failed to delete field');
+        throw new Error(result.error || t('pages.dashboard.failedDeleting', 'Failed to delete field'));
       }
     } catch (error) {
       console.error('Error deleting field:', error);
-      setError(`Failed to delete field: ${error.message}`);
+      setError(t('pages.dashboard.failedDeletingWithMsg', 'Failed to delete field: {{message}}', { message: error.message }));
     }
   };
 
@@ -134,17 +134,17 @@ const Fields = () => {
         <div className="flex-1">
           <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center">
             <FontAwesomeIcon icon={faMap} className="mr-2 sm:mr-3 text-green-600 text-lg sm:text-xl" />
-            Manage Fields
+            {t('sidebar.manageFields', 'Manage Fields')}
           </h1>
           <p className="text-gray-600 mt-1 text-sm sm:text-base">
-            View and manage your field maps stored in the database
+            {t('pages.dashboard.manageFieldsSubtitle', 'View and manage your field maps stored in the database')}
           </p>
         </div>
         <Link 
           to="/create-field" 
           className="btn bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg flex items-center justify-center transition-colors w-full sm:w-auto text-sm sm:text-base font-medium"
         >
-          <span className="mr-2">+</span> Add New Field
+          <span className="mr-2">+</span> {t('pages.dashboard.createNewField', 'Add New Field')}
         </Link>
       </div>
 
@@ -156,7 +156,7 @@ const Fields = () => {
           </div>
           <input
             type="text"
-            placeholder="Search by field name, location, or crop..."
+            placeholder={t('pages.dashboard.searchPlaceholder', 'Search by field name, location, or crop...')}
             className="pl-9 sm:pl-10 pr-4 py-2 sm:py-3 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm sm:text-base"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -174,23 +174,23 @@ const Fields = () => {
       {loading ? (
         <div className="text-center py-8 sm:py-12">
           <FontAwesomeIcon icon={faSpinner} spin className="text-3xl sm:text-4xl text-green-600 mb-3 sm:mb-4" />
-          <p className="text-sm sm:text-base text-gray-600">Loading fields...</p>
+          <p className="text-sm sm:text-base text-gray-600">{t('pages.dashboard.loading', 'Loading fields...')}</p>
         </div>
       ) : (
         <>
           {filteredFields.length === 0 ? (
             <div className="text-center py-8 sm:py-12 bg-gray-50 rounded-lg border border-dashed border-gray-300">
               <FontAwesomeIcon icon={faMap} className="text-3xl sm:text-4xl text-gray-400 mb-3" />
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-700">No fields found</h3>
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-700">{t('pages.dashboard.noFieldsFound', 'No fields found')}</h3>
               <p className="text-gray-600 mb-4 text-sm sm:text-base px-4">
-                {searchTerm ? 'No fields match your search criteria' : 'You haven\'t created any fields yet'}
+                {searchTerm ? t('pages.dashboard.noMatches', 'No fields match your search criteria') : t('pages.dashboard.noFieldsCreated', 'You haven\'t created any fields yet')}
               </p>
               {searchTerm && (
                 <button 
                   className="text-green-600 hover:text-green-700 font-medium text-sm sm:text-base"
                   onClick={() => setSearchTerm('')}
                 >
-                  Clear search
+                  {t('pages.dashboard.clearSearch', 'Clear search')}
                 </button>
               )}
               {!searchTerm && (
@@ -198,7 +198,7 @@ const Fields = () => {
                   to="/create-field" 
                   className="inline-block bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition-colors text-sm sm:text-base"
                 >
-                  Create your first field
+                  {t('pages.dashboard.createFirstField', 'Create your first field')}
                 </Link>
               )}
             </div>
@@ -213,23 +213,23 @@ const Fields = () => {
                       <h3 className="font-semibold text-gray-900 text-lg">{field.name}</h3>
                       <div className="mt-2 space-y-2">
                         <div className="flex justify-between text-sm">
-                          <span className="text-gray-500">Soil Type:</span>
-                          <span className="text-gray-900">{field.soilType || 'Unknown'}</span>
+                          <span className="text-gray-500">{t('pages.dashboard.soilType', 'Soil Type')}:</span>
+                          <span className="text-gray-900">{field.soilType || t('pages.dashboard.unknown', 'Unknown')}</span>
                         </div>
                         <div className="flex justify-between text-sm">
-                          <span className="text-gray-500">Area:</span>
-                          <span className="text-gray-900">{field.area ? field.area.toFixed(2) + ' ha' : 'N/A'}</span>
+                          <span className="text-gray-500">{t('pages.dashboard.area', 'Area')}:</span>
+                          <span className="text-gray-900">{field.area ? field.area.toFixed(2) + ' ha' : t('pages.dashboard.na', 'N/A')}</span>
                         </div>
                         <div className="flex justify-between text-sm">
-                          <span className="text-gray-500">Created:</span>
-                          <span className="text-gray-900">{field.createdAt ? new Date(field.createdAt).toLocaleDateString() : 'Unknown'}</span>
+                          <span className="text-gray-500">{t('pages.dashboard.created', 'Created')}:</span>
+                          <span className="text-gray-900">{field.createdAt ? new Date(field.createdAt).toLocaleDateString() : t('pages.dashboard.unknown', 'Unknown')}</span>
                         </div>
                         <div className="flex justify-between items-center text-sm">
-                          <span className="text-gray-500">Status:</span>
+                          <span className="text-gray-500">{t('pages.dashboard.status', 'Status')}:</span>
                           <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
                             field.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
                           }`}>
-                            {field.status === 'active' ? 'Active' : field.status || 'Unknown'}
+                            {field.status === 'active' ? t('pages.dashboard.active', 'Active') : field.status || t('pages.dashboard.unknown', 'Unknown')}
                           </span>
                         </div>
                       </div>
@@ -241,17 +241,17 @@ const Fields = () => {
                       <Link
                         to={`/field-detail/${field.id}`}
                         className="text-indigo-600 hover:text-indigo-900 text-sm font-medium"
-                        title="View field details"
+                        title={t('pages.dashboard.viewFieldDetails', 'View field details')}
                       >
-                        View
+                        {t('pages.dashboard.view', 'View')}
                       </Link>
                       <Link
                         to={`/field-detail/${field.id}`}
                         className="text-blue-600 hover:text-blue-900 text-sm"
-                        title="Edit field"
+                        title={t('pages.dashboard.editField', 'Edit field')}
                       >
                         <FontAwesomeIcon icon={faEdit} className="mr-1" />
-                        Edit
+                        {t('pages.dashboard.edit', 'Edit')}
                       </Link>
                     </div>
                     
@@ -261,14 +261,14 @@ const Fields = () => {
                           <button
                             onClick={() => handleDeleteField(field.id)}
                             className="text-red-600 hover:text-red-900 text-sm font-medium"
-                            title="Confirm delete"
+                            title={t('pages.dashboard.confirmDelete', 'Confirm delete')}
                           >
-                            Confirm
+                            {t('pages.dashboard.confirm', 'Confirm')}
                           </button>
                           <button
                             onClick={cancelDelete}
                             className="text-gray-600 hover:text-gray-900 text-sm"
-                            title="Cancel delete"
+                            title={t('pages.dashboard.cancelDelete', 'Cancel delete')}
                           >
                             <FontAwesomeIcon icon={faTimes} />
                           </button>
@@ -277,7 +277,7 @@ const Fields = () => {
                         <button
                           onClick={() => requestDelete(field.id)}
                           className="text-red-600 hover:text-red-900 text-sm"
-                          title="Delete field"
+                          title={t('pages.dashboard.deleteField', 'Delete field')}
                         >
                           <FontAwesomeIcon icon={faTrash} />
                         </button>
@@ -294,22 +294,22 @@ const Fields = () => {
                 <thead className="bg-gray-50 text-left">
                   <tr>
                     <th className="px-4 lg:px-6 py-3 border-b border-gray-200 text-gray-500 font-medium text-sm tracking-wider cursor-pointer" onClick={() => handleSort('name')}>
-                      Field Name {getSortIcon('name')}
+                      {t('pages.dashboard.fieldName', 'Field Name')} {getSortIcon('name')}
                     </th>
                     <th className="px-4 lg:px-6 py-3 border-b border-gray-200 text-gray-500 font-medium text-sm tracking-wider cursor-pointer" onClick={() => handleSort('soilType')}>
-                      Soil Type {getSortIcon('soilType')}
+                      {t('pages.dashboard.soilType', 'Soil Type')} {getSortIcon('soilType')}
                     </th>
                     <th className="px-4 lg:px-6 py-3 border-b border-gray-200 text-gray-500 font-medium text-sm tracking-wider cursor-pointer" onClick={() => handleSort('area')}>
-                      Area (ha) {getSortIcon('area')}
+                      {t('pages.dashboard.areaHa', 'Area (ha)')} {getSortIcon('area')}
                     </th>
                     <th className="px-4 lg:px-6 py-3 border-b border-gray-200 text-gray-500 font-medium text-sm tracking-wider cursor-pointer" onClick={() => handleSort('createdAt')}>
-                      Created Date {getSortIcon('createdAt')}
+                      {t('pages.dashboard.createdDate', 'Created Date')} {getSortIcon('createdAt')}
                     </th>
                     <th className="px-4 lg:px-6 py-3 border-b border-gray-200 text-gray-500 font-medium text-sm tracking-wider">
-                      Status
+                      {t('pages.dashboard.status', 'Status')}
                     </th>
                     <th className="px-4 lg:px-6 py-3 border-b border-gray-200 text-gray-500 font-medium text-sm tracking-wider text-right">
-                      Actions
+                      {t('pages.dashboard.actions', 'Actions')}
                     </th>
                   </tr>
                 </thead>
@@ -320,19 +320,19 @@ const Fields = () => {
                         <div className="font-medium text-gray-900">{field.name}</div>
                       </td>
                       <td className="px-4 lg:px-6 py-4 border-b border-gray-200 text-gray-500">
-                        {field.soilType || 'Unknown'}
+                        {field.soilType || t('pages.dashboard.unknown', 'Unknown')}
                       </td>
                       <td className="px-4 lg:px-6 py-4 border-b border-gray-200 text-gray-500">
-                        {field.area ? field.area.toFixed(2) : 'N/A'}
+                        {field.area ? field.area.toFixed(2) : t('pages.dashboard.na', 'N/A')}
                       </td>
                       <td className="px-4 lg:px-6 py-4 border-b border-gray-200 text-gray-500">
-                        {field.createdAt ? new Date(field.createdAt).toLocaleDateString() : 'Unknown'}
+                        {field.createdAt ? new Date(field.createdAt).toLocaleDateString() : t('pages.dashboard.unknown', 'Unknown')}
                       </td>
                       <td className="px-4 lg:px-6 py-4 border-b border-gray-200">
                         <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
                           field.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
                         }`}>
-                          {field.status === 'active' ? 'Active' : field.status || 'Unknown'}
+                          {field.status === 'active' ? t('pages.dashboard.active', 'Active') : field.status || t('pages.dashboard.unknown', 'Unknown')}
                         </span>
                       </td>
                       <td className="px-4 lg:px-6 py-4 border-b border-gray-200 text-right">
@@ -340,14 +340,14 @@ const Fields = () => {
                           <Link
                             to={`/field-detail/${field.id}`}
                             className="text-indigo-600 hover:text-indigo-900 text-sm"
-                            title="View field details"
+                            title={t('pages.dashboard.viewFieldDetails', 'View field details')}
                           >
-                            View
+                            {t('pages.dashboard.view', 'View')}
                           </Link>
                           <Link
                             to={`/field-detail/${field.id}`}
                             className="text-blue-600 hover:text-blue-900"
-                            title="Edit field"
+                            title={t('pages.dashboard.editField', 'Edit field')}
                           >
                             <FontAwesomeIcon icon={faEdit} />
                           </Link>
@@ -356,14 +356,14 @@ const Fields = () => {
                               <button
                                 onClick={() => handleDeleteField(field.id)}
                                 className="text-red-600 hover:text-red-900 text-sm"
-                                title="Confirm delete"
+                                title={t('pages.dashboard.confirmDelete', 'Confirm delete')}
                               >
-                                Yes
+                                {t('pages.dashboard.yes', 'Yes')}
                               </button>
                               <button
                                 onClick={cancelDelete}
                                 className="text-gray-600 hover:text-gray-900"
-                                title="Cancel delete"
+                                title={t('pages.dashboard.cancelDelete', 'Cancel delete')}
                               >
                                 <FontAwesomeIcon icon={faTimes} />
                               </button>
@@ -372,7 +372,7 @@ const Fields = () => {
                             <button
                               onClick={() => requestDelete(field.id)}
                               className="text-red-600 hover:text-red-900"
-                              title="Delete field"
+                              title={t('pages.dashboard.deleteField', 'Delete field')}
                             >
                               <FontAwesomeIcon icon={faTrash} />
                             </button>

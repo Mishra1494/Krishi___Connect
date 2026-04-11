@@ -5,6 +5,7 @@
  */
 
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faMicrophone, faWifi, faSignal,
@@ -25,14 +26,16 @@ const LANGUAGES = [
   { code: 'en', label: 'English', flag: '🇬🇧' },
 ];
 
-const CONNECTION_STATUS_LABEL = {
-  connected:    'Connected',
-  connecting:   'Connecting…',
-  disconnected: 'Offline',
-  error:        'Error',
-};
-
 export default function VoiceAssistant() {
+  const { t } = useTranslation();
+  
+  const CONNECTION_STATUS_LABEL = {
+    connected:    t('pages.voiceAssistant.connected', 'Connected'),
+    connecting:   t('pages.voiceAssistant.connecting', 'Connecting…'),
+    disconnected: t('pages.voiceAssistant.offline', 'Offline'),
+    error:        t('pages.voiceAssistant.error', 'Error'),
+  };
+
   const {
     connectionStatus,
     connect,
@@ -74,8 +77,8 @@ export default function VoiceAssistant() {
               <FontAwesomeIcon icon={faMicrophone} />
             </div>
             <div>
-              <span className="va-header-title">कृषी मित्र</span>
-              <span className="va-header-subtitle">AI Voice Assistant • Multilingual</span>
+              <span className="va-header-title">{t('pages.voiceAssistant.title', 'कृषी मित्र')}</span>
+              <span className="va-header-subtitle">{t('pages.voiceAssistant.subtitle', 'AI Voice Assistant • Multilingual')}</span>
             </div>
           </div>
 
@@ -90,9 +93,9 @@ export default function VoiceAssistant() {
                 <button
                   onClick={connect}
                   style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', padding: 0, fontSize: '0.7rem', textDecoration: 'underline' }}
-                  aria-label="Reconnect"
+                  aria-label={t('pages.voiceAssistant.reconnect', 'Reconnect')}
                 >
-                  Retry
+                  {t('pages.voiceAssistant.retry', 'Retry')}
                 </button>
               )}
             </div>
@@ -150,26 +153,26 @@ export default function VoiceAssistant() {
           {/* Session stats */}
           <div className="va-stats">
             <div className="va-stat-card">
-              <span className="va-stat-label">Language</span>
+              <span className="va-stat-label">{t('pages.voiceAssistant.language', 'Language')}</span>
               <span className="va-stat-value" style={{ fontFamily: "'Noto Sans Devanagari', sans-serif" }}>
                 {languageDisplay}
               </span>
             </div>
             <div className="va-stat-card">
-              <span className="va-stat-label">Responses</span>
+              <span className="va-stat-label">{t('pages.voiceAssistant.responses', 'Responses')}</span>
               <span className="va-stat-value">{botMessageCount}</span>
             </div>
             <div className="va-stat-card" style={{ gridColumn: '1 / -1' }}>
-              <span className="va-stat-label">Last Intent</span>
+              <span className="va-stat-label">{t('pages.voiceAssistant.lastIntent', 'Last Intent')}</span>
               <span className="va-stat-value" style={{ fontSize: '0.78rem', fontFamily: "'Noto Sans Devanagari', sans-serif" }}>
                 {lastIntent
                   ? {
-                      insurance_inquiry: '🛡 पीक विमा',
-                      crop_price: '📊 बाजारभाव',
-                      weather: '🌦 हवामान',
-                      disease_help: '🔬 रोग',
-                      irrigation_advice: '💧 सिंचन',
-                      general: '🌾 सामान्य',
+                      insurance_inquiry: t('pages.voiceAssistant.intents.insurance', '🛡 पीक विमा'),
+                      crop_price: t('pages.voiceAssistant.intents.price', '📊 बाजारभाव'),
+                      weather: t('pages.voiceAssistant.intents.weather', '🌦 हवामान'),
+                      disease_help: t('pages.voiceAssistant.intents.disease', '🔬 रोग'),
+                      irrigation_advice: t('pages.voiceAssistant.intents.irrigation', '💧 सिंचन'),
+                      general: t('pages.voiceAssistant.intents.general', '🌾 सामान्य'),
                     }[lastIntent] || lastIntent
                   : '—'}
               </span>
@@ -188,7 +191,7 @@ export default function VoiceAssistant() {
           >
             <p style={{ color: '#6ee7b7', fontSize: '0.7rem', margin: 0, lineHeight: 1.6, fontFamily: "'Noto Sans Devanagari', 'Inter', sans-serif" }}>
               <FontAwesomeIcon icon={faInfoCircle} style={{ marginRight: '0.4rem' }} />
-              <strong>कसे वापरावे:</strong> मायक्रोफोन बटणावर क्लिक करा आणि बोला. मराठी, हिंदी किंवा इंग्रजी — कोणत्याही भाषेत.
+              <strong>{t('pages.voiceAssistant.howToUseBold', 'कसे वापरावे:')}</strong> {t('pages.voiceAssistant.howToUse', 'मायक्रोफोन बटणावर क्लिक करा आणि बोला. मराठी, हिंदी किंवा इंग्रजी — कोणत्याही भाषेत.')}
             </p>
           </div>
         </aside>

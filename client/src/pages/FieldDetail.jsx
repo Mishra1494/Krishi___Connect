@@ -30,7 +30,7 @@ const FieldDetail = () => {
       setField(result);
     } catch (error) {
       console.error('Error fetching field details:', error);
-      setError(`Failed to load field details: ${error.message}`);
+      setError(t('pages.dashboard.failedLoadingDetails', 'Failed to load field details: {{message}}', { message: error.message }));
     } finally {
       setLoading(false);
     }
@@ -45,7 +45,7 @@ const FieldDetail = () => {
         await googleMapsLoader.loadGoogleMaps(['geometry']);
         initMap();
       } catch (error) {
-        setError("Failed to load Google Maps. Please check your internet connection.");
+        setError(t('pages.createField.mapsNotLoaded', "Failed to load Google Maps. Please check your internet connection."));
       }
     };
 
@@ -119,16 +119,16 @@ const FieldDetail = () => {
       {loading ? (
         <div className="text-center py-12">
           <FontAwesomeIcon icon={faSpinner} spin className="text-4xl text-green-600 mb-4" />
-          <p>Loading field details...</p>
+          <p>{t('pages.dashboard.loadingFieldDetails', 'Loading field details...')}</p>
         </div>
       ) : error ? (
         <div className="bg-red-50 text-red-700 p-6 rounded-lg flex items-center">
           <FontAwesomeIcon icon={faExclamationTriangle} className="text-3xl mr-4" />
           <div>
-            <h2 className="font-bold mb-1">Error</h2>
+            <h2 className="font-bold mb-1">{t('pages.dashboard.error', 'Error')}</h2>
             <p>{error}</p>
             <Link to="/field-list" className="text-red-700 font-medium mt-2 inline-block hover:underline">
-              &larr; Back to fields list
+              {t('pages.dashboard.backToFieldsList', '&larr; Back to fields list')}
             </Link>
           </div>
         </div>
@@ -151,19 +151,19 @@ const FieldDetail = () => {
                   className="btn bg-blue-600 hover:bg-blue-700 text-white py-1.5 px-3 rounded flex items-center"
                 >
                   <FontAwesomeIcon icon={faEdit} className="mr-1" />
-                  Edit
+                  {t('pages.dashboard.edit', 'Edit')}
                 </Link>
                 <button 
                   className="btn bg-red-600 hover:bg-red-700 text-white py-1.5 px-3 rounded flex items-center"
                   onClick={() => {
-                    if (confirm('Are you sure you want to delete this field?')) {
+                    if (confirm(t('pages.dashboard.confirmDeleteMsg', 'Are you sure you want to delete this field?'))) {
                       // Implement delete functionality here
-                      deleteField(id).then(() => { window.location.href = '/field-list'; }).catch((err) => setError(`Failed to delete field: ${err.message}`));
+                      deleteField(id).then(() => { window.location.href = '/field-list'; }).catch((err) => setError(t('pages.dashboard.failedDeletingWithMsg', 'Failed to delete field: {{message}}', { message: err.message })));
                     }
                   }}
                 >
                   <FontAwesomeIcon icon={faTrash} className="mr-1" />
-                  Delete
+                  {t('pages.dashboard.delete', 'Delete')}
                 </button>
               </div>
             </div>
@@ -172,40 +172,40 @@ const FieldDetail = () => {
           <div className="field-body grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
             <div className="field-info lg:col-span-1 space-y-6">
               <div className="bg-gray-50 p-4 rounded-lg">
-                <h2 className="font-semibold text-lg text-gray-800 mb-3">Field Information</h2>
+                <h2 className="font-semibold text-lg text-gray-800 mb-3">{t('pages.dashboard.fieldInformation', 'Field Information')}</h2>
                 <div className="space-y-3">
                   <div>
-                    <h3 className="text-sm text-gray-500">Field Name</h3>
+                    <h3 className="text-sm text-gray-500">{t('pages.dashboard.fieldName', 'Field Name')}</h3>
                     <p className="font-medium">{field.name}</p>
                   </div>
                   <div>
-                    <h3 className="text-sm text-gray-500">Location</h3>
+                    <h3 className="text-sm text-gray-500">{t('pages.dashboard.location', 'Location')}</h3>
                     <p className="font-medium">{field.location}</p>
                   </div>
                   <div>
-                    <h3 className="text-sm text-gray-500">Created Date</h3>
+                    <h3 className="text-sm text-gray-500">{t('pages.dashboard.createdDate', 'Created Date')}</h3>
                     <p className="font-medium">{new Date(field.createdAt).toLocaleDateString()}</p>
                   </div>
                   <div>
-                    <h3 className="text-sm text-gray-500">Field Size</h3>
-                    <p className="font-medium">{calculateFieldArea(field.coordinates).toFixed(2)} hectares</p>
+                    <h3 className="text-sm text-gray-500">{t('pages.dashboard.fieldSize', 'Field Size')}</h3>
+                    <p className="font-medium">{calculateFieldArea(field.coordinates).toFixed(2)} {t('pages.dashboard.hectares', 'hectares')}</p>
                   </div>
                   <div>
-                    <h3 className="text-sm text-gray-500">Crop</h3>
-                    <p className="font-medium">{field.crop || 'Not specified'}</p>
+                    <h3 className="text-sm text-gray-500">{t('pages.dashboard.crop', 'Crop')}</h3>
+                    <p className="font-medium">{field.crop || t('pages.dashboard.notSpecified', 'Not specified')}</p>
                   </div>
                 </div>
               </div>
               
               <div className="bg-gray-50 p-4 rounded-lg">
-                <h2 className="font-semibold text-lg text-gray-800 mb-3">Coordinates</h2>
+                <h2 className="font-semibold text-lg text-gray-800 mb-3">{t('pages.dashboard.coordinates', 'Coordinates')}</h2>
                 <div className="overflow-y-auto max-h-56">
                   <table className="w-full text-sm">
                     <thead className="border-b">
                       <tr>
-                        <th className="text-left py-2">Point</th>
-                        <th className="text-left py-2">Latitude</th>
-                        <th className="text-left py-2">Longitude</th>
+                        <th className="text-left py-2">{t('pages.dashboard.point', 'Point')}</th>
+                        <th className="text-left py-2">{t('pages.dashboard.latitude', 'Latitude')}</th>
+                        <th className="text-left py-2">{t('pages.dashboard.longitude', 'Longitude')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -234,12 +234,12 @@ const FieldDetail = () => {
             <div className="flex justify-between items-center">
               <div>
                 <Link to="/field-list" className="text-green-600 hover:text-green-700 font-medium">
-                  &larr; Back to All Fields
+                  {t('pages.dashboard.backToAllFields', '&larr; Back to All Fields')}
                 </Link>
               </div>
               <div>
                 <Link to="/" className="text-blue-600 hover:text-blue-700 font-medium">
-                  View in Dashboard
+                  {t('pages.dashboard.viewInDashboard', 'View in Dashboard')}
                 </Link>
               </div>
             </div>

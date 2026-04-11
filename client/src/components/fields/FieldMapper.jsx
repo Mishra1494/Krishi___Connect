@@ -41,10 +41,10 @@ const FieldMapper = () => {
   
   // List of major crops grown in India
   const cropOptions = [
-    'Rice', 'Wheat', 'Maize', 'Jowar (Sorghum)', 'Bajra (Pearl Millet)', 
-    'Cotton', 'Sugarcane', 'Pulses', 'Groundnut', 'Mustard', 
-    'Soybean', 'Sunflower', 'Jute', 'Coffee', 'Tea', 
-    'Rubber', 'Tobacco', 'Onion', 'Potato', 'Tomato'
+    t('crops.rice', 'Rice'), t('crops.wheat', 'Wheat'), t('crops.maize', 'Maize'), t('crops.jowar', 'Jowar (Sorghum)'), t('crops.bajra', 'Bajra (Pearl Millet)'), 
+    t('crops.cotton', 'Cotton'), t('crops.sugarcane', 'Sugarcane'), t('crops.pulses', 'Pulses'), t('crops.groundnut', 'Groundnut'), t('crops.mustard', 'Mustard'), 
+    t('crops.soybean', 'Soybean'), t('crops.sunflower', 'Sunflower'), t('crops.jute', 'Jute'), t('crops.coffee', 'Coffee'), t('crops.tea', 'Tea'), 
+    t('crops.rubber', 'Rubber'), t('crops.tobacco', 'Tobacco'), t('crops.onion', 'Onion'), t('crops.potato', 'Potato'), t('crops.tomato', 'Tomato')
   ];
 
   // Initialize the Google Maps and drawing tools
@@ -56,7 +56,7 @@ const FieldMapper = () => {
       } catch (error) {
         setMessage({
           show: true,
-          text: t('pages.createField.mapsNotLoaded'),
+          text: t('pages.createField.mapsNotLoaded', 'Failed to load Google Maps. Please check your internet connection.'),
           type: 'error'
         });
       }
@@ -72,7 +72,7 @@ const FieldMapper = () => {
     if (!window.google || !window.google.maps) {
       setMessage({
         show: true,
-        text: t('pages.createField.mapsApiError'),
+        text: t('pages.createField.mapsApiError', 'Google Maps API is not loaded properly.'),
         type: 'error'
       });
       return;
@@ -142,7 +142,7 @@ const FieldMapper = () => {
     if (!window.google.maps.drawing || !window.google.maps.drawing.DrawingManager) {
       setMessage({
         show: true,
-        text: t('pages.createField.drawingLibError'),
+        text: t('pages.createField.drawingLibError', 'Drawing library not loaded.'),
         type: 'error'
       });
       return;
@@ -220,7 +220,7 @@ const FieldMapper = () => {
     // Display success message
     setMessage({
       show: true,
-      text: t('pages.createField.boundaryDrawnSuccess'),
+      text: t('pages.createField.boundaryDrawnSuccess', 'Boundary drawn successfully.'),
       type: 'success'
     });
     
@@ -262,7 +262,7 @@ const FieldMapper = () => {
     
     setMessage({
       show: true,
-      text: t('pages.createField.mapCleared'),
+      text: t('pages.createField.mapCleared', 'Map cleared.'),
       type: 'info'
     });
   };
@@ -288,7 +288,7 @@ const FieldMapper = () => {
     if (!fieldName.trim()) {
       setMessage({
         show: true,
-        text: t('pages.createField.emptyFieldName'),
+        text: t('pages.createField.emptyFieldName', 'Field name is required.'),
         type: 'error'
       });
       return;
@@ -297,7 +297,7 @@ const FieldMapper = () => {
     if (!fieldLocation.trim()) {
       setMessage({
         show: true,
-        text: t('pages.createField.emptyFieldLocation'),
+        text: t('pages.createField.emptyFieldLocation', 'Location is required.'),
         type: 'error'
       });
       return;
@@ -306,7 +306,7 @@ const FieldMapper = () => {
     if (!selectedCrop) {
       setMessage({
         show: true,
-        text: t('pages.createField.selectCrop'),
+        text: t('pages.createField.selectCrop', 'Please select a crop.'),
         type: 'error'
       });
       return;
@@ -315,7 +315,7 @@ const FieldMapper = () => {
     if (!coordinates || coordinates.length < 3) {
       setMessage({
         show: true,
-        text: "Please draw a polygon with at least 3 points.",
+        text: t('pages.createField.invalidPolygon', "Please draw a polygon with at least 3 points."),
         type: 'error'
       });
       return;
@@ -329,15 +329,15 @@ const FieldMapper = () => {
       
       // Validate data before sending
       if (!fieldName.trim()) {
-        throw new Error('Field name is required');
+        throw new Error(t('pages.createField.emptyFieldName', 'Field name is required'));
       }
       
       if (!coordinates || coordinates.length < 3) {
-        throw new Error('Please draw a field boundary with at least 3 points');
+        throw new Error(t('pages.createField.invalidPolygon', 'Please draw a field boundary with at least 3 points'));
       }
       
       if (area <= 0) {
-        throw new Error('Invalid field area calculated. Please redraw the field boundary');
+        throw new Error(t('pages.createField.invalidArea', 'Invalid field area calculated. Please redraw the field boundary'));
       }
       
       // Create field data object (matching Flask backend schema)
@@ -347,8 +347,8 @@ const FieldMapper = () => {
         coordinates: coordinates,
         area: Math.round(area * 100) / 100, // Round to 2 decimal places
         current_crop: selectedCrop,
-        soil_type: 'Unknown', // Default value
-        status: 'Active'
+        soil_type: t('pages.dashboard.unknown', 'Unknown'), // Default value
+        status: t('pages.dashboard.active', 'Active')
       };
       
       console.log('Sending field data to Flask backend:', fieldData);
@@ -357,12 +357,12 @@ const FieldMapper = () => {
       const result = await createField(fieldData);
       
       if (!result.success) {
-        throw new Error(result.error || 'Failed to save field data');
+        throw new Error(result.error || t('pages.createField.fieldSaveError', 'Failed to save field data'));
       }
       
       setMessage({
         show: true,
-        text: t('pages.createField.fieldSavedSuccess'),
+        text: t('pages.createField.fieldSavedSuccess', 'Field saved successfully!'),
         type: 'success'
       });
       
@@ -388,7 +388,7 @@ const FieldMapper = () => {
       console.error('Error saving field:', error);
       setMessage({
         show: true,
-        text: t('pages.createField.fieldSaveError'),
+        text: t('pages.createField.fieldSaveError', 'Failed to save field.'),
         type: 'error'
       });
     } finally {
@@ -401,9 +401,9 @@ const FieldMapper = () => {
       <div className="field-mapper-header">
         <h2>
           <FontAwesomeIcon icon={faDrawPolygon} className="mr-2" />
-          Create Farm Plot
+          {t('pages.createField.createFarmPlot', 'Create Farm Plot')}
         </h2>
-        <p>Draw your field boundaries on the map and add crop information for better farm management and analytics.</p>
+        <p>{t('pages.createField.drawBoundariesDesc', 'Draw your field boundaries on the map and add crop information for better farm management and analytics.')}</p>
       </div>
       
       <div className="field-mapper-container">
@@ -415,7 +415,7 @@ const FieldMapper = () => {
               disabled={loading || !currentPolygon}
             >
               <FontAwesomeIcon icon={drawingMode ? faEdit : faMapPin} />
-              {drawingMode ? 'Edit Mode' : 'Draw Mode'}
+              {drawingMode ? t('pages.createField.editMode', 'Edit Mode') : t('pages.createField.drawMode', 'Draw Mode')}
             </button>
             
             <button 
@@ -424,7 +424,7 @@ const FieldMapper = () => {
               disabled={loading}
             >
               <FontAwesomeIcon icon={faEraser} />
-              Clear All
+              {t('pages.createField.clearAll', 'Clear All')}
             </button>
           </div>
           
@@ -436,14 +436,14 @@ const FieldMapper = () => {
             
             <div className="mode-indicator">
               <FontAwesomeIcon icon={drawingMode ? faMapPin : faEdit} />
-              {drawingMode ? 'Drawing Mode' : 'Edit Mode'}
+              {drawingMode ? t('pages.createField.drawingMode', 'Drawing Mode') : t('pages.createField.editMode', 'Edit Mode')}
             </div>
             
             <div className="map-instructions">
               <FontAwesomeIcon icon={faInfoCircle} />
               {drawingMode 
-                ? 'Click on the map to add points and create a polygon. Complete the shape by connecting to the first point.' 
-                : 'Drag the points to adjust the field boundary. Add new points by clicking on the boundary lines.'}
+                ? t('pages.createField.drawInstructions', 'Click on the map to add points and create a polygon. Complete the shape by connecting to the first point.') 
+                : t('pages.createField.editInstructions', 'Drag the points to adjust the field boundary. Add new points by clicking on the boundary lines.')}
             </div>
           </div>
           
@@ -451,16 +451,16 @@ const FieldMapper = () => {
             <div className="field-summary">
               <div className="field-summary-item">
                 <span className="field-summary-label">
-                  <FontAwesomeIcon icon={faMapMarkerAlt} /> Points:
+                  <FontAwesomeIcon icon={faMapMarkerAlt} /> {t('pages.createField.points', 'Points')}:
                 </span>
                 <span className="field-summary-value">{coordinates.length}</span>
               </div>
               <div className="field-summary-item">
                 <span className="field-summary-label">
-                  <FontAwesomeIcon icon={faRulerCombined} /> Area:
+                  <FontAwesomeIcon icon={faRulerCombined} /> {t('pages.createField.area', 'Area')}:
                 </span>
                 <span className="field-summary-value">
-                  {fieldArea.toFixed(2)} hectares
+                  {fieldArea.toFixed(2)} {t('pages.dashboard.hectares', 'hectares')}
                 </span>
               </div>
             </div>
@@ -471,40 +471,40 @@ const FieldMapper = () => {
           <div className="field-details field-info-card">
             <div className="field-info-header">
               <FontAwesomeIcon icon={faInfoCircle} className="field-info-icon" />
-              <h3>Field Information</h3>
+              <h3>{t('pages.dashboard.fieldInformation', 'Field Information')}</h3>
             </div>
             
             <div className="field-form">
               <div className="form-group required form-group-animated">
                 <label htmlFor="fieldNameInput">
                   <FontAwesomeIcon icon={faTag} />
-                  Field Name <span className="required-star">*</span>
+                  {t('pages.dashboard.fieldName', 'Field Name')} <span className="required-star">*</span>
                 </label>
                 <input 
                   type="text" 
                   id="fieldNameInput" 
                   className={`form-control ${loading ? 'form-loading' : ''}`}
-                  placeholder="Enter Field Name (e.g. North Plot)"
+                  placeholder={t('pages.createField.fieldNamePlaceholder', 'Enter Field Name (e.g. North Plot)')}
                   value={fieldName}
                   onChange={(e) => setFieldName(e.target.value)}
                   disabled={loading}
                 />
                 <div className="form-help-text">
-                  Give your field a unique, recognizable name
+                  {t('pages.createField.fieldNameHelp', 'Give your field a unique, recognizable name')}
                 </div>
               </div>
               
               <div className="form-group required form-group-animated">
                 <label htmlFor="fieldLocation">
                   <FontAwesomeIcon icon={faLocationDot} />
-                  Location <span className="required-star">*</span>
+                  {t('pages.dashboard.location', 'Location')} <span className="required-star">*</span>
                 </label>
                 <div className="input-with-icon">
                   <input 
                     type="text" 
                     id="fieldLocation" 
                     className={`form-control ${loading ? 'form-loading' : ''}`}
-                    placeholder="Field Location (e.g. Nashik, Maharashtra)"
+                    placeholder={t('pages.createField.locationPlaceholder', 'Field Location (e.g. Nashik, Maharashtra)')}
                     value={fieldLocation}
                     onChange={(e) => setFieldLocation(e.target.value)}
                     disabled={loading}
@@ -512,14 +512,14 @@ const FieldMapper = () => {
                   <FontAwesomeIcon icon={faMapMarkerAlt} className="input-icon" />
                 </div>
                 <div className="form-help-text">
-                  Enter a descriptive location for your field
+                  {t('pages.createField.locationHelp', 'Enter a descriptive location for your field')}
                 </div>
               </div>
 
               <div className="form-group required form-group-animated">
                 <label htmlFor="cropSelect">
                   <FontAwesomeIcon icon={faSeedling} />
-                  Select Crop <span className="required-star">*</span>
+                  {t('pages.createField.selectCrop', 'Select Crop')} <span className="required-star">*</span>
                 </label>
                 <div className="custom-select-wrapper">
                   <select
@@ -529,7 +529,7 @@ const FieldMapper = () => {
                     onChange={(e) => setSelectedCrop(e.target.value)}
                     disabled={loading}
                   >
-                    <option value="">-- Select Crop --</option>
+                    <option value="">{t('pages.createField.selectCropDefault', '-- Select Crop --')}</option>
                     {cropOptions.map((crop) => (
                       <option key={crop} value={crop}>
                         {crop}
@@ -538,7 +538,7 @@ const FieldMapper = () => {
                   </select>
                 </div>
                 <div className="form-help-text">
-                  Select the crop you are planning to grow in this field
+                  {t('pages.createField.cropHelp', 'Select the crop you are planning to grow in this field')}
                 </div>
               </div>
             </div>
@@ -548,22 +548,22 @@ const FieldMapper = () => {
             <div className="field-details">
               <h3>
                 <FontAwesomeIcon icon={faLayerGroup} />
-                Field Boundary
+                {t('pages.createField.fieldBoundary', 'Field Boundary')}
               </h3>
               
               <div className="field-summary">
                 <div className="field-summary-item">
                   <span className="field-summary-label">
-                    <FontAwesomeIcon icon={faMapMarkerAlt} /> Boundary Points
+                    <FontAwesomeIcon icon={faMapMarkerAlt} /> {t('pages.createField.boundaryPoints', 'Boundary Points')}
                   </span>
                   <span className="field-summary-value">{coordinates.length}</span>
                 </div>
                 <div className="field-summary-item">
                   <span className="field-summary-label">
-                    <FontAwesomeIcon icon={faRulerCombined} /> Field Area
+                    <FontAwesomeIcon icon={faRulerCombined} /> {t('pages.createField.fieldArea', 'Field Area')}
                   </span>
                   <span className="field-summary-value">
-                    {fieldArea.toFixed(2)} ha
+                    {fieldArea.toFixed(2)} {t('pages.dashboard.hectares', 'ha')}
                   </span>
                 </div>
               </div>
@@ -571,15 +571,15 @@ const FieldMapper = () => {
               <div className="coordinates-table">
                 <h4>
                   <FontAwesomeIcon icon={faMapPin} />
-                  GPS Coordinates
+                  {t('pages.createField.gpsCoordinates', 'GPS Coordinates')}
                 </h4>
                 <div className="table-responsive">
                   <table className="table">
                     <thead>
                       <tr>
-                        <th>Point</th>
-                        <th>Latitude</th>
-                        <th>Longitude</th>
+                        <th>{t('pages.dashboard.point', 'Point')}</th>
+                        <th>{t('pages.dashboard.latitude', 'Latitude')}</th>
+                        <th>{t('pages.dashboard.longitude', 'Longitude')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -603,7 +603,7 @@ const FieldMapper = () => {
                     disabled={loading || coordinates.length < 3 || !fieldName || !selectedCrop}
                   >
                     <FontAwesomeIcon icon={loading ? faSpinner : faSave} className={loading ? 'fa-spin' : ''} />
-                    {loading ? 'Saving...' : 'Save Field'}
+                    {loading ? t('pages.dashboard.saving', 'Saving...') : t('pages.createField.saveField', 'Save Field')}
                   </button>
                   
                   <button 
@@ -612,7 +612,7 @@ const FieldMapper = () => {
                     disabled={loading}
                   >
                     <FontAwesomeIcon icon={faEraser} />
-                    Clear
+                    {t('pages.createField.clearBtn', 'Clear')}
                   </button>
                 </div>
               </div>
