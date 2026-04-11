@@ -13,25 +13,26 @@ import './AIAssistant.css';
 const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
 const GROQ_API_URL = import.meta.env.VITE_GROQ_API_URL || "https://api.groq.com/openai/v1/chat/completions";
 
-const SUGGESTIONS = [
-  "Current weather and forecast",
-  "Soil health tips",
-  "Crop price in market",
-  "Best fertilizer schedule",
-  "How to prevent pests?",
-  "Water usage advice"
-];
-
 const AIAssistant = () => {
   const { t } = useTranslation();
   const { selectedField, fields } = useAppContext();
   const [fieldData, setFieldData] = useState(null);
   const [message, setMessage] = useState('');
+  
+  const SUGGESTIONS = [
+    t('pages.aiAssistant.suggestions.weather', "Current weather and forecast"),
+    t('pages.aiAssistant.suggestions.soil', "Soil health tips"),
+    t('pages.aiAssistant.suggestions.price', "Crop price in market"),
+    t('pages.aiAssistant.suggestions.fertilizer', "Best fertilizer schedule"),
+    t('pages.aiAssistant.suggestions.pests', "How to prevent pests?"),
+    t('pages.aiAssistant.suggestions.water', "Water usage advice")
+  ];
+
   const [messages, setMessages] = useState([
     {
       id: 1,
       sender: 'bot',
-      text: 'नमस्ते, किसान मित्र! 👋 I am AgriSense AI, your smart farming companion. How can I assist your fields today?',
+      text: t('pages.aiAssistant.greeting', 'नमस्ते, किसान मित्र! 👋 I am Fasal AI, your smart farming companion. How can I assist your fields today?'),
       timestamp: new Date().toISOString(),
       isIntroduction: true
     }
@@ -134,13 +135,13 @@ const AIAssistant = () => {
         icon: faRobot
       };
     } catch (error) {
-      let errorMsg = "I'm having trouble connecting to my knowledge base at the moment. Please try again later or ask another question.";
+      let errorMsg = t('pages.aiAssistant.connectionError', "I'm having trouble connecting to my knowledge base at the moment. Please try again later or ask another question.");
       if (error.message.includes("decommissioned") || error.message.includes("deprecated")) {
-        errorMsg += " (Error: The AI model being used is no longer available. Our team has been notified.)";
+        errorMsg += t('pages.aiAssistant.modelError', " (Error: The AI model being used is no longer available. Our team has been notified.)");
       } else if (error.message.includes("API key")) {
-        errorMsg += " (Error: There seems to be an issue with API authentication. Our team has been notified.)";
+        errorMsg += t('pages.aiAssistant.authError', " (Error: There seems to be an issue with API authentication. Our team has been notified.)");
       } else if (error.message.includes("rate limit")) {
-        errorMsg += " (Error: We've reached our usage limit. Please try again in a few minutes.)";
+        errorMsg += t('pages.aiAssistant.rateLimitError', " (Error: We've reached our usage limit. Please try again in a few minutes.)");
       }
       return {
         text: errorMsg,
@@ -179,7 +180,7 @@ const AIAssistant = () => {
       const errorMessage = {
         id: Date.now() + 1,
         sender: 'bot',
-        text: 'I apologize, but I encountered an issue processing your request. Please try again later.',
+        text: t('pages.aiAssistant.processingError', 'I apologize, but I encountered an issue processing your request. Please try again later.'),
         timestamp: new Date().toISOString(),
         icon: faRobot
       };
@@ -212,8 +213,8 @@ const AIAssistant = () => {
             />
           </div>
           <div className="flex-1 min-w-0">
-            <h1 className="text-xl sm:text-2xl font-bold text-white flex items-center truncate">Fasal AI</h1>
-            <p className="text-xs sm:text-sm text-blue-50 truncate">Smart farming, personalized insights</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-white flex items-center truncate">{t('pages.aiAssistant.title', 'Fasal AI')}</h1>
+            <p className="text-xs sm:text-sm text-blue-50 truncate">{t('pages.aiAssistant.subtitle', 'Smart farming, personalized insights')}</p>
           </div>
         </div>
       </div>
@@ -257,7 +258,7 @@ const AIAssistant = () => {
                   {msg.icon && msg.sender === 'bot' && (
                     <div className="flex items-center mb-1 text-blue-600 gap-2">
                       <FontAwesomeIcon icon={msg.icon} className="text-base" />
-                      <span className="text-xs">Fasal AI</span>
+                      <span className="text-xs">{t('pages.aiAssistant.fasalAI', 'Fasal AI')}</span>
                     </div>
                   )}
                   <div className="text-xs sm:text-base break-words whitespace-pre-line">{msg.text}</div>
@@ -297,7 +298,7 @@ const AIAssistant = () => {
             type="text"
             value={message}
             onChange={e => setMessage(e.target.value)}
-            placeholder="Ask about farming, crops, weather…"
+            placeholder={t('pages.aiAssistant.inputPlaceholder', 'Ask about farming, crops, weather…')}
             className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 transition"
             disabled={isLoading}
             autoComplete="off"

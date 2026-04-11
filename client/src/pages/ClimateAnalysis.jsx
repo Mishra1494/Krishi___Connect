@@ -725,10 +725,10 @@ const ClimateAnalysis = () => {
       <div className="mb-6 max-w-screen">
         <h1 className="text-2xl font-bold mb-2 flex items-center">
           <FontAwesomeIcon icon={faChartLine} className="text-gray-700 mr-2" />
-          Climate Analysis
+          {t('pages.climateAnalysis.title', 'Climate Analysis')}
         </h1>
         <p className="text-gray-600">
-          Analyze climate and environmental data to make informed farming decisions.
+          {t('pages.climateAnalysis.subtitle', 'Analyze climate and environmental data to make informed farming decisions.')}
         </p>
       </div>
 
@@ -744,7 +744,7 @@ const ClimateAnalysis = () => {
             }`}
           >
             <FontAwesomeIcon icon={faCloudSunRain} className="mr-2" />
-            Weather
+            {t('pages.climateAnalysis.tabs.weather', 'Weather')}
           </button>
           
           <button
@@ -756,7 +756,7 @@ const ClimateAnalysis = () => {
             }`}
           >
             <FontAwesomeIcon icon={faLeaf} className="mr-2" />
-            Vegetation
+            {t('pages.climateAnalysis.tabs.vegetation', 'Vegetation')}
           </button>
           
           <button
@@ -768,7 +768,7 @@ const ClimateAnalysis = () => {
             }`}
           >
             <FontAwesomeIcon icon={faLayerGroup} className="mr-2" />
-            Soil & Land
+            {t('pages.climateAnalysis.tabs.soil', 'Soil & Land')}
           </button>
           
           <button
@@ -780,7 +780,7 @@ const ClimateAnalysis = () => {
             }`}
           >
             <FontAwesomeIcon icon={faDroplet} className="mr-2" />
-            Water & Irrigation
+            {t('pages.climateAnalysis.tabs.water', 'Water & Irrigation')}
           </button>
           
           <button
@@ -792,7 +792,7 @@ const ClimateAnalysis = () => {
             }`}
           >
             <FontAwesomeIcon icon={faCloudRain} className="mr-2" />
-            Rainfall & Monsoon
+            {t('pages.climateAnalysis.tabs.rainfall', 'Rainfall & Monsoon')}
           </button>
           
           <button
@@ -804,7 +804,7 @@ const ClimateAnalysis = () => {
             }`}
           >
             <FontAwesomeIcon icon={faFire} className="mr-2" />
-            Fire & Hazards
+            {t('pages.climateAnalysis.tabs.fire', 'Fire & Hazards')}
           </button>
         </nav>
       </div>
@@ -835,10 +835,10 @@ const ClimateAnalysis = () => {
         {(activeTab === 'rainfall' || activeTab === 'fire') && (
           <div className="Analytics">
             <div className="bg-white p-6 rounded-lg shadow text-center">
-              <h3 className="text-xl font-semibold mb-2">Feature Coming Soon</h3>
-              <p className="text-gray-600 mb-4">This analytics feature is currently in development.</p>
+              <h3 className="text-xl font-semibold mb-2">{t('pages.climateAnalysis.comingSoon', 'Feature Coming Soon')}</h3>
+              <p className="text-gray-600 mb-4">{t('pages.climateAnalysis.inDevelopment', 'This analytics feature is currently in development.')}</p>
               <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
-                Request Early Access
+                {t('pages.climateAnalysis.earlyAccess', 'Request Early Access')}
               </button>
             </div>
           </div>

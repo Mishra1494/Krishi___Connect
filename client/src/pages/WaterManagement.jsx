@@ -103,10 +103,10 @@ const WaterManagement = () => {
       // Mock API call
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      addNotification('success', `${TEXT_CONSTANTS.NOTIFICATIONS.IRRIGATION_STARTED} for ${zone} zone`);
+      addNotification('success', `${t('pages.waterManagement.irrigationStarted', 'Irrigation started')} for ${zone} zone`);
     } catch (error) {
       console.error('Error activating irrigation:', error);
-      addNotification('error', TEXT_CONSTANTS.NOTIFICATIONS.SYSTEM_ERROR);
+      addNotification('error', t('pages.waterManagement.systemError', 'System Error'));
     } finally {
       setIsLoading(false);
     }

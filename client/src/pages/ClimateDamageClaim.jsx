@@ -16,31 +16,22 @@ const ClimateDamageClaim = () => {
   const fileInputRef = useRef(null);
   
   const [formData, setFormData] = useState({
-    // Personal Information
     farmerName: user?.name || '',
     email: user?.email || '',
     phone: '',
     address: '',
     farmLocation: '',
-    
-    // Damage Details
     incidentDate: '',
     damageType: '',
     cropType: '',
     affectedArea: '',
     estimatedLoss: '',
     description: '',
-    
-    // Weather/Climate Information
     weatherCondition: '',
     severityLevel: '',
     duration: '',
-    
-    // Supporting Documents
     photos: [],
     documents: [],
-    
-    // Scheme Information
     selectedScheme: '',
     claimAmount: ''
   });
@@ -50,62 +41,75 @@ const ClimateDamageClaim = () => {
   const [submitStatus, setSubmitStatus] = useState('');
   const [showSchemeSearch, setShowSchemeSearch] = useState(false);
 
-  // Available government schemes for climate damage
   const availableSchemes = [
     {
       id: 'pmfby',
-      name: 'Pradhan Mantri Fasal Bima Yojana (PMFBY)',
+      name: t('pages.climateDamageClaim.schemes.pmfby.name', 'Pradhan Mantri Fasal Bima Yojana (PMFBY)'),
       maxAmount: '₹2,00,000',
-      description: 'Comprehensive crop insurance for weather-related losses',
-      eligibility: 'All farmers growing notified crops'
+      description: t('pages.climateDamageClaim.schemes.pmfby.description', 'Comprehensive crop insurance for weather-related losses'),
+      eligibility: t('pages.climateDamageClaim.schemes.pmfby.eligibility', 'All farmers growing notified crops')
     },
     {
       id: 'wbcis',
-      name: 'Weather Based Crop Insurance Scheme (WBCIS)',
+      name: t('pages.climateDamageClaim.schemes.wbcis.name', 'Weather Based Crop Insurance Scheme (WBCIS)'),
       maxAmount: '₹1,50,000',
-      description: 'Insurance based on weather parameters',
-      eligibility: 'Farmers affected by adverse weather'
+      description: t('pages.climateDamageClaim.schemes.wbcis.description', 'Insurance based on weather parameters'),
+      eligibility: t('pages.climateDamageClaim.schemes.wbcis.eligibility', 'Farmers affected by adverse weather')
     },
     {
       id: 'nais',
-      name: 'National Agricultural Insurance Scheme (NAIS)',
+      name: t('pages.climateDamageClaim.schemes.nais.name', 'National Agricultural Insurance Scheme (NAIS)'),
       maxAmount: '₹1,00,000',
-      description: 'Basic crop insurance for natural calamities',
-      eligibility: 'Small and marginal farmers'
+      description: t('pages.climateDamageClaim.schemes.nais.description', 'Basic crop insurance for natural calamities'),
+      eligibility: t('pages.climateDamageClaim.schemes.nais.eligibility', 'Small and marginal farmers')
     },
     {
       id: 'disaster-relief',
-      name: 'State Disaster Relief Fund',
+      name: t('pages.climateDamageClaim.schemes.disaster.name', 'State Disaster Relief Fund'),
       maxAmount: '₹50,000',
-      description: 'Emergency relief for climate disasters',
-      eligibility: 'Farmers in disaster-declared areas'
+      description: t('pages.climateDamageClaim.schemes.disaster.description', 'Emergency relief for climate disasters'),
+      eligibility: t('pages.climateDamageClaim.schemes.disaster.eligibility', 'Farmers in disaster-declared areas')
     },
     {
       id: 'kisan-credit',
-      name: 'Kisan Credit Card Scheme',
+      name: t('pages.climateDamageClaim.schemes.kcc.name', 'Kisan Credit Card Scheme'),
       maxAmount: '₹3,00,000',
-      description: 'Credit support for crop recovery',
-      eligibility: 'KCC holders with valid insurance'
+      description: t('pages.climateDamageClaim.schemes.kcc.description', 'Credit support for crop recovery'),
+      eligibility: t('pages.climateDamageClaim.schemes.kcc.eligibility', 'KCC holders with valid insurance')
     }
   ];
 
   const damageTypes = [
-    'Flood', 'Drought', 'Hailstorm', 'Cyclone', 'Heavy Rainfall',
-    'Unseasonal Rainfall', 'Frost', 'Heat Wave', 'Pest Attack due to Weather',
-    'Disease due to Weather', 'Other'
+    t('pages.climateDamageClaim.damageTypes.flood', 'Flood'),
+    t('pages.climateDamageClaim.damageTypes.drought', 'Drought'),
+    t('pages.climateDamageClaim.damageTypes.hailstorm', 'Hailstorm'),
+    t('pages.climateDamageClaim.damageTypes.cyclone', 'Cyclone'),
+    t('pages.climateDamageClaim.damageTypes.heavyRain', 'Heavy Rainfall'),
+    t('pages.climateDamageClaim.damageTypes.unseasonalRain', 'Unseasonal Rainfall'),
+    t('pages.climateDamageClaim.damageTypes.frost', 'Frost'),
+    t('pages.climateDamageClaim.damageTypes.heatWave', 'Heat Wave'),
+    t('pages.climateDamageClaim.damageTypes.pestAttack', 'Pest Attack due to Weather'),
+    t('pages.climateDamageClaim.damageTypes.disease', 'Disease due to Weather'),
+    t('pages.climateDamageClaim.damageTypes.other', 'Other')
   ];
 
   const cropTypes = [
-    'Rice', 'Wheat', 'Sugarcane', 'Cotton', 'Maize', 'Bajra', 'Jowar',
-    'Barley', 'Gram', 'Tur', 'Moong', 'Urad', 'Groundnut', 'Soybean',
-    'Sunflower', 'Mustard', 'Other'
+    t('pages.cropPrediction.rice', 'Rice'), t('pages.cropPrediction.wheat', 'Wheat'),
+    t('pages.cropPrediction.sugarcane', 'Sugarcane'), t('pages.cropPrediction.cotton', 'Cotton'),
+    t('pages.cropPrediction.maize', 'Maize'), t('pages.cropPrediction.bajra', 'Bajra'),
+    t('pages.cropPrediction.jowar', 'Jowar'), t('pages.cropPrediction.barley', 'Barley'),
+    t('pages.cropPrediction.gram', 'Gram'), t('pages.cropPrediction.tur', 'Tur'),
+    t('pages.cropPrediction.moong', 'Moong'), t('pages.cropPrediction.urad', 'Urad'),
+    t('pages.cropPrediction.groundnut', 'Groundnut'), t('pages.cropPrediction.soybean', 'Soybean'),
+    t('pages.cropPrediction.sunflower', 'Sunflower'), t('pages.cropPrediction.mustard', 'Mustard'),
+    t('pages.climateDamageClaim.damageTypes.other', 'Other')
   ];
 
   const severityLevels = [
-    { value: 'mild', label: 'Mild (0-25% damage)', color: 'text-yellow-600' },
-    { value: 'moderate', label: 'Moderate (25-50% damage)', color: 'text-orange-600' },
-    { value: 'severe', label: 'Severe (50-75% damage)', color: 'text-red-600' },
-    { value: 'complete', label: 'Complete (75-100% damage)', color: 'text-red-800' }
+    { value: 'mild', label: t('pages.climateDamageClaim.severity.mild', 'Mild (0-25% damage)'), color: 'text-yellow-600' },
+    { value: 'moderate', label: t('pages.climateDamageClaim.severity.moderate', 'Moderate (25-50% damage)'), color: 'text-orange-600' },
+    { value: 'severe', label: t('pages.climateDamageClaim.severity.severe', 'Severe (50-75% damage)'), color: 'text-red-600' },
+    { value: 'complete', label: t('pages.climateDamageClaim.severity.complete', 'Complete (75-100% damage)'), color: 'text-red-800' }
   ];
 
   const handleInputChange = (e) => {
@@ -161,10 +165,8 @@ const ClimateDamageClaim = () => {
     setSubmitStatus('');
 
     try {
-      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // TODO: Replace with actual API call to Flask backend
       const claimData = {
         ...formData,
         submittedAt: new Date().toISOString(),
@@ -175,7 +177,6 @@ const ClimateDamageClaim = () => {
       console.log('Claim submitted:', claimData);
       setSubmitStatus('success');
       
-      // Reset form after successful submission
       setTimeout(() => {
         window.location.reload();
       }, 3000);
@@ -193,30 +194,28 @@ const ClimateDamageClaim = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex items-center">
             <div className="bg-blue-100 p-3 rounded-full mr-4">
               <FontAwesomeIcon icon={faCloudSunRain} className="text-blue-600 text-2xl" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Climate Damage Claim</h1>
+              <h1 className="text-2xl font-bold text-gray-900">{t('pages.climateDamageClaim.title', 'Climate Damage Claim')}</h1>
               <p className="text-gray-600 mt-1">
-                File a claim for crop damages due to climate change or extreme weather events
+                {t('pages.climateDamageClaim.subtitle', 'File a claim for crop damages due to climate change or extreme weather events')}
               </p>
             </div>
           </div>
         </div>
 
-        {/* Submit Status */}
         {submitStatus === 'success' && (
           <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
             <div className="flex items-center">
               <FontAwesomeIcon icon={faCheck} className="text-green-600 mr-3" />
               <div>
-                <h3 className="text-green-800 font-medium">Claim Submitted Successfully!</h3>
+                <h3 className="text-green-800 font-medium">{t('pages.climateDamageClaim.submitSuccess', 'Claim Submitted Successfully!')}</h3>
                 <p className="text-green-700 text-sm mt-1">
-                  Your claim has been submitted and is under review. You will receive updates via email and SMS.
+                  {t('pages.climateDamageClaim.submitSuccessDesc', 'Your claim has been submitted and is under review. You will receive updates via email and SMS.')}
                 </p>
               </div>
             </div>
@@ -228,9 +227,9 @@ const ClimateDamageClaim = () => {
             <div className="flex items-center">
               <FontAwesomeIcon icon={faExclamationTriangle} className="text-red-600 mr-3" />
               <div>
-                <h3 className="text-red-800 font-medium">Submission Failed</h3>
+                <h3 className="text-red-800 font-medium">{t('pages.climateDamageClaim.submitFail', 'Submission Failed')}</h3>
                 <p className="text-red-700 text-sm mt-1">
-                  There was an error submitting your claim. Please try again or contact support.
+                  {t('pages.climateDamageClaim.submitFailDesc', 'There was an error submitting your claim. Please try again or contact support.')}
                 </p>
               </div>
             </div>
@@ -242,13 +241,13 @@ const ClimateDamageClaim = () => {
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
               <FontAwesomeIcon icon={faUser} className="mr-2 text-blue-600" />
-              Personal Information
+              {t('pages.climateDamageClaim.personalInfo', 'Personal Information')}
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Farmer Name *
+                  {t('pages.climateDamageClaim.farmerName', 'Farmer Name')} *
                 </label>
                 <input
                   type="text"
@@ -262,7 +261,7 @@ const ClimateDamageClaim = () => {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email Address *
+                  {t('pages.climateDamageClaim.email', 'Email Address')} *
                 </label>
                 <input
                   type="email"
@@ -276,7 +275,7 @@ const ClimateDamageClaim = () => {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Phone Number *
+                  {t('pages.climateDamageClaim.phone', 'Phone Number')} *
                 </label>
                 <input
                   type="tel"
@@ -290,14 +289,14 @@ const ClimateDamageClaim = () => {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Farm Location *
+                  {t('pages.climateDamageClaim.farmLocation', 'Farm Location')} *
                 </label>
                 <input
                   type="text"
                   name="farmLocation"
                   value={formData.farmLocation}
                   onChange={handleInputChange}
-                  placeholder="Village, District, State"
+                  placeholder={t('pages.climateDamageClaim.locationPlaceholder', 'Village, District, State')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 />
@@ -306,7 +305,7 @@ const ClimateDamageClaim = () => {
             
             <div className="mt-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Complete Address *
+                {t('pages.climateDamageClaim.address', 'Complete Address')} *
               </label>
               <textarea
                 name="address"
@@ -323,13 +322,13 @@ const ClimateDamageClaim = () => {
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
               <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2 text-orange-600" />
-              Damage Details
+              {t('pages.climateDamageClaim.damageDetails', 'Damage Details')}
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Incident Date *
+                  {t('pages.climateDamageClaim.incidentDate', 'Incident Date')} *
                 </label>
                 <input
                   type="date"
@@ -343,7 +342,7 @@ const ClimateDamageClaim = () => {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Type of Damage *
+                  {t('pages.climateDamageClaim.damageType', 'Type of Damage')} *
                 </label>
                 <select
                   name="damageType"
@@ -352,7 +351,7 @@ const ClimateDamageClaim = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 >
-                  <option value="">Select damage type</option>
+                  <option value="">{t('pages.climateDamageClaim.selectDamage', 'Select damage type')}</option>
                   {damageTypes.map(type => (
                     <option key={type} value={type}>{type}</option>
                   ))}
@@ -361,7 +360,7 @@ const ClimateDamageClaim = () => {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Crop Type *
+                  {t('pages.climateDamageClaim.cropType', 'Crop Type')} *
                 </label>
                 <select
                   name="cropType"
@@ -370,7 +369,7 @@ const ClimateDamageClaim = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 >
-                  <option value="">Select crop type</option>
+                  <option value="">{t('pages.climateDamageClaim.selectCrop', 'Select crop type')}</option>
                   {cropTypes.map(crop => (
                     <option key={crop} value={crop}>{crop}</option>
                   ))}
@@ -379,7 +378,7 @@ const ClimateDamageClaim = () => {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Affected Area (in acres) *
+                  {t('pages.climateDamageClaim.affectedArea', 'Affected Area (in acres)')} *
                 </label>
                 <input
                   type="number"
@@ -395,7 +394,7 @@ const ClimateDamageClaim = () => {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Estimated Loss (₹) *
+                  {t('pages.climateDamageClaim.estLoss', 'Estimated Loss')} (₹) *
                 </label>
                 <input
                   type="number"
@@ -410,7 +409,7 @@ const ClimateDamageClaim = () => {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Severity Level *
+                  {t('pages.climateDamageClaim.severityLevel', 'Severity Level')} *
                 </label>
                 <select
                   name="severityLevel"
@@ -419,7 +418,7 @@ const ClimateDamageClaim = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 >
-                  <option value="">Select severity</option>
+                  <option value="">{t('pages.climateDamageClaim.selectSeverity', 'Select severity')}</option>
                   {severityLevels.map(level => (
                     <option key={level.value} value={level.value}>
                       {level.label}
@@ -431,14 +430,14 @@ const ClimateDamageClaim = () => {
             
             <div className="mt-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Detailed Description of Damage *
+                {t('pages.climateDamageClaim.descLabel', 'Detailed Description of Damage')} *
               </label>
               <textarea
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
                 rows="4"
-                placeholder="Describe the damage in detail, including what caused it and its impact on your crops..."
+                placeholder={t('pages.climateDamageClaim.descPlaceholder', 'Describe the damage in detail, including what caused it and its impact on your crops...')}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
@@ -449,7 +448,7 @@ const ClimateDamageClaim = () => {
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
               <FontAwesomeIcon icon={faSearch} className="mr-2 text-green-600" />
-              Select Government Scheme
+              {t('pages.climateDamageClaim.selectScheme', 'Select Government Scheme')}
             </h2>
             
             <div className="mb-4">
@@ -460,8 +459,8 @@ const ClimateDamageClaim = () => {
               >
                 <FontAwesomeIcon icon={faSearch} className="mr-2" />
                 {selectedSchemeDetails ? 
-                  `Selected: ${selectedSchemeDetails.name}` : 
-                  'Search and Select Applicable Scheme'
+                  `${t('pages.climateDamageClaim.selected', 'Selected')}: ${selectedSchemeDetails.name}` : 
+                  t('pages.climateDamageClaim.searchScheme', 'Search and Select Applicable Scheme')
                 }
               </button>
             </div>
@@ -471,7 +470,7 @@ const ClimateDamageClaim = () => {
                 <div className="relative mb-4">
                   <input
                     type="text"
-                    placeholder="Search schemes..."
+                    placeholder={t('pages.climateDamageClaim.searchPlaceholder', 'Search schemes...')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -503,12 +502,12 @@ const ClimateDamageClaim = () => {
 
             {selectedSchemeDetails && (
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <h4 className="font-medium text-green-800 mb-2">Selected Scheme Details:</h4>
+                <h4 className="font-medium text-green-800 mb-2">{t('pages.climateDamageClaim.selectedDetails', 'Selected Scheme Details')}:</h4>
                 <div className="text-sm text-green-700">
-                  <p><strong>Name:</strong> {selectedSchemeDetails.name}</p>
-                  <p><strong>Maximum Amount:</strong> {selectedSchemeDetails.maxAmount}</p>
-                  <p><strong>Description:</strong> {selectedSchemeDetails.description}</p>
-                  <p><strong>Eligibility:</strong> {selectedSchemeDetails.eligibility}</p>
+                  <p><strong>{t('pages.climateDamageClaim.name', 'Name')}:</strong> {selectedSchemeDetails.name}</p>
+                  <p><strong>{t('pages.climateDamageClaim.maxAmount', 'Maximum Amount')}:</strong> {selectedSchemeDetails.maxAmount}</p>
+                  <p><strong>{t('pages.climateDamageClaim.description', 'Description')}:</strong> {selectedSchemeDetails.description}</p>
+                  <p><strong>{t('pages.climateDamageClaim.eligibility', 'Eligibility')}:</strong> {selectedSchemeDetails.eligibility}</p>
                 </div>
               </div>
             )}
@@ -518,7 +517,7 @@ const ClimateDamageClaim = () => {
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
               <FontAwesomeIcon icon={faCamera} className="mr-2 text-purple-600" />
-              Upload Photos of Damage *
+              {t('pages.climateDamageClaim.uploadPhotos', 'Upload Photos of Damage')} *
             </h2>
             
             <div className="mb-4">
@@ -536,8 +535,8 @@ const ClimateDamageClaim = () => {
                 className="w-full px-4 py-6 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-400 hover:text-blue-600 transition-colors"
               >
                 <FontAwesomeIcon icon={faUpload} className="text-2xl mb-2" />
-                <div>Click to upload photos or drag and drop</div>
-                <div className="text-sm text-gray-500 mt-1">PNG, JPG up to 10MB each</div>
+                <div>{t('pages.climateDamageClaim.clickUpload', 'Click to upload photos or drag and drop')}</div>
+                <div className="text-sm text-gray-500 mt-1">{t('pages.climateDamageClaim.uploadLimit', 'PNG, JPG up to 10MB each')}</div>
               </button>
             </div>
 
@@ -569,7 +568,7 @@ const ClimateDamageClaim = () => {
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-600">
                 <FontAwesomeIcon icon={faInfoCircle} className="mr-2 text-blue-500" />
-                All information will be verified by government officials
+                {t('pages.climateDamageClaim.infoVerify', 'All information will be verified by government officials')}
               </div>
               <button
                 type="submit"
@@ -579,10 +578,10 @@ const ClimateDamageClaim = () => {
                 {isLoading ? (
                   <div className="flex items-center">
                     <FontAwesomeIcon icon={faSpinner} className="animate-spin mr-2" />
-                    Submitting Claim...
+                    {t('common.submitting', 'Submitting...')}
                   </div>
                 ) : (
-                  'Submit Claim'
+                  t('pages.climateDamageClaim.submitBtn', 'Submit Claim')
                 )}
               </button>
             </div>

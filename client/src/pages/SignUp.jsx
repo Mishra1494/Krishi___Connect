@@ -48,12 +48,12 @@ const SignUp = () => {
 
   const validateForm = () => {
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('pages.signup.passwordMismatch', 'Passwords do not match'));
       return false;
     }
     
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
+      setError(t('pages.signup.passwordLength', 'Password must be at least 6 characters long'));
       return false;
     }
     
@@ -80,7 +80,7 @@ const SignUp = () => {
         navigate('/government-dashboard');
       }
     } else {
-      setError(result.error || 'Registration failed. Please try again.');
+      setError(result.error || t('pages.signup.signupFailed', 'Registration failed. Please try again.'));
     }
     
     setIsLoading(false);
@@ -98,15 +98,15 @@ const SignUp = () => {
           <Link to="/" className="inline-flex items-center justify-center w-16 h-16 bg-brand-500 rounded-2xl mb-6 shadow-lg shadow-brand-500/30 hover:scale-105 transition-transform">
             <FontAwesomeIcon icon={faLeaf} className="text-white text-3xl" />
           </Link>
-          <h1 className="text-4xl font-heading font-extrabold text-slate-900 mb-3 tracking-tight">Join KrishiConnect</h1>
-          <p className="text-slate-600 text-lg">Create your account to get started</p>
+          <h1 className="text-4xl font-heading font-extrabold text-slate-900 mb-3 tracking-tight">{t('pages.signup.title', 'Join KrishiConnect')}</h1>
+          <p className="text-slate-600 text-lg">{t('pages.signup.subtitle', 'Create your account to get started')}</p>
         </div>
 
         {/* Sign Up Form */}
         <div className="glass-card p-8 md:p-10 shadow-2xl border border-white/50">
           {/* User Type Selection */}
           <div className="mb-6">
-            <p className="text-sm font-medium text-gray-700 mb-3">Register as:</p>
+            <p className="text-sm font-medium text-gray-700 mb-3">{t('pages.signup.registerAs', 'Register as:')}</p>
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
@@ -118,7 +118,7 @@ const SignUp = () => {
                 }`}
               >
                 <FontAwesomeIcon icon={faUser} className="text-2xl mb-2" />
-                <div className="text-sm font-medium">Farmer</div>
+                <div className="text-sm font-medium">{t('pages.signup.farmer', 'Farmer')}</div>
               </button>
               <button
                 type="button"
@@ -130,7 +130,7 @@ const SignUp = () => {
                 }`}
               >
                 <FontAwesomeIcon icon={faBuilding} className="text-2xl mb-2" />
-                <div className="text-sm font-medium">Government</div>
+                <div className="text-sm font-medium">{t('pages.signup.government', 'Government')}</div>
               </button>
             </div>
           </div>
@@ -139,7 +139,7 @@ const SignUp = () => {
             {/* Name Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Full Name
+                {t('pages.signup.fullName', 'Full Name')}
               </label>
               <div className="relative">
                 <FontAwesomeIcon 
@@ -152,7 +152,7 @@ const SignUp = () => {
                   value={formData.name}
                   onChange={handleInputChange}
                   className="w-full pl-10 pr-4 py-3.5 glass-input text-slate-900"
-                  placeholder="Enter your full name"
+                  placeholder={t('pages.signup.fullNamePlaceholder', 'Enter your full name')}
                   required
                 />
               </div>
@@ -161,7 +161,7 @@ const SignUp = () => {
             {/* Email Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
+                {t('pages.signup.emailAddress', 'Email Address')}
               </label>
               <div className="relative">
                 <FontAwesomeIcon 
@@ -174,7 +174,7 @@ const SignUp = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                   className="w-full pl-10 pr-4 py-3.5 glass-input text-slate-900"
-                  placeholder="Enter your email"
+                  placeholder={t('pages.signup.emailPlaceholder', 'Enter your email')}
                   required
                 />
               </div>
@@ -183,7 +183,7 @@ const SignUp = () => {
             {/* Phone Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Phone Number
+                {t('pages.signup.phoneNumber', 'Phone Number')}
               </label>
               <div className="relative">
                 <FontAwesomeIcon 
@@ -196,7 +196,7 @@ const SignUp = () => {
                   value={formData.phone}
                   onChange={handleInputChange}
                   className="w-full pl-10 pr-4 py-3.5 glass-input text-slate-900"
-                  placeholder="Enter your phone number"
+                  placeholder={t('pages.signup.phonePlaceholder', 'Enter your phone number')}
                   required
                 />
               </div>
@@ -205,7 +205,7 @@ const SignUp = () => {
             {/* Location Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                {formData.userType === 'farmer' ? 'Farm Location' : 'Office Location'}
+                {formData.userType === 'farmer' ? t('pages.signup.farmLocation', 'Farm Location') : t('pages.signup.officeLocation', 'Office Location')}
               </label>
               <div className="relative">
                 <FontAwesomeIcon 
@@ -218,7 +218,7 @@ const SignUp = () => {
                   value={formData.location}
                   onChange={handleInputChange}
                   className="w-full pl-10 pr-4 py-3.5 glass-input text-slate-900"
-                  placeholder={formData.userType === 'farmer' ? 'Enter your farm location' : 'Enter your office location'}
+                  placeholder={formData.userType === 'farmer' ? t('pages.signup.farmLocationPlaceholder', 'Enter your farm location') : t('pages.signup.officeLocationPlaceholder', 'Enter your office location')}
                   required
                 />
               </div>
@@ -227,7 +227,7 @@ const SignUp = () => {
             {/* Password Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Password
+                {t('pages.signup.password', 'Password')}
               </label>
               <div className="relative">
                 <FontAwesomeIcon 
@@ -240,7 +240,7 @@ const SignUp = () => {
                   value={formData.password}
                   onChange={handleInputChange}
                   className="w-full pl-10 pr-12 py-3.5 glass-input text-slate-900"
-                  placeholder="Create a password"
+                  placeholder={t('pages.signup.passwordPlaceholder', 'Create a password')}
                   required
                 />
                 <button
@@ -256,7 +256,7 @@ const SignUp = () => {
             {/* Confirm Password Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Confirm Password
+                {t('pages.signup.confirmPassword', 'Confirm Password')}
               </label>
               <div className="relative">
                 <FontAwesomeIcon 
@@ -269,7 +269,7 @@ const SignUp = () => {
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
                   className="w-full pl-10 pr-12 py-3.5 glass-input text-slate-900"
-                  placeholder="Confirm your password"
+                  placeholder={t('pages.signup.confirmPasswordPlaceholder', 'Confirm your password')}
                   required
                 />
                 <button
@@ -302,10 +302,10 @@ const SignUp = () => {
               {isLoading ? (
                 <div className="flex items-center justify-center">
                   <FontAwesomeIcon icon={faSpinner} className="animate-spin mr-2" />
-                  Creating account...
+                  {t('pages.signup.creatingAccount', 'Creating account...')}
                 </div>
               ) : (
-                `Create ${formData.userType === 'farmer' ? 'Farmer' : 'Government'} Account`
+                formData.userType === 'farmer' ? t('pages.signup.createFarmerAccount', 'Create Farmer Account') : t('pages.signup.createGovernmentAccount', 'Create Government Account')
               )}
             </button>
           </form>
@@ -313,12 +313,12 @@ const SignUp = () => {
           {/* Footer */}
           <div className="mt-8 text-center pt-6 border-t border-slate-200/50">
             <p className="text-slate-600">
-              Already have an account?{' '}
+              {t('pages.signup.alreadyHaveAccount', 'Already have an account?')} {' '}
               <Link 
                 to="/login" 
                 className="text-brand-600 hover:text-brand-700 font-bold transition-colors"
               >
-                Sign in here
+                {t('pages.signup.signInHere', 'Sign in here')}
               </Link>
             </p>
           </div>

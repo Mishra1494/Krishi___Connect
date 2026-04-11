@@ -64,11 +64,11 @@ const CropPrediction = () => {
   };
 
   const locations = [
-    { id: 'current-location', name: 'Current Location (GPS)', climate: 'Temperate' },
-    { id: 'mumbai', name: 'Mumbai, Maharashtra', climate: 'Tropical' },
-    { id: 'delhi', name: 'Delhi, NCR', climate: 'Semi-arid' },
-    { id: 'bangalore', name: 'Bangalore, Karnataka', climate: 'Tropical savanna' },
-    { id: 'pune', name: 'Pune, Maharashtra', climate: 'Semi-arid' }
+    { id: 'current-location', name: t('pages.cropPrediction.currentLocation', 'Current Location (GPS)'), climate: t('pages.cropPrediction.temperate', 'Temperate') },
+    { id: 'mumbai', name: t('pages.cropPrediction.locations.mumbai', 'Mumbai, Maharashtra'), climate: t('pages.cropPrediction.tropical', 'Tropical') },
+    { id: 'delhi', name: t('pages.cropPrediction.locations.delhi', 'Delhi, NCR'), climate: t('pages.cropPrediction.semiArid', 'Semi-arid') },
+    { id: 'bangalore', name: t('pages.cropPrediction.locations.bangalore', 'Bangalore, Karnataka'), climate: t('pages.cropPrediction.tropicalSavanna', 'Tropical savanna') },
+    { id: 'pune', name: t('pages.cropPrediction.locations.pune', 'Pune, Maharashtra'), climate: t('pages.cropPrediction.semiArid', 'Semi-arid') }
   ];
 
   // Function to call Groq API for crop prediction
@@ -150,19 +150,19 @@ Requirements:
           // Process and validate the crops data
           const processedCrops = jsonData.crops.slice(0, 3).map((crop, index) => ({
             id: index + 1,
-            name: crop.name || 'Unknown Crop',
+            name: crop.name || t('pages.cropPrediction.unknownCrop', 'Unknown Crop'),
             icon: getCropIcon(crop.name),
             suitability: Math.min(100, Math.max(0, parseInt(crop.suitability) || 0)),
-            season: crop.season || 'All Season',
-            plantingWindow: crop.plantingWindow || 'Year Round',
-            harvestWindow: crop.harvestWindow || 'Year Round',
-            expectedYield: crop.expectedYield || 'Variable',
-            marketPrice: crop.marketPrice || 'Market Rate',
-            profitability: crop.profitability || 'Medium',
-            waterRequirement: crop.waterRequirement || 'Medium',
-            difficulty: crop.difficulty || 'Medium',
-            advantages: Array.isArray(crop.advantages) ? crop.advantages.slice(0, 3) : ['Good choice for the region'],
-            considerations: Array.isArray(crop.considerations) ? crop.considerations.slice(0, 2) : ['Monitor weather conditions'],
+            season: crop.season || t('pages.cropPrediction.allSeason', 'All Season'),
+            plantingWindow: crop.plantingWindow || t('pages.cropPrediction.yearRound', 'Year Round'),
+            harvestWindow: crop.harvestWindow || t('pages.cropPrediction.yearRound', 'Year Round'),
+            expectedYield: crop.expectedYield || t('pages.cropPrediction.variable', 'Variable'),
+            marketPrice: crop.marketPrice || t('pages.cropPrediction.marketRate', 'Market Rate'),
+            profitability: crop.profitability || t('pages.cropPrediction.medium', 'Medium'),
+            waterRequirement: crop.waterRequirement || t('pages.cropPrediction.medium', 'Medium'),
+            difficulty: crop.difficulty || t('pages.cropPrediction.medium', 'Medium'),
+            advantages: Array.isArray(crop.advantages) ? crop.advantages.slice(0, 3) : [t('pages.cropPrediction.goodChoiceRegion', 'Good choice for the region')],
+            considerations: Array.isArray(crop.considerations) ? crop.considerations.slice(0, 2) : [t('pages.cropPrediction.monitorWeather', 'Monitor weather conditions')],
             confidence: Math.min(100, Math.max(0, parseInt(crop.confidence) || crop.suitability || 0))
           }));
           
@@ -276,13 +276,13 @@ Requirements:
   const handleAnalyze = async () => {
     // Validate parameters first
     if (!validateParameters()) {
-      setError('Please fill in all parameter fields with valid values.');
+      setError(t('pages.cropPrediction.fillAllParams', 'Please fill in all parameter fields with valid values.'));
       return;
     }
 
     // Check if API key is available
     if (!GROQ_API_KEY) {
-      setError('Groq API key is not configured. Please add VITE_GROQ_API_KEY to your .env file.');
+      setError(t('pages.cropPrediction.apiNotConfigured', 'Groq API key is not configured. Please add VITE_GROQ_API_KEY to your .env file.'));
       return;
     }
 
@@ -296,11 +296,11 @@ Requirements:
         setPredictions(cropPredictions);
         setShowResults(true);
       } else {
-        setError('No crop recommendations could be generated. Please try again with different parameters.');
+        setError(t('pages.cropPrediction.noRecommendations', 'No crop recommendations could be generated. Please try again with different parameters.'));
       }
     } catch (error) {
       console.error('Error analyzing crops:', error);
-      setError(`Failed to get crop predictions: ${error.message}. Please check your parameters and try again.`);
+      setError(t('pages.cropPrediction.apiError', 'Failed to get crop predictions: {{message}}. Please check your parameters and try again.', { message: error.message }));
     } finally {
       setIsAnalyzing(false);
     }
@@ -312,8 +312,8 @@ Requirements:
       <div className="bg-white border-b border-gray-200 px-6 py-4 mb-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">AI Crop Prediction</h1>
-            <p className="text-gray-600 mt-1">Get AI-powered crop recommendations based on your conditions</p>
+            <h1 className="text-2xl font-bold text-gray-900">{t('pages.cropPrediction.title', 'AI Crop Prediction')}</h1>
+            <p className="text-gray-600 mt-1">{t('pages.cropPrediction.subtitle', 'Get AI-powered crop recommendations based on your conditions')}</p>
           </div>
           <div className="flex items-center space-x-3">
             <button
@@ -325,11 +325,11 @@ Requirements:
                 icon={faRefresh} 
                 className={`mr-2 ${isAnalyzing ? 'animate-spin' : ''}`} 
               />
-              {isAnalyzing ? 'Analyzing...' : 'Refresh Analysis'}
+              {isAnalyzing ? t('pages.cropPrediction.analyzing', 'Analyzing...') : t('pages.cropPrediction.refreshAnalysis', 'Refresh Analysis')}
             </button>
             <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center">
               <FontAwesomeIcon icon={faDownload} className="mr-2" />
-              Export Report
+              {t('pages.cropPrediction.exportReport', 'Export Report')}
             </button>
           </div>
         </div>
@@ -340,11 +340,11 @@ Requirements:
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
             <FontAwesomeIcon icon={faLocationDot} className="text-blue-500 mr-2" />
-            Location Selection
+            {t('pages.cropPrediction.locationSelection', 'Location Selection')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Select Location</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('pages.cropPrediction.selectLocation', 'Select Location')}</label>
               <select
                 value={selectedLocation}
                 onChange={(e) => handleLocationChange(e.target.value)}
@@ -352,7 +352,7 @@ Requirements:
               >
                 {locations.map(location => (
                   <option key={location.id} value={location.id}>
-                    {location.name} - {location.climate} Climate
+                    {location.name} - {t('pages.cropPrediction.climatePrefix', '')}{location.climate} {t('pages.cropPrediction.climateSuffix', 'Climate')}
                   </option>
                 ))}
               </select>
@@ -364,7 +364,7 @@ Requirements:
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
             <FontAwesomeIcon icon={faFlask} className="text-green-500 mr-2" />
-            Soil & Environmental Parameters
+            {t('pages.cropPrediction.soilParamsData', 'Soil & Environmental Parameters')}
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -372,7 +372,7 @@ Requirements:
             <div className="space-y-2">
               <label className="flex text-sm font-medium text-gray-700 items-center">
                 <FontAwesomeIcon icon={faLeaf} className="text-green-500 mr-2" />
-                Nitrogen ({parameterLimits.nitrogen.unit})
+                {t('pages.cropPrediction.nitrogen', 'Nitrogen')} ({parameterLimits.nitrogen.unit})
               </label>
               <input
                 type="number"
@@ -382,17 +382,17 @@ Requirements:
                 max={parameterLimits.nitrogen.max}
                 step={parameterLimits.nitrogen.step}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                placeholder={`Enter value (${parameterLimits.nitrogen.min}-${parameterLimits.nitrogen.max}${parameterLimits.nitrogen.unit})`}
+                placeholder={`${t('pages.cropPrediction.enterValue', 'Enter value')} (${parameterLimits.nitrogen.min}-${parameterLimits.nitrogen.max}${parameterLimits.nitrogen.unit})`}
                 required
               />
-              <p className="text-xs text-gray-500">Range: {parameterLimits.nitrogen.min}-{parameterLimits.nitrogen.max}{parameterLimits.nitrogen.unit}</p>
+              <p className="text-xs text-gray-500">{t('pages.cropPrediction.range', 'Range')}: {parameterLimits.nitrogen.min}-{parameterLimits.nitrogen.max}{parameterLimits.nitrogen.unit}</p>
             </div>
 
             {/* Phosphorus */}
             <div className="space-y-2">
               <label className="flex text-sm font-medium text-gray-700 items-center">
                 <FontAwesomeIcon icon={faSeedling} className="text-orange-500 mr-2" />
-                Phosphorus ({parameterLimits.phosphorus.unit})
+                {t('pages.cropPrediction.phosphorus', 'Phosphorus')} ({parameterLimits.phosphorus.unit})
               </label>
               <input
                 type="number"
@@ -402,17 +402,17 @@ Requirements:
                 max={parameterLimits.phosphorus.max}
                 step={parameterLimits.phosphorus.step}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                placeholder={`Enter value (${parameterLimits.phosphorus.min}-${parameterLimits.phosphorus.max}${parameterLimits.phosphorus.unit})`}
+                placeholder={`${t('pages.cropPrediction.enterValue', 'Enter value')} (${parameterLimits.phosphorus.min}-${parameterLimits.phosphorus.max}${parameterLimits.phosphorus.unit})`}
                 required
               />
-              <p className="text-xs text-gray-500">Range: {parameterLimits.phosphorus.min}-{parameterLimits.phosphorus.max}{parameterLimits.phosphorus.unit}</p>
+              <p className="text-xs text-gray-500">{t('pages.cropPrediction.range', 'Range')}: {parameterLimits.phosphorus.min}-{parameterLimits.phosphorus.max}{parameterLimits.phosphorus.unit}</p>
             </div>
 
             {/* Potassium */}
             <div className="space-y-2">
               <label className="flex text-sm font-medium text-gray-700 items-center">
                 <FontAwesomeIcon icon={faWheatAwn} className="text-purple-500 mr-2" />
-                Potassium ({parameterLimits.potassium.unit})
+                {t('pages.cropPrediction.potassium', 'Potassium')} ({parameterLimits.potassium.unit})
               </label>
               <input
                 type="number"
@@ -422,17 +422,17 @@ Requirements:
                 max={parameterLimits.potassium.max}
                 step={parameterLimits.potassium.step}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                placeholder={`Enter value (${parameterLimits.potassium.min}-${parameterLimits.potassium.max}${parameterLimits.potassium.unit})`}
+                placeholder={`${t('pages.cropPrediction.enterValue', 'Enter value')} (${parameterLimits.potassium.min}-${parameterLimits.potassium.max}${parameterLimits.potassium.unit})`}
                 required
               />
-              <p className="text-xs text-gray-500">Range: {parameterLimits.potassium.min}-{parameterLimits.potassium.max}{parameterLimits.potassium.unit}</p>
+              <p className="text-xs text-gray-500">{t('pages.cropPrediction.range', 'Range')}: {parameterLimits.potassium.min}-{parameterLimits.potassium.max}{parameterLimits.potassium.unit}</p>
             </div>
 
             {/* Temperature */}
             <div className="space-y-2">
               <label className="flex text-sm font-medium text-gray-700 items-center">
                 <FontAwesomeIcon icon={faThermometerHalf} className="text-red-500 mr-2" />
-                Temperature ({parameterLimits.temperature.unit})
+                {t('pages.cropPrediction.temperature', 'Temperature')} ({parameterLimits.temperature.unit})
               </label>
               <input
                 type="number"
@@ -442,17 +442,17 @@ Requirements:
                 max={parameterLimits.temperature.max}
                 step={parameterLimits.temperature.step}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                placeholder={`Enter value (${parameterLimits.temperature.min}-${parameterLimits.temperature.max}${parameterLimits.temperature.unit})`}
+                placeholder={`${t('pages.cropPrediction.enterValue', 'Enter value')} (${parameterLimits.temperature.min}-${parameterLimits.temperature.max}${parameterLimits.temperature.unit})`}
                 required
               />
-              <p className="text-xs text-gray-500">Range: {parameterLimits.temperature.min}-{parameterLimits.temperature.max}{parameterLimits.temperature.unit}</p>
+              <p className="text-xs text-gray-500">{t('pages.cropPrediction.range', 'Range')}: {parameterLimits.temperature.min}-{parameterLimits.temperature.max}{parameterLimits.temperature.unit}</p>
             </div>
 
             {/* Humidity */}
             <div className="space-y-2">
               <label className="flex text-sm font-medium text-gray-700 items-center">
                 <FontAwesomeIcon icon={faDroplet} className="text-blue-500 mr-2" />
-                Humidity ({parameterLimits.humidity.unit})
+                {t('pages.cropPrediction.humidity', 'Humidity')} ({parameterLimits.humidity.unit})
               </label>
               <input
                 type="number"
@@ -462,17 +462,17 @@ Requirements:
                 max={parameterLimits.humidity.max}
                 step={parameterLimits.humidity.step}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                placeholder={`Enter value (${parameterLimits.humidity.min}-${parameterLimits.humidity.max}${parameterLimits.humidity.unit})`}
+                placeholder={`${t('pages.cropPrediction.enterValue', 'Enter value')} (${parameterLimits.humidity.min}-${parameterLimits.humidity.max}${parameterLimits.humidity.unit})`}
                 required
               />
-              <p className="text-xs text-gray-500">Range: {parameterLimits.humidity.min}-{parameterLimits.humidity.max}{parameterLimits.humidity.unit}</p>
+              <p className="text-xs text-gray-500">{t('pages.cropPrediction.range', 'Range')}: {parameterLimits.humidity.min}-{parameterLimits.humidity.max}{parameterLimits.humidity.unit}</p>
             </div>
 
             {/* pH */}
             <div className="space-y-2">
               <label className="flex text-sm font-medium text-gray-700 items-center">
                 <FontAwesomeIcon icon={faEye} className="text-yellow-500 mr-2" />
-                pH Value
+                {t('pages.cropPrediction.phValue', 'pH Value')}
               </label>
               <input
                 type="number"
@@ -482,17 +482,17 @@ Requirements:
                 max={parameterLimits.ph.max}
                 step={parameterLimits.ph.step}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                placeholder={`Enter value (${parameterLimits.ph.min}-${parameterLimits.ph.max})`}
+                placeholder={`${t('pages.cropPrediction.enterValue', 'Enter value')} (${parameterLimits.ph.min}-${parameterLimits.ph.max})`}
                 required
               />
-              <p className="text-xs text-gray-500">Range: {parameterLimits.ph.min}-{parameterLimits.ph.max} (soil acidity/alkalinity)</p>
+              <p className="text-xs text-gray-500">{t('pages.cropPrediction.range', 'Range')}: {parameterLimits.ph.min}-{parameterLimits.ph.max} {t('pages.cropPrediction.soilAcidity', '(soil acidity/alkalinity)')}</p>
             </div>
 
             {/* Rainfall */}
             <div className="space-y-2 md:col-span-2 lg:col-span-3">
               <label className="flex text-sm font-medium text-gray-700 items-center">
                 <FontAwesomeIcon icon={faCloudSun} className="text-cyan-500 mr-2" />
-                Rainfall ({parameterLimits.rainfall.unit})
+                {t('pages.cropPrediction.rainfall', 'Rainfall')} ({parameterLimits.rainfall.unit})
               </label>
               <input
                 type="number"
@@ -502,10 +502,10 @@ Requirements:
                 max={parameterLimits.rainfall.max}
                 step={parameterLimits.rainfall.step}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                placeholder={`Enter value (${parameterLimits.rainfall.min}-${parameterLimits.rainfall.max}${parameterLimits.rainfall.unit})`}
+                placeholder={`${t('pages.cropPrediction.enterValue', 'Enter value')} (${parameterLimits.rainfall.min}-${parameterLimits.rainfall.max}${parameterLimits.rainfall.unit})`}
                 required
               />
-              <p className="text-xs text-gray-500">Range: {parameterLimits.rainfall.min}-{parameterLimits.rainfall.max}{parameterLimits.rainfall.unit} (annual precipitation)</p>
+              <p className="text-xs text-gray-500">{t('pages.cropPrediction.range', 'Range')}: {parameterLimits.rainfall.min}-{parameterLimits.rainfall.max}{parameterLimits.rainfall.unit} {t('pages.cropPrediction.annualPrecipitation', '(annual precipitation)')}</p>
             </div>
           </div>
 
@@ -515,7 +515,7 @@ Requirements:
               <div className="flex items-start">
                 <FontAwesomeIcon icon={faExclamationTriangle} className="text-red-600 mt-1 mr-3" />
                 <div>
-                  <h3 className="font-semibold text-red-900 mb-1">Error</h3>
+                  <h3 className="font-semibold text-red-900 mb-1">{t('pages.dashboard.error', 'Error')}</h3>
                   <p className="text-red-800 text-sm">{error}</p>
                 </div>
               </div>
@@ -532,17 +532,17 @@ Requirements:
               {isAnalyzing ? (
                 <>
                   <FontAwesomeIcon icon={faSpinner} className="mr-3 animate-spin" />
-                  Analyzing with AI...
+                  {t('pages.cropPrediction.analyzingWithAi', 'Analyzing with AI...')}
                 </>
               ) : !validateParameters() ? (
                 <>
                   <FontAwesomeIcon icon={faExclamationTriangle} className="mr-3" />
-                  Fill All Parameters First
+                  {t('pages.cropPrediction.fillAllParamsMsg', 'Fill All Parameters First')}
                 </>
               ) : (
                 <>
                   <FontAwesomeIcon icon={faRobot} className="mr-3" />
-                  Analyze & Get Crop Predictions
+                  {t('pages.cropPrediction.analyzePredictions', 'Analyze & Get Crop Predictions')}
                   <FontAwesomeIcon icon={faArrowRight} className="ml-3" />
                 </>
               )}
@@ -553,7 +553,7 @@ Requirements:
           {!validateParameters() && (
             <div className="mt-4 text-center">
               <p className="text-sm text-gray-600">
-                Please fill in all parameter fields to get AI-powered crop recommendations
+                {t('pages.cropPrediction.validationInfo', 'Please fill in all parameter fields to get AI-powered crop recommendations')}
               </p>
             </div>
           )}
@@ -564,43 +564,43 @@ Requirements:
           <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-lg border border-blue-200 p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
               <FontAwesomeIcon icon={faCog} className="text-blue-500 mr-2" />
-              Current Analysis Parameters
+              {t('pages.cropPrediction.currentParams', 'Current Analysis Parameters')}
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
               <div className="text-center p-3 bg-white rounded-lg shadow-sm">
                 <FontAwesomeIcon icon={faLeaf} className="text-green-500 text-lg mb-2" />
                 <div className="font-bold text-gray-900">{parameters.nitrogen}{parameterLimits.nitrogen.unit}</div>
-                <div className="text-xs text-gray-600">Nitrogen</div>
+                <div className="text-xs text-gray-600">{t('pages.cropPrediction.nitrogen', 'Nitrogen')}</div>
               </div>
               <div className="text-center p-3 bg-white rounded-lg shadow-sm">
                 <FontAwesomeIcon icon={faSeedling} className="text-orange-500 text-lg mb-2" />
                 <div className="font-bold text-gray-900">{parameters.phosphorus}{parameterLimits.phosphorus.unit}</div>
-                <div className="text-xs text-gray-600">Phosphorus</div>
+                <div className="text-xs text-gray-600">{t('pages.cropPrediction.phosphorus', 'Phosphorus')}</div>
               </div>
               <div className="text-center p-3 bg-white rounded-lg shadow-sm">
                 <FontAwesomeIcon icon={faWheatAwn} className="text-purple-500 text-lg mb-2" />
                 <div className="font-bold text-gray-900">{parameters.potassium}{parameterLimits.potassium.unit}</div>
-                <div className="text-xs text-gray-600">Potassium</div>
+                <div className="text-xs text-gray-600">{t('pages.cropPrediction.potassium', 'Potassium')}</div>
               </div>
               <div className="text-center p-3 bg-white rounded-lg shadow-sm">
                 <FontAwesomeIcon icon={faThermometerHalf} className="text-red-500 text-lg mb-2" />
                 <div className="font-bold text-gray-900">{parameters.temperature}{parameterLimits.temperature.unit}</div>
-                <div className="text-xs text-gray-600">Temperature</div>
+                <div className="text-xs text-gray-600">{t('pages.cropPrediction.temperature', 'Temperature')}</div>
               </div>
               <div className="text-center p-3 bg-white rounded-lg shadow-sm">
                 <FontAwesomeIcon icon={faDroplet} className="text-blue-500 text-lg mb-2" />
                 <div className="font-bold text-gray-900">{parameters.humidity}{parameterLimits.humidity.unit}</div>
-                <div className="text-xs text-gray-600">Humidity</div>
+                <div className="text-xs text-gray-600">{t('pages.cropPrediction.humidity', 'Humidity')}</div>
               </div>
               <div className="text-center p-3 bg-white rounded-lg shadow-sm">
                 <FontAwesomeIcon icon={faEye} className="text-yellow-500 text-lg mb-2" />
                 <div className="font-bold text-gray-900">{parameters.ph}</div>
-                <div className="text-xs text-gray-600">pH Value</div>
+                <div className="text-xs text-gray-600">{t('pages.cropPrediction.phValue', 'pH Value')}</div>
               </div>
               <div className="text-center p-3 bg-white rounded-lg shadow-sm">
                 <FontAwesomeIcon icon={faCloudSun} className="text-cyan-500 text-lg mb-2" />
                 <div className="font-bold text-gray-900">{parameters.rainfall}{parameterLimits.rainfall.unit}</div>
-                <div className="text-xs text-gray-600">Rainfall</div>
+                <div className="text-xs text-gray-600">{t('pages.cropPrediction.rainfall', 'Rainfall')}</div>
               </div>
             </div>
           </div>
@@ -612,14 +612,10 @@ Requirements:
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center">
                 <FontAwesomeIcon icon={faRobot} className="text-blue-500 text-xl mr-3" />
-                <h2 className="text-lg font-semibold text-gray-900">Top 3 AI Crop Recommendations</h2>
+                <h2 className="text-lg font-semibold text-gray-900">{t('pages.cropPrediction.top3', 'Top 3 AI Crop Recommendations')}</h2>
               </div>
               <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-500">Best matches for your parameters</span>
-                <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center text-sm">
-                  <FontAwesomeIcon icon={faDownload} className="mr-2" />
-                  Export Report
-                </button>
+                <span className="text-sm text-gray-500">{t('pages.cropPrediction.bestMatches', 'Best matches for your parameters')}</span>
               </div>
             </div>
 
@@ -642,43 +638,43 @@ Requirements:
                   <div className="text-right">
                     <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getSuitabilityColor(prediction.suitability)}`}>
                       <FontAwesomeIcon icon={faStar} className="mr-1" />
-                      {prediction.suitability}% Match
+                      {prediction.suitability}% {t('pages.cropPrediction.match', 'Match')}
                     </div>
-                    <div className="text-xs text-gray-500 mt-1">#{index + 1} Recommended</div>
+                    <div className="text-xs text-gray-500 mt-1">#{index + 1} {t('pages.cropPrediction.recommended', 'Recommended')}</div>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                   <div className="bg-gray-50 rounded-lg p-3">
-                    <div className="text-sm text-gray-600">Planting Window</div>
+                    <div className="text-sm text-gray-600">{t('pages.cropPrediction.plantingWindow', 'Planting Window')}</div>
                     <div className="font-semibold text-gray-900">{prediction.plantingWindow}</div>
                   </div>
                   <div className="bg-gray-50 rounded-lg p-3">
-                    <div className="text-sm text-gray-600">Harvest Window</div>
+                    <div className="text-sm text-gray-600">{t('pages.cropPrediction.harvestWindow', 'Harvest Window')}</div>
                     <div className="font-semibold text-gray-900">{prediction.harvestWindow}</div>
                   </div>
                   <div className="bg-gray-50 rounded-lg p-3">
-                    <div className="text-sm text-gray-600">Expected Yield</div>
+                    <div className="text-sm text-gray-600">{t('pages.cropPrediction.expectedYield', 'Expected Yield')}</div>
                     <div className="font-semibold text-gray-900">{prediction.expectedYield}</div>
                   </div>
                   <div className="bg-gray-50 rounded-lg p-3">
-                    <div className="text-sm text-gray-600">Market Price</div>
+                    <div className="text-sm text-gray-600">{t('pages.cropPrediction.marketPrice', 'Market Price')}</div>
                     <div className="font-semibold text-gray-900">{prediction.marketPrice}</div>
                   </div>
                 </div>
 
                 <div className="flex flex-wrap gap-2 mb-4">
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${getProfitabilityColor(prediction.profitability)}`}>
-                    Profitability: {prediction.profitability}
+                    {t('pages.cropPrediction.profitability', 'Profitability')}: {prediction.profitability}
                   </span>
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${getDifficultyColor(prediction.difficulty)}`}>
-                    Difficulty: {prediction.difficulty}
+                    {t('pages.cropPrediction.difficulty', 'Difficulty')}: {prediction.difficulty}
                   </span>
                   <span className="px-3 py-1 rounded-full text-sm font-medium text-blue-600 bg-blue-50">
-                    Water: {prediction.waterRequirement}
+                    {t('pages.cropPrediction.water', 'Water')}: {prediction.waterRequirement}
                   </span>
                   <span className="px-3 py-1 rounded-full text-sm font-medium text-gray-600 bg-gray-100">
-                    Confidence: {prediction.confidence}%
+                    {t('pages.cropPrediction.confidence', 'Confidence')}: {prediction.confidence}%
                   </span>
                 </div>
 
@@ -686,7 +682,7 @@ Requirements:
                   <div>
                     <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
                       <FontAwesomeIcon icon={faCheckCircle} className="text-green-500 mr-2" />
-                      Advantages
+                      {t('pages.cropPrediction.advantages', 'Advantages')}
                     </h4>
                     <ul className="space-y-1">
                       {prediction.advantages.map((advantage, advIndex) => (
@@ -700,7 +696,7 @@ Requirements:
                   <div>
                     <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
                       <FontAwesomeIcon icon={faExclamationTriangle} className="text-yellow-500 mr-2" />
-                      Considerations
+                      {t('pages.cropPrediction.considerations', 'Considerations')}
                     </h4>
                     <ul className="space-y-1">
                       {prediction.considerations.map((consideration, consIndex) => (
@@ -723,28 +719,26 @@ Requirements:
           <div className="flex items-start">
             <FontAwesomeIcon icon={faInfoCircle} className="text-blue-600 mt-1 mr-3" />
             <div>
-              <h3 className="font-semibold text-blue-900 mb-2">How AI Predictions Work</h3>
+              <h3 className="font-semibold text-blue-900 mb-2">{t('pages.cropPrediction.howToHeading', 'How AI Predictions Work')}</h3>
               <p className="text-blue-800 text-sm leading-relaxed mb-3">
-                Our AI-powered crop prediction system uses advanced language models to analyze your specific soil and environmental parameters. 
-                The system considers multiple factors including nitrogen, phosphorus, potassium levels, temperature, humidity, pH, and rainfall 
-                to provide personalized crop recommendations for Indian agriculture.
+                {t('pages.cropPrediction.howToDesc', 'Our AI-powered crop prediction system uses advanced language models to analyze your specific soil and environmental parameters...')}
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
-                  <h4 className="font-medium text-blue-900 mb-1">✓ Real-time Analysis</h4>
-                  <p className="text-blue-700">Live AI processing based on your exact parameters</p>
+                  <h4 className="font-medium text-blue-900 mb-1">✓ {t('pages.cropPrediction.realTimeAnalysis', 'Real-time Analysis')}</h4>
+                  <p className="text-blue-700">{t('pages.cropPrediction.realTimeDesc', 'Live AI processing based on your exact parameters')}</p>
                 </div>
                 <div>
-                  <h4 className="font-medium text-blue-900 mb-1">✓ Location-Specific</h4>
-                  <p className="text-blue-700">Recommendations tailored to Indian farming conditions</p>
+                  <h4 className="font-medium text-blue-900 mb-1">✓ {t('pages.cropPrediction.locationSpecific', 'Location-Specific')}</h4>
+                  <p className="text-blue-700">{t('pages.cropPrediction.locationSpecificDesc', 'Recommendations tailored to Indian farming conditions')}</p>
                 </div>
                 <div>
-                  <h4 className="font-medium text-blue-900 mb-1">✓ Top 3 Crops</h4>
-                  <p className="text-blue-700">Best matches ranked by suitability score</p>
+                  <h4 className="font-medium text-blue-900 mb-1">✓ {t('pages.cropPrediction.top3Desc', 'Top 3 Crops')}</h4>
+                  <p className="text-blue-700">{t('pages.cropPrediction.top3Details', 'Best matches ranked by suitability score')}</p>
                 </div>
                 <div>
-                  <h4 className="font-medium text-blue-900 mb-1">✓ Comprehensive Data</h4>
-                  <p className="text-blue-700">Yield, profitability, and cultivation details</p>
+                  <h4 className="font-medium text-blue-900 mb-1">✓ {t('pages.cropPrediction.comprehensiveData', 'Comprehensive Data')}</h4>
+                  <p className="text-blue-700">{t('pages.cropPrediction.dataDetails', 'Yield, profitability, and cultivation details')}</p>
                 </div>
               </div>
             </div>

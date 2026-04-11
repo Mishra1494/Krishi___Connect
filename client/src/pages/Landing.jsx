@@ -2,8 +2,11 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { FaLeaf, FaChartLine, FaCloudSunRain, FaRobot, FaArrowRight } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 
 const Landing = () => {
+  const { t } = useTranslation();
+
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
@@ -21,23 +24,23 @@ const Landing = () => {
   const features = [
     {
       icon: <FaLeaf className="w-8 h-8 text-brand-500" />,
-      title: "Crop Management",
-      description: "Optimize your yield with smart AI-driven recommendations tailored to your soil and climate."
+      title: t('pages.landing.features.cropManagement.title', "Crop Management"),
+      description: t('pages.landing.features.cropManagement.desc', "Optimize your yield with smart AI-driven recommendations tailored to your soil and climate.")
     },
     {
       icon: <FaCloudSunRain className="w-8 h-8 text-brand-500" />,
-      title: "Climate Analysis",
-      description: "Stay ahead of the weather with precise, hyper-local climate forecasting and alerts."
+      title: t('pages.landing.features.climateAnalysis.title', "Climate Analysis"),
+      description: t('pages.landing.features.climateAnalysis.desc', "Stay ahead of the weather with precise, hyper-local climate forecasting and alerts.")
     },
     {
       icon: <FaChartLine className="w-8 h-8 text-brand-500" />,
-      title: "Market Insights",
-      description: "Connect to realtime market trends and maximize your profit margins easily."
+      title: t('pages.landing.features.marketInsights.title', "Market Insights"),
+      description: t('pages.landing.features.marketInsights.desc', "Connect to realtime market trends and maximize your profit margins easily.")
     },
     {
       icon: <FaRobot className="w-8 h-8 text-brand-500" />,
-      title: "AI Agronomist",
-      description: "Get immediate answers to your farming questions with our built-in intelligent assistant."
+      title: t('pages.landing.features.aiAgronomist.title', "AI Agronomist"),
+      description: t('pages.landing.features.aiAgronomist.desc', "Get immediate answers to your farming questions with our built-in intelligent assistant.")
     }
   ];
 
@@ -56,10 +59,10 @@ const Landing = () => {
           </div>
           <div className="flex gap-4 items-center">
             <Link to="/login" className="text-slate-600 hover:text-brand-600 font-medium transition-colors">
-              Log in
+              {t('navigation.login', 'Log in')}
             </Link>
             <Link to="/signup" className="glass-button px-5 py-2.5">
-              Get Started
+              {t('pages.landing.getStarted', 'Get Started')}
             </Link>
           </div>
         </div>
@@ -75,14 +78,14 @@ const Landing = () => {
              <div className="absolute -bottom-40 left-40 w-96 h-96 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
           </div>
           
-          <div className="max-w-5xl mx-auto text-center" >
+          <div className="max-w-5xl mx-auto text-center">
             <motion.h1 
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: 'easeOut' }}
               className="font-heading text-5xl sm:text-7xl font-extrabold tracking-tight text-slate-900 mb-8"
             >
-              Farming <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-teal-500">Reimagined</span> for the Modern Era.
+              {t('pages.landing.hero.title1', 'Farming')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-teal-500">{t('pages.landing.hero.title2', 'Reimagined')}</span> {t('pages.landing.hero.title3', 'for the Modern Era.')}
             </motion.h1>
             <motion.p 
               initial={{ opacity: 0 }}
@@ -90,7 +93,7 @@ const Landing = () => {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="mt-6 text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed"
             >
-              Krishi Connect brings AI-driven insights, advanced climate tracking, and smart marketplace access directly to your fingertips. Empowering farmers to grow more, with less.
+              {t('pages.landing.hero.subtitle', 'Krishi Connect brings AI-driven insights, advanced climate tracking, and smart marketplace access directly to your fingertips. Empowering farmers to grow more, with less.')}
             </motion.p>
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
@@ -99,11 +102,11 @@ const Landing = () => {
               className="mt-10 flex flex-col sm:flex-row gap-4 justify-center"
             >
               <Link to="/signup" className="glass-button px-8 py-4 text-lg flex items-center justify-center gap-2 group">
-                Start Growing Free
+                {t('pages.landing.startGrowingFree', 'Start Growing Free')}
                 <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link to="/login" className="px-8 py-4 text-lg font-medium text-slate-700 bg-white/50 backdrop-blur-md border border-slate-200 hover:bg-white hover:border-slate-300 rounded-lg shadow-sm transition-all duration-300">
-                Sign back in
+                {t('pages.landing.signBackIn', 'Sign back in')}
               </Link>
             </motion.div>
           </div>
@@ -113,8 +116,8 @@ const Landing = () => {
         <div className="py-24 bg-white/40 backdrop-blur-sm border-t border-slate-200/50">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="font-heading text-3xl md:text-4xl font-bold text-slate-900">Intelligence at Every Level</h2>
-              <p className="mt-4 text-slate-600 text-lg">Everything you need to manage your farm efficiently in one unified platform.</p>
+              <h2 className="font-heading text-3xl md:text-4xl font-bold text-slate-900">{t('pages.landing.intelligenceTitle', 'Intelligence at Every Level')}</h2>
+              <p className="mt-4 text-slate-600 text-lg">{t('pages.landing.intelligenceDesc', 'Everything you need to manage your farm efficiently in one unified platform.')}</p>
             </div>
             
             <motion.div 
@@ -144,10 +147,10 @@ const Landing = () => {
                 {/* Background Pattern */}
                 <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }}></div>
                 <div className="relative z-10">
-                  <h2 className="font-heading text-3xl md:text-5xl font-bold mb-6">Ready to Transform Your Yield?</h2>
-                  <p className="text-brand-100 text-lg mb-10 max-w-2xl mx-auto">Join thousands of modern farmers leveraging data and AI to secure their future.</p>
+                  <h2 className="font-heading text-3xl md:text-5xl font-bold mb-6">{t('pages.landing.cta.title', 'Ready to Transform Your Yield?')}</h2>
+                  <p className="text-brand-100 text-lg mb-10 max-w-2xl mx-auto">{t('pages.landing.cta.desc', 'Join thousands of modern farmers leveraging data and AI to secure their future.')}</p>
                   <Link to="/signup" className="bg-white text-brand-900 hover:bg-brand-50 px-8 py-4 rounded-lg font-bold text-lg inline-block shadow-lg transition-colors">
-                    Create Your Account
+                    {t('pages.landing.cta.button', 'Create Your Account')}
                   </Link>
                 </div>
              </div>
@@ -161,7 +164,7 @@ const Landing = () => {
             <FaLeaf className="w-5 h-5 text-brand-500" />
             <span className="font-heading font-bold text-xl text-slate-800">KrishiConnect</span>
         </div>
-        <p className="text-slate-500">© 2026 Krishi Connect. All rights reserved.</p>
+        <p className="text-slate-500">{t('footer.copyright', '© 2026 Krishi Connect. All rights reserved.')}</p>
       </footer>
     </div>
   );

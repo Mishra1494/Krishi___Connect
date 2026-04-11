@@ -301,7 +301,7 @@ const IrrigationManagement = () => {
                 ></div>
               </div>
               <div className="text-xs text-gray-500">
-                Capacity: 10,000L • Available: {((waterTankLevel/100) * 10000).toFixed(0)}L
+                {t('pages.irrigationManagement.capacity', 'Capacity')}: 10,000L • {t('pages.irrigationManagement.available', 'Available')}: {((waterTankLevel/100) * 10000).toFixed(0)}L
               </div>
             </div>
           </div>
@@ -350,7 +350,7 @@ const IrrigationManagement = () => {
             </div>
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">South Pump</span>
+                <span className="text-sm text-gray-600">{t('pages.irrigationManagement.southPump', 'South Pump')}</span>
                 <div className="flex items-center">
                   <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                   <span className="text-sm font-medium">{pumps.south.duration.toFixed(0)} min</span>
@@ -361,7 +361,7 @@ const IrrigationManagement = () => {
                 <span className="text-sm text-gray-500">{t('pages.irrigationManagement.idle')}</span>
               </div>
               <div className="text-xs text-gray-500 mt-3">
-                Total runtime today: 2h 15min
+                {t('pages.irrigationManagement.totalRuntime', 'Total runtime today')}: 2h 15min
               </div>
             </div>
           </div>
