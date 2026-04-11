@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Copy the requirements file into the container
 COPY requirement.txt .
-
+    
 # Install Python dependencies
 # Using --no-cache-dir keeps the image smaller
 RUN pip install --no-cache-dir -r requirement.txt
@@ -31,8 +31,8 @@ USER myuser
 COPY --chown=myuser:myuser . .
 
 # Expose port (Matches Gunicorn bound port)
-EXPOSE 5000
+EXPOSE 5002
 
 # Run Gunicorn with threading since the Flask app utilizes Flask-Sock for WebSockets
 # 1 worker with 50 threads handles WebSockets and HTTP routes perfectly for grob-whisper setups
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "--threads", "50", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5002", "--workers", "1", "--threads", "50", "app:app"]

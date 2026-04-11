@@ -16,8 +16,11 @@ export default defineConfig(({ mode }) => {
       },
     },
     define: {
-      // Make env variables available globally
-      'process.env': env
+      // Define a minimal process.env to prevent ReferenceErrors in third-party libraries
+      'process.env': {
+        NODE_ENV: JSON.stringify(mode),
+        VITE_BACKEND_URL: JSON.stringify(env.VITE_BACKEND_URL || '')
+      }
     }
   }
 })

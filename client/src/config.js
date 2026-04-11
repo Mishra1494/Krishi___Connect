@@ -3,7 +3,7 @@
 const isDevelopment = import.meta.env ? import.meta.env.DEV : (process.env.NODE_ENV === 'development');
 
 // Get Flask backend URL - Always use local Flask server   : http://65.0.26.201:5002
-const FLASK_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:5002';
+const FLASK_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://13.201.124.198';
 
 // Debug logging
 console.log('Environment check:', {
