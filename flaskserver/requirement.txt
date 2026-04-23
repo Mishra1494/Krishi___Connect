@@ -1,20 +1,23 @@
-flask
-flask-cors
-flask-sock
-tensorflow
-numpy
-pandas
+# Core Flask
+flask>=3.0.0
+flask-cors>=4.0.0
+flask-sock>=0.7.0
+
+# Data & ML
+numpy>=1.26.0
+pandas>=2.2.0
 scikit-learn==1.7.0
-joblib
-h5py
-psutil
-matplotlib
-pymongo
-dnspython
-gunicorn
-python-dotenv
-requests
-# Voice Assistant dependencies
+joblib>=1.3.0
+
+# Database — PostgreSQL / Neon
+psycopg2-binary>=2.9.9
+
+# Server & Utils
+gunicorn>=22.0.0
+python-dotenv>=1.0.0
+requests>=2.31.0
+
+# Voice Assistant
 groq>=0.9.0
 langchain>=0.2.0
 langchain-groq>=0.1.6

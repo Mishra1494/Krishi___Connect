@@ -1,38 +1,46 @@
-# Use an official Python runtime as a parent image
-# Python 3.11 is slim enough and modern for your ML requirements
+# ──────────────────────────────────────────────
+# Krishi Connect – Flask Server
+# Python 3.11-slim keeps the image lean while
+# supporting all ML / voice-assistant deps.
+# ──────────────────────────────────────────────
 FROM python:3.11-slim
 
-# Set working directory in the container
+# Prevent .pyc files and enable unbuffered logs
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    FLASK_ENV=production \
+    PORT=5002
+
 WORKDIR /app
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-ENV FLASK_ENV=production
-
-# Install system dependencies required for ML frameworks (scikit-learn, etc.)
+# Install OS-level build deps needed by scikit-learn / numpy
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libgomp1 \
+        build-essential \
+        libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy the requirements file into the container
+# ── Install Python deps BEFORE copying code so Docker
+#    can cache this layer when only code changes ──────
 COPY requirement.txt .
-    
-# Install Python dependencies
-# Using --no-cache-dir keeps the image smaller
-RUN pip install --no-cache-dir -r requirement.txt
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir -r requirement.txt
 
-# Create a non-root user for security (optional but recommended for production)
-RUN useradd -m myuser
-USER myuser
+# ── Copy application source ─────────────────────────
+COPY . .
 
-# Copy the rest of the application code
-COPY --chown=myuser:myuser . .
+# Create a non-root user for security
+RUN useradd -m appuser && chown -R appuser:appuser /app
+USER appuser
 
-# Expose port (Matches Gunicorn bound port)
+# Expose the Flask/Gunicorn port
 EXPOSE 5002
 
-# Run Gunicorn with threading since the Flask app utilizes Flask-Sock for WebSockets
-# 1 worker with 50 threads handles WebSockets and HTTP routes perfectly for grob-whisper setups
-CMD ["gunicorn", "--bind", "0.0.0.0:5002", "--workers", "1", "--threads", "50", "app:app"]
+# Gunicorn: 1 worker + 50 threads works well with
+# flask-sock WebSockets (gevent is NOT needed here)
+CMD ["gunicorn", \
+     "--bind", "0.0.0.0:5002", \
+     "--workers", "1", \
+     "--threads", "50", \
+     "--timeout", "120", \
+     "--access-logfile", "-", \
+     "app:app"]

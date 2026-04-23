@@ -23,12 +23,12 @@ try:
 except Exception as e:
     print(f"⚠️ Voice assistant not available: {e}")
 
-# MongoDB imports
+# PostgreSQL / Neon DB imports
 from config.database import init_database
 from services.database_service import (
-    FieldMapService, 
-    CropLifecycleService, 
-    YieldPredictionService, 
+    FieldMapService,
+    CropLifecycleService,
+    YieldPredictionService,
     UserSessionService,
     get_user_session_id
 )
@@ -64,8 +64,8 @@ GROQ_API_KEY = os.getenv('GROQ_API_KEY')
 GROQ_API_URL = os.getenv('GROQ_API_URL', 'https://api.groq.ai/v1')
 
 # Initialize database
-print("Initializing MongoDB connection...")
-mongodb_connected = init_database()
+print("Initializing PostgreSQL (Neon) connection...")
+postgresql_connected = init_database()
 
 
 # Initialize services (only if MongoDB is connected)
@@ -74,16 +74,16 @@ crop_service = None
 yield_service = None 
 session_service = None
 
-if mongodb_connected:
+if postgresql_connected:
     try:
         field_service = FieldMapService()
         crop_service = CropLifecycleService()
         yield_service = YieldPredictionService()
         session_service = UserSessionService()
-        print("✅ MongoDB services initialized")
+        print("✅ PostgreSQL services initialized")
     except Exception as e:
-        print(f"❌ Failed to initialize MongoDB services: {e}")
-        mongodb_connected = False
+        print(f"❌ Failed to initialize PostgreSQL services: {e}")
+        postgresql_connected = False
 
 # ML Model Functions
 def load_models(models_dir=None):
@@ -304,10 +304,10 @@ def home():
 
 @app.route('/api/status')
 def api_status():
-    """Get API status including MongoDB connection"""
+    """Get API status including PostgreSQL connection"""
     return jsonify({
         "status": "running",
-        "mongodb_connected": mongodb_connected,
+        "postgresql_connected": postgresql_connected,
         "ml_models_loaded": DURATION_MODELS is not None,
         "services_available": {
             "field_mapping": field_service is not None,
@@ -409,11 +409,11 @@ def get_water_balance_summary():
 # ============ NEW MONGODB ENDPOINTS ============
 
 def check_mongodb_available():
-    """Check if MongoDB services are available"""
-    if not mongodb_connected or not field_service:
+    """Check if PostgreSQL services are available"""
+    if not postgresql_connected or not field_service:
         return jsonify({
-            'error': 'MongoDB is not available. Please check connection and try again.',
-            'mongodb_status': 'disconnected'
+            'error': 'Database is not available. Please set DATABASE_URL in .env and restart.',
+            'db_status': 'disconnected'
         }), 503
     return None
 
