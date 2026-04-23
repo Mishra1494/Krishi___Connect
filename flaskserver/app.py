@@ -92,16 +92,8 @@ def load_models(models_dir=None):
         models_dir = os.environ.get('MODELS_DIR')
         
     if not models_dir:
-        # Check standard locations (Docker vs Local)
-        local_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'models', 'trained_models')
-        parent_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'models', 'trained_models')
-        
-        if os.path.exists(local_path):
-            models_dir = local_path
-        elif os.path.exists(parent_path):
-            models_dir = parent_path
-        else:
-            models_dir = '../models/trained_models' # Fallback for error message output
+        # Models are inside flaskserver/models/trained_models
+        models_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'models', 'trained_models')
 
     try:
         if not os.path.exists(models_dir):
