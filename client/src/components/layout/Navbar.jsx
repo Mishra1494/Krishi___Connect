@@ -16,7 +16,9 @@ import {
   faUser,
   faSignOutAlt,
   faBuilding,
-  faShieldAlt
+  faShieldAlt,
+  faClipboardList,
+  faCloudSun
 } from '@fortawesome/free-solid-svg-icons';
 import './Navbar.css';
 import { useAppContext } from '../../context/AppContext';
@@ -408,13 +410,21 @@ const Navbar = () => {
                   <FontAwesomeIcon icon={faMap} className="mr-3 text-green-300 w-4 h-4" />
                   {t('navigation.reports', 'Reports')}
                 </Link>
+                <Link
+                  to="/weather-forecast"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-left px-5 py-3 text-white hover:bg-green-800/50 active:bg-green-800/70 block transition-colors text-sm font-medium flex items-center mobile-nav-item smooth-transition"
+                >
+                  <FontAwesomeIcon icon={faCloudSun} className="mr-3 text-green-300 w-4 h-4" />
+                  Weather Forecast
+                </Link>
                 <Link 
-                  to="/ai-assistant"
+                  to="/krishi-ai"
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full text-left px-5 py-3 text-white hover:bg-green-800/50 active:bg-green-800/70 block transition-colors text-sm font-medium flex items-center mobile-nav-item smooth-transition"
                 >
                   <FontAwesomeIcon icon={faMicrophone} className="mr-3 text-green-300 w-4 h-4" />
-                  {t('pages.aiAssistant.title', 'AI Assistant')}
+                  Krishi AI
                 </Link>
                 <Link
                   to="/crop-insurance-suggestions"
@@ -423,6 +433,14 @@ const Navbar = () => {
                 >
                   <FontAwesomeIcon icon={faShieldAlt} className="mr-3 text-green-300 w-4 h-4" />
                   {t('pages.financialAid.cropInsurance', 'Crop Insurance')}
+                </Link>
+                <Link
+                  to="/my-applications"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-left px-5 py-3 text-white hover:bg-green-800/50 active:bg-green-800/70 block transition-colors text-sm font-medium flex items-center mobile-nav-item smooth-transition"
+                >
+                  <FontAwesomeIcon icon={faClipboardList} className="mr-3 text-green-300 w-4 h-4" />
+                  My Applications
                 </Link>
                 
                 {/* User Profile Section - Mobile */}

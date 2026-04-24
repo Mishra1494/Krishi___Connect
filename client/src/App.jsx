@@ -8,7 +8,7 @@ import SignUp from './pages/SignUp';
 import Landing from './pages/Landing';
 import ClimateAnalysis from './pages/ClimateAnalysis';
 import FarmConsole from './pages/FarmConsole';
-import AIAssistant from './pages/AIAssistant';
+import KrishiAI from './pages/KrishiAI';
 import CropManagement from './pages/CropManagement';
 import CreateField from './pages/CreateField';
 import Fields from './pages/Fields';
@@ -24,7 +24,9 @@ import YieldPrediction from './pages/YieldPrediction';
 import IrrigationManagement from './pages/IrrigationManagement';
 import Profile from './pages/Profile';
 import Reports from './pages/Reports';
-import VoiceAssistant from './pages/VoiceAssistant';
+// VoiceAssistant merged into KrishiAI
+import MyApplications from './pages/MyApplications';
+import WeatherForecast from './pages/WeatherForecast';
 import { AppProvider } from './context/AppContext';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -95,8 +97,11 @@ function App() {
               path="/irrigation-management"
               element={wrapProtected(<IrrigationManagement />, 'farmer')}
             />
-            <Route path="/ai-assistant" element={wrapProtected(<AIAssistant />)} />
-            <Route path="/voice-assistant" element={wrapProtected(<VoiceAssistant />, 'farmer')} />
+            <Route path="/krishi-ai" element={wrapProtected(<KrishiAI />, 'farmer')} />
+            <Route path="/ai-assistant" element={<Navigate to="/krishi-ai" replace />} />
+            <Route path="/voice-assistant" element={<Navigate to="/krishi-ai" replace />} />
+            <Route path="/my-applications" element={wrapProtected(<MyApplications />, 'farmer')} />
+            <Route path="/weather-forecast" element={wrapProtected(<WeatherForecast />, 'farmer')} />
 
             <Route path="/create-field" element={wrapProtected(<CreateField />, 'farmer')} />
             <Route path="/fields" element={wrapProtected(<Fields />, 'farmer')} />

@@ -3,10 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPaperPlane, faSpinner, faRobot, faLeaf,
-  faMicrophone, faImage
+  faMicrophone, faImage, faShieldAlt
 } from '@fortawesome/free-solid-svg-icons';
 import { useAppContext } from '../context/AppContext';
 import { fetchFieldData } from '../services/dataService';
+import InsuranceAgent from '../components/insurance/InsuranceAgent';
 
 import './AIAssistant.css';
 
@@ -18,6 +19,7 @@ const AIAssistant = () => {
   const { selectedField, fields } = useAppContext();
   const [fieldData, setFieldData] = useState(null);
   const [message, setMessage] = useState('');
+  const [showInsuranceAgent, setShowInsuranceAgent] = useState(false);
   
   const SUGGESTIONS = [
     t('pages.aiAssistant.suggestions.weather', "Current weather and forecast"),
@@ -154,6 +156,14 @@ const AIAssistant = () => {
     e?.preventDefault();
     if (!message.trim()) return;
 
+    // Check if user is asking about insurance
+    const insuranceKeywords = ['insurance', 'bima', 'pmfby', 'apply insurance', 'crop insurance', 'fasal bima'];
+    if (insuranceKeywords.some(kw => message.toLowerCase().includes(kw))) {
+      setShowInsuranceAgent(true);
+      setMessage('');
+      return;
+    }
+
     const userMessage = {
       id: Date.now(),
       sender: 'user',
@@ -200,6 +210,18 @@ const AIAssistant = () => {
     setMessage(sugg);
   };
 
+  // If insurance agent is active, show it full-screen
+  if (showInsuranceAgent) {
+    return (
+      <div className="flex flex-col h-[100vh] bg-white">
+        <InsuranceAgent
+          onClose={() => setShowInsuranceAgent(false)}
+          onApplicationSubmitted={() => {}}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-[100vh] bg-gradient-to-br from-white to-blue-50 relative">
       {/* --- Assistant Header --- */}
@@ -235,6 +257,14 @@ const AIAssistant = () => {
                 <FontAwesomeIcon icon={faLeaf} className="mr-1" /> {sugg}
               </button>
             ))}
+            {/* Insurance Agent Button */}
+            <button
+              className="bg-emerald-600 text-white px-3 py-1 rounded-full text-xs sm:text-sm hover:bg-emerald-700 transition shadow-md font-semibold animate-pulse hover:animate-none"
+              onClick={() => setShowInsuranceAgent(true)}
+              type="button"
+            >
+              <FontAwesomeIcon icon={faShieldAlt} className="mr-1" /> Apply for Insurance
+            </button>
           </div>
 
           {/* Message Bubbles */}

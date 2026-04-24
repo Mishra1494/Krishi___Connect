@@ -1,861 +1,1242 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import * as THREE from 'three';
+import { useEffect, useRef } from "react";
 
-/* ─────────────────────────────────────────────
-   Inline styles & keyframes (injected once)
-───────────────────────────────────────────── */
-const GLOBAL_CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+const styles = `
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --cream: #faf7f0;
-    --ink: #1a1a0f;
-    --moss: #2d4a2d;
-    --sage: #6b8f5e;
-    --gold: #c4a35a;
-    --gold-light: #e8d5a3;
-    --rust: #8b4513;
-    --mist: rgba(250,247,240,0.06);
+    --white: #ffffff;
+    --off-white: #f8faf6;
+    --surface: #f0f7ec;
+    --surface-2: #e4f1de;
+    --green-900: #0f3320;
+    --green-800: #174d30;
+    --green-700: #1e6b3f;
+    --green-600: #2a8a52;
+    --green-500: #3aad67;
+    --green-400: #5ccc84;
+    --green-300: #8ddfa9;
+    --green-200: #b8edcc;
+    --green-100: #d9f5e5;
+    --green-50: #edfaf3;
+    --accent: #2a8a52;
+    --accent-hover: #1e6b3f;
+    --text-primary: #0f2018;
+    --text-secondary: #2d5040;
+    --text-muted: #5a7a68;
+    --border: rgba(42, 138, 82, 0.15);
+    --border-strong: rgba(42, 138, 82, 0.3);
+    --shadow-sm: 0 2px 8px rgba(15, 51, 32, 0.06);
+    --shadow-md: 0 8px 32px rgba(15, 51, 32, 0.1);
+    --shadow-lg: 0 24px 64px rgba(15, 51, 32, 0.14);
   }
 
-  html, body { margin: 0; padding: 0; background: #0a0f07; }
+  html { scroll-behavior: smooth; }
 
-  @keyframes floatUp {
-    from { opacity: 0; transform: translateY(40px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; } to { opacity: 1; }
-  }
-  @keyframes drawLine {
-    from { transform: scaleX(0); } to { transform: scaleX(1); }
-  }
-  @keyframes shimmer {
-    0%,100% { opacity: 0.4; } 50% { opacity: 1; }
-  }
-  @keyframes rotateSlow {
-    from { transform: rotate(0deg); } to { transform: rotate(360deg); }
-  }
-  @keyframes pulseGlow {
-    0%,100% { box-shadow: 0 0 0 0 rgba(196,163,90,0); }
-    50%      { box-shadow: 0 0 40px 10px rgba(196,163,90,0.25); }
-  }
-  @keyframes marquee {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
-  }
-  @keyframes leafSway {
-    0%,100% { transform: rotate(-3deg) scale(1); }
-    50%     { transform: rotate(3deg) scale(1.02); }
-  }
-
-  .kr-canvas {
-    position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  }
-
-  .kr-root {
-    position: relative; z-index: 1;
-    font-family: 'DM Sans', sans-serif;
-    color: var(--cream);
+  .kc-body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--off-white);
+    color: var(--text-primary);
     overflow-x: hidden;
+    line-height: 1.6;
   }
 
-  .kr-nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  #three-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .kc-container { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
+  .kc-section { position: relative; z-index: 2; }
+
+  /* NAV */
+  .kc-nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 24px 60px;
     display: flex; align-items: center; justify-content: space-between;
-    padding: 28px 60px;
-    transition: all 0.4s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .kr-nav.scrolled {
-    padding: 18px 60px;
-    background: rgba(10,15,7,0.85);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(196,163,90,0.15);
+  .kc-nav.scrolled {
+    padding: 16px 60px;
+    background: rgba(248, 250, 246, 0.92);
+    backdrop-filter: blur(24px) saturate(1.8);
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
   }
-
-  .kr-logo {
+  .kc-nav-logo {
     display: flex; align-items: center; gap: 10px;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 26px; font-weight: 600; letter-spacing: 0.02em;
-    color: var(--cream); text-decoration: none;
+    text-decoration: none;
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 700;
+    color: var(--green-900);
+    letter-spacing: -0.02em;
   }
-  .kr-logo-leaf {
-    width: 32px; height: 32px;
-    background: linear-gradient(135deg, var(--sage), var(--gold));
-    border-radius: 50% 0 50% 0;
+  .kc-nav-logo-mark {
+    width: 36px; height: 36px;
+    background: var(--green-700);
+    border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 16px; animation: leafSway 4s ease-in-out infinite;
+    transition: transform 0.3s ease;
   }
-  .kr-logo em { color: var(--gold); font-style: italic; }
+  .kc-nav-logo:hover .kc-nav-logo-mark { transform: rotate(8deg) scale(1.05); }
+  .kc-nav-logo .em { color: var(--green-600); font-style: italic; }
 
-  .kr-nav-links { display: flex; align-items: center; gap: 8px; }
-  .kr-nav-link {
-    padding: 10px 20px;
-    color: rgba(250,247,240,0.65);
-    text-decoration: none; font-size: 14px; font-weight: 400;
-    letter-spacing: 0.04em; text-transform: uppercase;
-    transition: color 0.3s;
+  .kc-nav-links { display: flex; align-items: center; gap: 4px; }
+  .kc-nav-link {
+    padding: 9px 18px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px; font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.25s ease;
+    letter-spacing: 0.01em;
   }
-  .kr-nav-link:hover { color: var(--cream); }
-  .kr-cta-btn {
-    padding: 11px 28px;
-    background: transparent;
-    border: 1px solid var(--gold);
-    color: var(--gold);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px; font-weight: 400;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    text-decoration: none; cursor: pointer;
-    transition: all 0.35s ease;
-    position: relative; overflow: hidden;
+  .kc-nav-link:hover { color: var(--green-700); background: var(--green-50); }
+  .kc-nav-btn {
+    padding: 10px 24px;
+    background: var(--green-700);
+    color: var(--white);
+    text-decoration: none;
+    font-size: 14px; font-weight: 600;
+    border-radius: 10px;
+    transition: all 0.25s ease;
+    letter-spacing: 0.01em;
+    box-shadow: 0 2px 12px rgba(30, 107, 63, 0.3);
   }
-  .kr-cta-btn::before {
-    content: ''; position: absolute; inset: 0;
-    background: var(--gold); transform: scaleX(0);
-    transform-origin: left; transition: transform 0.35s ease;
-    z-index: -1;
+  .kc-nav-btn:hover {
+    background: var(--green-800);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(30, 107, 63, 0.35);
   }
-  .kr-cta-btn:hover { color: var(--ink); }
-  .kr-cta-btn:hover::before { transform: scaleX(1); }
 
   /* HERO */
-  .kr-hero {
-    min-height: 100vh; display: flex; flex-direction: column;
+  .kc-hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    text-align: center; padding: 120px 40px 80px;
-    position: relative;
+    text-align: center;
+    padding: 140px 48px 100px;
+    position: relative; z-index: 2;
   }
-  .kr-hero-eyebrow {
-    font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase;
-    color: var(--gold); margin-bottom: 32px;
-    display: flex; align-items: center; gap: 16px;
-    animation: floatUp 1s ease both 0.2s;
+
+  .kc-hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 20px;
+    background: var(--green-50);
+    border: 1px solid var(--green-200);
+    border-radius: 100px;
+    font-size: 12px; font-weight: 600;
+    color: var(--green-700);
+    letter-spacing: 0.06em; text-transform: uppercase;
+    margin-bottom: 40px;
+    opacity: 0; transform: translateY(16px);
+    animation: kcRevealUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.1s forwards;
   }
-  .kr-hero-eyebrow-line {
-    width: 40px; height: 1px; background: var(--gold);
-    transform-origin: left; animation: drawLine 0.8s ease both 0.8s;
+  .kc-hero-badge-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--green-500);
+    animation: kcPulseDot 2s ease-in-out infinite;
   }
-  .kr-hero-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(60px, 10vw, 130px);
-    font-weight: 300; line-height: 0.95;
-    letter-spacing: -0.02em; margin: 0 0 8px;
-    animation: floatUp 1.2s ease both 0.4s;
+
+  .kc-hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(52px, 8vw, 112px);
+    font-weight: 700;
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    color: var(--green-900);
+    max-width: 900px;
+    margin-bottom: 12px;
+    opacity: 0; transform: translateY(24px);
+    animation: kcRevealUp 1s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
   }
-  .kr-hero-title em {
-    font-style: italic; color: var(--gold);
+  .kc-hero-title em {
+    font-style: italic;
+    color: var(--green-600);
   }
-  .kr-hero-title-accent {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(60px, 10vw, 130px);
-    font-weight: 300; line-height: 0.95;
+  .kc-hero-title-line2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(52px, 8vw, 112px);
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1.0;
+    letter-spacing: -0.03em;
     color: transparent;
-    -webkit-text-stroke: 1px rgba(250,247,240,0.3);
-    animation: floatUp 1.2s ease both 0.5s;
+    -webkit-text-stroke: 1.5px var(--green-400);
+    margin-bottom: 40px;
     display: block;
+    opacity: 0; transform: translateY(24px);
+    animation: kcRevealUp 1s cubic-bezier(0.4, 0, 0.2, 1) 0.35s forwards;
   }
-  .kr-hero-sub {
-    max-width: 520px; margin: 40px auto 0;
-    font-size: 15px; line-height: 1.8; font-weight: 300;
-    color: rgba(250,247,240,0.6);
-    animation: floatUp 1s ease both 0.7s;
+
+  .kc-hero-desc {
+    max-width: 580px;
+    font-size: 17px; font-weight: 400; line-height: 1.75;
+    color: var(--text-muted);
+    margin-bottom: 52px;
+    opacity: 0; transform: translateY(20px);
+    animation: kcRevealUp 0.9s cubic-bezier(0.4, 0, 0.2, 1) 0.5s forwards;
   }
-  .kr-hero-btns {
-    display: flex; gap: 16px; margin-top: 48px; justify-content: center;
-    animation: floatUp 1s ease both 0.9s;
+
+  .kc-hero-btns {
+    display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
+    opacity: 0; transform: translateY(20px);
+    animation: kcRevealUp 0.9s cubic-bezier(0.4, 0, 0.2, 1) 0.65s forwards;
+    margin-bottom: 80px;
   }
-  .kr-btn-primary {
-    padding: 16px 40px;
-    background: var(--gold);
-    color: var(--ink);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px; font-weight: 500;
-    letter-spacing: 0.08em; text-transform: uppercase;
+  .kc-btn-primary {
+    padding: 17px 44px;
+    background: var(--green-700);
+    color: var(--white);
     text-decoration: none;
+    font-size: 15px; font-weight: 600;
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 20px rgba(30, 107, 63, 0.35);
+    letter-spacing: 0.01em;
+  }
+  .kc-btn-primary:hover {
+    background: var(--green-800);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 32px rgba(30, 107, 63, 0.42);
+  }
+  .kc-btn-outline {
+    padding: 17px 44px;
+    background: var(--white);
+    color: var(--green-700);
+    border: 1.5px solid var(--border-strong);
+    text-decoration: none;
+    font-size: 15px; font-weight: 600;
+    border-radius: 12px;
     transition: all 0.3s ease;
-    animation: pulseGlow 3s ease-in-out infinite 2s;
+    letter-spacing: 0.01em;
   }
-  .kr-btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
-  .kr-btn-ghost {
-    padding: 16px 40px;
-    background: transparent; border: 1px solid rgba(250,247,240,0.25);
-    color: rgba(250,247,240,0.7);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px; font-weight: 400;
-    letter-spacing: 0.08em; text-transform: uppercase;
-    text-decoration: none; transition: all 0.3s ease;
-  }
-  .kr-btn-ghost:hover {
-    border-color: rgba(250,247,240,0.7);
-    color: var(--cream);
+  .kc-btn-outline:hover {
+    background: var(--green-50);
+    border-color: var(--green-400);
+    transform: translateY(-2px);
   }
 
-  /* SCROLL INDICATOR */
-  .kr-scroll-hint {
-    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
-    display: flex; flex-direction: column; align-items: center; gap: 8px;
-    animation: fadeIn 1s ease both 1.5s;
+  .kc-hero-trust {
+    display: flex; align-items: center; gap: 32px;
+    opacity: 0;
+    animation: kcFadeIn 1s ease 1.2s forwards;
   }
-  .kr-scroll-line {
-    width: 1px; height: 60px;
-    background: linear-gradient(to bottom, var(--gold), transparent);
-    animation: shimmer 2s ease-in-out infinite;
+  .kc-trust-item {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; font-weight: 500; color: var(--text-muted);
   }
-  .kr-scroll-text { font-size: 10px; letter-spacing: 0.2em; color: rgba(250,247,240,0.3); }
+  .kc-trust-icon {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: var(--green-100);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .kc-trust-divider { width: 1px; height: 20px; background: var(--border-strong); }
 
-  /* TICKER */
-  .kr-ticker {
-    border-top: 1px solid rgba(196,163,90,0.2);
-    border-bottom: 1px solid rgba(196,163,90,0.2);
-    padding: 16px 0; overflow: hidden;
-    background: rgba(196,163,90,0.04);
+  /* MARQUEE */
+  .kc-marquee-section {
+    position: relative; z-index: 2;
+    padding: 20px 0;
+    background: var(--green-700);
+    overflow: hidden;
   }
-  .kr-ticker-inner {
-    display: flex; gap: 0;
-    animation: marquee 30s linear infinite;
+  .kc-marquee-inner {
+    display: flex;
+    animation: kcMarquee 28s linear infinite;
     width: max-content;
   }
-  .kr-ticker-item {
-    padding: 0 48px; font-size: 11px;
-    letter-spacing: 0.25em; text-transform: uppercase;
-    color: rgba(250,247,240,0.35); white-space: nowrap;
+  .kc-marquee-item {
+    padding: 0 40px;
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.65);
+    white-space: nowrap;
     display: flex; align-items: center; gap: 16px;
   }
-  .kr-ticker-dot {
+  .kc-marquee-dot {
     width: 4px; height: 4px; border-radius: 50%;
-    background: var(--gold); opacity: 0.6;
+    background: var(--green-300);
   }
 
-  /* STATS ROW */
-  .kr-stats {
-    display: grid; grid-template-columns: repeat(3,1fr);
-    border-top: 1px solid rgba(250,247,240,0.08);
-    border-bottom: 1px solid rgba(250,247,240,0.08);
-    margin: 0 60px;
+  /* STATS */
+  .kc-stats-section {
+    position: relative; z-index: 2;
+    padding: 80px 0;
+    background: var(--white);
   }
-  .kr-stat {
-    padding: 60px 40px; text-align: center;
-    border-right: 1px solid rgba(250,247,240,0.08);
+  .kc-stats-grid {
+    max-width: 1100px; margin: 0 auto; padding: 0 48px;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+  }
+  .kc-stat-card {
+    padding: 48px 36px;
+    border-right: 1px solid var(--border);
+    text-align: center;
     opacity: 0; transform: translateY(20px);
     transition: all 0.6s ease;
+    position: relative;
+    background: var(--white);
   }
-  .kr-stat:last-child { border-right: none; }
-  .kr-stat.visible { opacity: 1; transform: translateY(0); }
-  .kr-stat-num {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 72px; font-weight: 300; line-height: 1;
-    color: var(--gold); letter-spacing: -0.02em;
+  .kc-stat-card:last-child { border-right: none; }
+  .kc-stat-card.visible { opacity: 1; transform: translateY(0); }
+  .kc-stat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--green-400), var(--green-600));
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.5s ease 0.3s;
   }
-  .kr-stat-unit { font-size: 28px; }
-  .kr-stat-label {
-    margin-top: 12px; font-size: 12px;
-    letter-spacing: 0.15em; text-transform: uppercase;
-    color: rgba(250,247,240,0.4);
+  .kc-stat-card.visible::before { transform: scaleX(1); }
+  .kc-stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 56px; font-weight: 700;
+    color: var(--green-800);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+  .kc-stat-unit { font-size: 32px; color: var(--green-500); }
+  .kc-stat-label {
+    margin-top: 10px;
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-muted);
   }
 
   /* FEATURES */
-  .kr-features { padding: 120px 60px; }
-  .kr-section-label {
-    font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase;
-    color: var(--gold); margin-bottom: 20px;
-    display: flex; align-items: center; gap: 16px;
+  .kc-features-section {
+    position: relative; z-index: 2;
+    padding: 120px 0;
+    background: var(--off-white);
   }
-  .kr-section-label::before {
-    content: ''; display: block; width: 30px; height: 1px; background: var(--gold);
+  .kc-section-eyebrow {
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--green-600);
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 12px;
   }
-  .kr-section-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(40px, 6vw, 72px);
-    font-weight: 300; line-height: 1.05;
-    letter-spacing: -0.02em; margin: 0 0 80px; max-width: 600px;
+  .kc-section-eyebrow::before {
+    content: '';
+    display: block; width: 28px; height: 2px;
+    background: var(--green-500); border-radius: 2px;
   }
-  .kr-section-title em { font-style: italic; color: var(--gold); }
+  .kc-section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 5vw, 60px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    color: var(--green-900);
+    margin-bottom: 16px;
+  }
+  .kc-section-title em { font-style: italic; color: var(--green-600); }
+  .kc-section-sub {
+    font-size: 16px; font-weight: 400; line-height: 1.7;
+    color: var(--text-muted);
+    max-width: 500px;
+    margin-bottom: 72px;
+  }
 
-  .kr-features-grid {
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px;
+  .kc-features-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+    border-radius: 20px; overflow: hidden;
+    box-shadow: var(--shadow-lg);
   }
-  .kr-feature-card {
+  .kc-feature-card {
+    background: var(--white);
     padding: 56px 48px;
-    border: 1px solid rgba(250,247,240,0.06);
     position: relative; overflow: hidden;
     cursor: default;
-    opacity: 0; transform: translateY(30px);
-    transition: opacity 0.7s ease, transform 0.7s ease, background 0.4s ease;
+    opacity: 0; transform: translateY(28px);
+    transition: opacity 0.6s ease, transform 0.6s ease, background 0.35s ease;
   }
-  .kr-feature-card.visible { opacity: 1; transform: translateY(0); }
-  .kr-feature-card:hover { background: rgba(250,247,240,0.03); }
-  .kr-feature-card::before {
-    content: ''; position: absolute;
-    bottom: 0; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    transform: scaleX(0); transform-origin: center;
-    transition: transform 0.5s ease;
+  .kc-feature-card.visible { opacity: 1; transform: translateY(0); }
+  .kc-feature-card:hover { background: var(--green-50); }
+  .kc-feature-card::after {
+    content: '';
+    position: absolute; left: 0; bottom: 0;
+    width: 100%; height: 2px;
+    background: linear-gradient(90deg, var(--green-400), var(--green-600));
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.45s ease;
   }
-  .kr-feature-card:hover::before { transform: scaleX(1); }
+  .kc-feature-card:hover::after { transform: scaleX(1); }
 
-  .kr-feature-num {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 100px; font-weight: 300;
-    color: rgba(196,163,90,0.08); line-height: 1;
-    position: absolute; top: 20px; right: 28px;
-    letter-spacing: -0.05em; pointer-events: none;
-    transition: color 0.4s ease;
+  .kc-feature-num {
+    position: absolute; top: 28px; right: 36px;
+    font-family: 'Playfair Display', serif;
+    font-size: 88px; font-weight: 700;
+    color: var(--green-100);
+    line-height: 1;
+    letter-spacing: -0.05em;
+    pointer-events: none;
+    transition: color 0.35s ease;
   }
-  .kr-feature-card:hover .kr-feature-num { color: rgba(196,163,90,0.15); }
+  .kc-feature-card:hover .kc-feature-num { color: var(--green-200); }
 
-  .kr-feature-icon {
-    width: 48px; height: 48px; margin-bottom: 28px;
-    border: 1px solid rgba(196,163,90,0.3);
+  .kc-feature-icon-wrap {
+    width: 52px; height: 52px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 20px;
-    transition: all 0.4s ease;
-    transform: rotate(0deg);
+    margin-bottom: 28px;
+    transition: all 0.35s ease;
   }
-  .kr-feature-card:hover .kr-feature-icon {
-    border-color: var(--gold);
-    background: rgba(196,163,90,0.08);
-    transform: rotate(5deg) scale(1.05);
+  .kc-feature-card:hover .kc-feature-icon-wrap {
+    background: var(--green-100);
+    border-color: var(--green-300);
+    transform: scale(1.05) rotate(4deg);
   }
-  .kr-feature-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 28px; font-weight: 400; margin: 0 0 16px;
+  .kc-feature-icon-wrap svg { width: 24px; height: 24px; }
+
+  .kc-feature-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px; font-weight: 600;
+    color: var(--green-900);
+    margin-bottom: 14px;
     letter-spacing: -0.01em;
   }
-  .kr-feature-desc {
-    font-size: 14px; line-height: 1.8; font-weight: 300;
-    color: rgba(250,247,240,0.5); max-width: 340px;
+  .kc-feature-desc {
+    font-size: 15px; line-height: 1.75;
+    color: var(--text-muted); max-width: 360px;
   }
 
-  /* VISUAL BREAK */
-  .kr-visual-break {
-    height: 70vh; display: flex; align-items: center; justify-content: center;
-    position: relative; overflow: hidden;
-    margin: 0 0 0;
-  }
-  .kr-vb-inner {
-    text-align: center; position: relative; z-index: 2;
-  }
-  .kr-vb-quote {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(32px, 5vw, 56px);
-    font-weight: 300; font-style: italic;
-    line-height: 1.3; max-width: 800px;
-    color: rgba(250,247,240,0.9);
-    opacity: 0; transform: translateY(30px);
-    transition: all 0.8s ease;
-  }
-  .kr-vb-quote.visible { opacity: 1; transform: translateY(0); }
-  .kr-vb-attr {
-    margin-top: 32px; font-size: 11px;
-    letter-spacing: 0.25em; text-transform: uppercase;
-    color: var(--gold); opacity: 0;
-    transition: opacity 0.8s ease 0.3s;
-  }
-  .kr-vb-attr.visible { opacity: 1; }
-  .kr-vb-bg {
-    position: absolute; inset: 0; pointer-events: none;
-  }
-  .kr-vb-circle {
-    position: absolute; border-radius: 50%;
-    border: 1px solid rgba(196,163,90,0.12);
-  }
-
-  /* HOW IT WORKS */
-  .kr-how { padding: 120px 60px; }
-  .kr-steps {
-    display: grid; grid-template-columns: repeat(3,1fr);
-    gap: 0; margin-top: 80px;
-    border-top: 1px solid rgba(250,247,240,0.08);
-  }
-  .kr-step {
-    padding: 48px 40px; border-right: 1px solid rgba(250,247,240,0.08);
-    position: relative;
-    opacity: 0; transform: translateY(20px);
-    transition: all 0.6s ease;
-  }
-  .kr-step:last-child { border-right: none; }
-  .kr-step.visible { opacity: 1; transform: translateY(0); }
-  .kr-step-num {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 14px; color: var(--gold);
-    letter-spacing: 0.1em; margin-bottom: 24px;
-    display: block;
-  }
-  .kr-step-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 26px; font-weight: 400; margin: 0 0 16px;
-  }
-  .kr-step-desc {
-    font-size: 13px; line-height: 1.8; font-weight: 300;
-    color: rgba(250,247,240,0.5);
-  }
-  .kr-step-connector {
-    position: absolute; top: 72px; right: -1px;
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--gold); transform: translateX(50%);
-    z-index: 2;
-  }
-  .kr-step:last-child .kr-step-connector { display: none; }
-
-  /* CTA */
-  .kr-cta {
-    margin: 60px; padding: 100px 80px;
-    border: 1px solid rgba(196,163,90,0.2);
-    background: linear-gradient(135deg,
-      rgba(45,74,45,0.4) 0%,
-      rgba(10,15,7,0.8) 60%,
-      rgba(139,69,19,0.2) 100%);
-    position: relative; overflow: hidden;
+  /* QUOTE */
+  .kc-quote-section {
+    position: relative; z-index: 2;
+    padding: 100px 0;
+    background: var(--green-800);
+    overflow: hidden;
     text-align: center;
   }
-  .kr-cta-ring {
+  .kc-quote-section::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at center, rgba(90, 204, 132, 0.12) 0%, transparent 70%);
+  }
+  .kc-quote-decorative {
+    position: absolute;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 50%;
+  }
+  .kc-quote-text {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(24px, 4vw, 44px);
+    font-weight: 400; font-style: italic;
+    color: var(--white);
+    line-height: 1.4;
+    max-width: 820px;
+    margin: 0 auto;
+    position: relative; z-index: 2;
+    opacity: 0; transform: translateY(24px);
+    transition: all 0.8s ease;
+  }
+  .kc-quote-text.visible { opacity: 1; transform: translateY(0); }
+  .kc-quote-text em { color: var(--green-300); font-style: normal; }
+  .kc-quote-attr {
+    margin-top: 28px;
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    position: relative; z-index: 2;
+    opacity: 0; transition: opacity 0.8s ease 0.25s;
+  }
+  .kc-quote-attr.visible { opacity: 1; }
+
+  /* HOW IT WORKS */
+  .kc-how-section {
+    position: relative; z-index: 2;
+    padding: 120px 0;
+    background: var(--white);
+  }
+  .kc-steps-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 40px; margin-top: 64px;
+  }
+  .kc-step-card {
+    position: relative;
+    opacity: 0; transform: translateY(24px);
+    transition: all 0.6s ease;
+  }
+  .kc-step-card.visible { opacity: 1; transform: translateY(0); }
+  .kc-step-connector {
+    position: absolute;
+    top: 32px; left: calc(100% + 4px);
+    width: calc(40px - 8px);
+    height: 1px;
+    background: linear-gradient(90deg, var(--green-300), var(--green-100));
+    display: flex; align-items: center; justify-content: center;
+  }
+  .kc-step-connector::after {
+    content: '';
+    position: absolute; right: 0;
+    width: 6px; height: 6px;
+    border-top: 1.5px solid var(--green-400);
+    border-right: 1.5px solid var(--green-400);
+    transform: rotate(45deg) translateX(-2px);
+  }
+  .kc-step-card:last-child .kc-step-connector { display: none; }
+
+  .kc-step-num-badge {
+    width: 48px; height: 48px;
+    background: var(--green-700);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 20px; font-weight: 700;
+    color: var(--white);
+    margin-bottom: 28px;
+    position: relative; z-index: 1;
+  }
+  .kc-step-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 600;
+    color: var(--green-900);
+    margin-bottom: 14px;
+    letter-spacing: -0.01em;
+  }
+  .kc-step-desc {
+    font-size: 14px; line-height: 1.75;
+    color: var(--text-muted);
+  }
+
+  /* TESTIMONIALS */
+  .kc-testimonials-section {
+    position: relative; z-index: 2;
+    padding: 120px 0;
+    background: var(--off-white);
+  }
+  .kc-testimonials-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 20px; margin-top: 64px;
+  }
+  .kc-testimonial-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px 36px;
+    box-shadow: var(--shadow-sm);
+    opacity: 0; transform: translateY(24px);
+    transition: all 0.6s ease;
+  }
+  .kc-testimonial-card.visible { opacity: 1; transform: translateY(0); }
+  .kc-testimonial-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-4px);
+  }
+  .kc-testimonial-stars {
+    display: flex; gap: 4px; margin-bottom: 20px;
+  }
+  .kc-star { width: 14px; height: 14px; fill: var(--green-500); }
+  .kc-testimonial-quote {
+    font-size: 15px; line-height: 1.75;
+    color: var(--text-secondary);
+    margin-bottom: 28px;
+  }
+  .kc-testimonial-author {
+    display: flex; align-items: center; gap: 14px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .kc-author-avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--green-700);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 16px; font-weight: 700; color: var(--white);
+    flex-shrink: 0;
+  }
+  .kc-author-name { font-size: 14px; font-weight: 600; color: var(--green-900); }
+  .kc-author-role { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  /* CTA */
+  .kc-cta-section {
+    position: relative; z-index: 2;
+    padding: 60px 48px 80px;
+    background: var(--off-white);
+  }
+  .kc-cta-inner {
+    background: var(--green-800);
+    border-radius: 28px;
+    padding: 100px 80px;
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .kc-cta-inner::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 50%, rgba(90, 204, 132, 0.14) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(141, 223, 169, 0.08) 0%, transparent 50%);
+  }
+  .kc-cta-ring {
     position: absolute; border-radius: 50%;
-    border: 1px solid rgba(196,163,90,0.1);
-    animation: rotateSlow linear infinite;
+    border: 1px solid rgba(255,255,255,0.05);
   }
-  .kr-cta-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(44px, 6vw, 80px);
-    font-weight: 300; line-height: 1;
-    letter-spacing: -0.02em; margin: 0 0 24px;
+  .kc-cta-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 700; line-height: 1.1;
+    letter-spacing: -0.025em;
+    color: var(--white);
+    margin-bottom: 20px;
     position: relative; z-index: 2;
   }
-  .kr-cta-title em { font-style: italic; color: var(--gold); }
-  .kr-cta-sub {
-    font-size: 15px; line-height: 1.8; font-weight: 300;
-    color: rgba(250,247,240,0.55); margin: 0 0 48px;
-    max-width: 500px; margin-left: auto; margin-right: auto;
+  .kc-cta-title em { font-style: italic; color: var(--green-300); }
+  .kc-cta-sub {
+    font-size: 17px; line-height: 1.7;
+    color: rgba(255,255,255,0.55);
+    max-width: 480px;
+    margin: 0 auto 48px;
     position: relative; z-index: 2;
   }
-  .kr-cta-btns { position: relative; z-index: 2; display: flex; gap: 16px; justify-content: center; }
+  .kc-cta-btns {
+    display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
+    position: relative; z-index: 2;
+  }
+  .kc-btn-white {
+    padding: 17px 44px;
+    background: var(--white);
+    color: var(--green-800);
+    text-decoration: none;
+    font-size: 15px; font-weight: 700;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+  .kc-btn-white:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(0,0,0,0.25); }
+  .kc-btn-ghost-white {
+    padding: 17px 44px;
+    background: transparent;
+    border: 1.5px solid rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    font-size: 15px; font-weight: 600;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+  }
+  .kc-btn-ghost-white:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.5); }
 
   /* FOOTER */
-  .kr-footer {
-    border-top: 1px solid rgba(250,247,240,0.08);
-    padding: 60px;
+  .kc-footer {
+    position: relative; z-index: 2;
+    background: var(--green-900);
+    padding: 72px 60px 40px;
+  }
+  .kc-footer-top {
+    display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    gap: 60px; padding-bottom: 60px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .kc-footer-brand-desc {
+    font-size: 14px; line-height: 1.75;
+    color: rgba(255,255,255,0.4);
+    margin-top: 16px; max-width: 260px;
+  }
+  .kc-footer-col-title {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--green-400);
+    margin-bottom: 20px;
+  }
+  .kc-footer-link {
+    display: block; margin-bottom: 12px;
+    font-size: 14px; color: rgba(255,255,255,0.45);
+    text-decoration: none;
+    transition: color 0.25s ease;
+  }
+  .kc-footer-link:hover { color: rgba(255,255,255,0.85); }
+  .kc-footer-bottom {
     display: flex; align-items: center; justify-content: space-between;
+    padding-top: 36px;
+    font-size: 13px; color: rgba(255,255,255,0.25);
   }
-  .kr-footer-copy {
-    font-size: 12px; letter-spacing: 0.05em;
-    color: rgba(250,247,240,0.25);
-  }
-  .kr-footer-links { display: flex; gap: 32px; }
-  .kr-footer-link {
-    font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
-    color: rgba(250,247,240,0.3); text-decoration: none;
-    transition: color 0.3s;
-  }
-  .kr-footer-link:hover { color: var(--gold); }
+  .kc-footer-bottom-links { display: flex; gap: 28px; }
 
-  @media (max-width: 768px) {
-    .kr-nav { padding: 20px 24px; }
-    .kr-nav.scrolled { padding: 14px 24px; }
-    .kr-stats { grid-template-columns: 1fr; margin: 0 24px; }
-    .kr-stat { border-right: none; border-bottom: 1px solid rgba(250,247,240,0.08); padding: 40px 24px; }
-    .kr-features { padding: 80px 24px; }
-    .kr-features-grid { grid-template-columns: 1fr; }
-    .kr-how { padding: 80px 24px; }
-    .kr-steps { grid-template-columns: 1fr; }
-    .kr-step { border-right: none; border-bottom: 1px solid rgba(250,247,240,0.08); }
-    .kr-cta { margin: 24px; padding: 60px 32px; }
-    .kr-footer { flex-direction: column; gap: 24px; padding: 40px 24px; text-align: center; }
-    .kr-hero-btns { flex-direction: column; align-items: center; }
+  /* SCROLL TO TOP */
+  .kc-scroll-top {
+    position: fixed; bottom: 32px; right: 32px;
+    width: 44px; height: 44px;
+    background: var(--green-700);
+    border: none; border-radius: 12px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow-md);
+    opacity: 0; pointer-events: none;
+    transition: all 0.3s ease;
+    z-index: 200;
+  }
+  .kc-scroll-top.visible { opacity: 1; pointer-events: all; }
+  .kc-scroll-top:hover { background: var(--green-800); transform: translateY(-2px); }
+  .kc-scroll-top svg { width: 18px; height: 18px; stroke: #fff; }
+
+  /* ANIMATIONS */
+  @keyframes kcRevealUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes kcFadeIn {
+    to { opacity: 1; }
+  }
+  @keyframes kcMarquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes kcPulseDot {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.4); opacity: 0.7; }
+  }
+  @keyframes kcRotateSlow {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  .kc-cta-ring-1 { animation: kcRotateSlow 40s linear infinite; }
+  .kc-cta-ring-2 { animation: kcRotateSlow 28s linear infinite reverse; }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .kc-nav { padding: 20px 24px; }
+    .kc-nav.scrolled { padding: 14px 24px; }
+    .kc-nav-links .kc-nav-link { display: none; }
+    .kc-container { padding: 0 24px; }
+    .kc-hero { padding: 120px 24px 80px; }
+    .kc-hero-trust { flex-wrap: wrap; justify-content: center; gap: 16px; }
+    .kc-trust-divider { display: none; }
+    .kc-stats-grid { grid-template-columns: repeat(2, 1fr); margin: 0 24px; }
+    .kc-stat-card:nth-child(2) { border-right: none; }
+    .kc-stat-card:nth-child(1), .kc-stat-card:nth-child(2) { border-bottom: 1px solid var(--border); }
+    .kc-features-section, .kc-how-section, .kc-testimonials-section { padding: 80px 0; }
+    .kc-features-grid { grid-template-columns: 1fr; }
+    .kc-steps-grid { grid-template-columns: 1fr; gap: 32px; }
+    .kc-step-connector { display: none; }
+    .kc-testimonials-grid { grid-template-columns: 1fr; }
+    .kc-cta-inner { padding: 60px 32px; }
+    .kc-footer-top { grid-template-columns: 1fr 1fr; gap: 40px; }
+    .kc-footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+    .kc-footer { padding: 60px 24px 32px; }
   }
 `;
 
-/* ─────────────────────────────────────────────
-   Three.js Scene
-───────────────────────────────────────────── */
-function useThreeScene(canvasRef) {
+const marqueeItems = [
+  'Smart Farming', 'Precision Agriculture', 'AI-Powered Yields',
+  'Climate Resilience', 'Market Intelligence', 'Soil Analytics',
+  'Crop Forecasting', 'Farm Digitisation', 'Mandi Connect', 'Agri Finance'
+];
+
+const StarIcon = () => (
+  <svg className="kc-star" viewBox="0 0 14 14">
+    <path d="M7 1L8.5 5H13L9.5 7.5L11 12L7 9.5L3 12L4.5 7.5L1 5H5.5L7 1Z" />
+  </svg>
+);
+
+const Stars = () => (
+  <div className="kc-testimonial-stars">
+    {[...Array(5)].map((_, i) => <StarIcon key={i} />)}
+  </div>
+);
+
+export default function Landing() {
+  const canvasRef = useRef(null);
+  const navRef = useRef(null);
+  const scrollBtnRef = useRef(null);
+
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    // Inject styles
+    const styleEl = document.createElement('style');
+    styleEl.textContent = styles;
+    document.head.appendChild(styleEl);
+    return () => document.head.removeChild(styleEl);
+  }, []);
 
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(window.innerWidth, window.innerHeight);
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 0, 80);
-
-    /* ── Particle field (floating seeds/spores) ── */
-    const COUNT = 3000;
-    const positions = new Float32Array(COUNT * 3);
-    const colors = new Float32Array(COUNT * 3);
-    const sizes = new Float32Array(COUNT);
-    const speeds = new Float32Array(COUNT);
-
-    const palette = [
-      new THREE.Color('#c4a35a'),
-      new THREE.Color('#6b8f5e'),
-      new THREE.Color('#faf7f0'),
-      new THREE.Color('#8b4513'),
-      new THREE.Color('#2d4a2d'),
-    ];
-
-    for (let i = 0; i < COUNT; i++) {
-      const i3 = i * 3;
-      positions[i3]     = (Math.random() - 0.5) * 200;
-      positions[i3 + 1] = (Math.random() - 0.5) * 200;
-      positions[i3 + 2] = (Math.random() - 0.5) * 120;
-
-      const c = palette[Math.floor(Math.random() * palette.length)];
-      colors[i3]     = c.r;
-      colors[i3 + 1] = c.g;
-      colors[i3 + 2] = c.b;
-
-      sizes[i]  = Math.random() * 2.5 + 0.5;
-      speeds[i] = Math.random() * 0.004 + 0.001;
+  useEffect(() => {
+    // Three.js scene
+    if (typeof window === 'undefined') return;
+    const THREE = window.THREE;
+    if (!THREE) {
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+      script.onload = () => initThree(window.THREE);
+      document.body.appendChild(script);
+    } else {
+      initThree(THREE);
     }
 
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geo.setAttribute('color',    new THREE.BufferAttribute(colors,    3));
-    geo.setAttribute('size',     new THREE.BufferAttribute(sizes,     1));
-
-    /* Circle sprite texture */
-    const spriteCanvas = document.createElement('canvas');
-    spriteCanvas.width = spriteCanvas.height = 64;
-    const ctx = spriteCanvas.getContext('2d');
-    const grd = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-    grd.addColorStop(0,   'rgba(255,255,255,1)');
-    grd.addColorStop(0.4, 'rgba(255,255,255,0.8)');
-    grd.addColorStop(1,   'rgba(255,255,255,0)');
-    ctx.fillStyle = grd;
-    ctx.fillRect(0, 0, 64, 64);
-    const spriteTex = new THREE.CanvasTexture(spriteCanvas);
-
-    const mat = new THREE.PointsMaterial({
-      size: 1.2,
-      sizeAttenuation: true,
-      map: spriteTex,
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.7,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-    });
-
-    const particles = new THREE.Points(geo, mat);
-    scene.add(particles);
-
-    /* ── Floating geometric rings ── */
-    const rings = [];
-    const ringDefs = [
-      { r: 30, tube: 0.08, col: '#c4a35a', speed: 0.003, axis: [1,0.5,0] },
-      { r: 50, tube: 0.05, col: '#2d4a2d', speed: 0.002, axis: [0.3,1,0.2] },
-      { r: 18, tube: 0.12, col: '#6b8f5e', speed: 0.005, axis: [0,0.5,1] },
-    ];
-    ringDefs.forEach(d => {
-      const g = new THREE.TorusGeometry(d.r, d.tube, 16, 120);
-      const m = new THREE.MeshBasicMaterial({ color: d.col, transparent: true, opacity: 0.35 });
-      const mesh = new THREE.Mesh(g, m);
-      mesh.userData = { speed: d.speed, axis: new THREE.Vector3(...d.axis).normalize() };
-      scene.add(mesh);
-      rings.push(mesh);
-    });
-
-    /* ── Mouse interaction ── */
-    let mouseX = 0, mouseY = 0;
-    const onMouseMove = e => {
-      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-    };
-    window.addEventListener('mousemove', onMouseMove);
-
-    /* ── Scroll-based camera drift ── */
-    let scrollY = 0;
-    const onScroll = () => { scrollY = window.scrollY; };
-    window.addEventListener('scroll', onScroll);
-
-    /* ── Resize ── */
-    const onResize = () => {
+    function initThree(THREE) {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.setSize(window.innerWidth, window.innerHeight);
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-    };
-    window.addEventListener('resize', onResize);
+      renderer.setClearColor(0x000000, 0);
 
-    /* ── Animation loop ── */
-    let frameId;
-    const clock = new THREE.Clock();
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.set(0, 0, 90);
 
-    const animate = () => {
-      frameId = requestAnimationFrame(animate);
-      const t = clock.getElapsedTime();
+      scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+      const dLight = new THREE.DirectionalLight(0x5ccc84, 0.8);
+      dLight.position.set(5, 5, 5);
+      scene.add(dLight);
 
-      /* Drift particles */
-      const pos = geo.attributes.position.array;
+      const COUNT = 2200;
+      const positions = new Float32Array(COUNT * 3);
+      const colors = new Float32Array(COUNT * 3);
+      const sizes = new Float32Array(COUNT);
+      const speeds = new Float32Array(COUNT);
+
+      const palette = [
+        new THREE.Color('#2a8a52'), new THREE.Color('#5ccc84'),
+        new THREE.Color('#8ddfa9'), new THREE.Color('#b8edcc'),
+        new THREE.Color('#d9f5e5'), new THREE.Color('#3aad67'),
+        new THREE.Color('#174d30'),
+      ];
+
       for (let i = 0; i < COUNT; i++) {
         const i3 = i * 3;
-        pos[i3 + 1] += speeds[i];
-        if (pos[i3 + 1] > 100) pos[i3 + 1] = -100;
-        pos[i3] += Math.sin(t * 0.3 + i) * 0.002;
+        positions[i3]     = (Math.random() - 0.5) * 220;
+        positions[i3 + 1] = (Math.random() - 0.5) * 180;
+        positions[i3 + 2] = (Math.random() - 0.5) * 100;
+        const c = palette[Math.floor(Math.random() * palette.length)];
+        colors[i3] = c.r; colors[i3 + 1] = c.g; colors[i3 + 2] = c.b;
+        sizes[i] = Math.random() * 2.2 + 0.4;
+        speeds[i] = Math.random() * 0.005 + 0.001;
       }
-      geo.attributes.position.needsUpdate = true;
 
-      /* Rotate rings */
-      rings.forEach(r => {
-        r.quaternion.setFromAxisAngle(r.userData.axis, t * r.userData.speed);
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+      const sCanvas = document.createElement('canvas');
+      sCanvas.width = sCanvas.height = 64;
+      const sCtx = sCanvas.getContext('2d');
+      const grd = sCtx.createRadialGradient(32, 32, 0, 32, 32, 32);
+      grd.addColorStop(0, 'rgba(255,255,255,1)');
+      grd.addColorStop(0.5, 'rgba(255,255,255,0.6)');
+      grd.addColorStop(1, 'rgba(255,255,255,0)');
+      sCtx.fillStyle = grd;
+      sCtx.fillRect(0, 0, 64, 64);
+      const spriteTex = new THREE.CanvasTexture(sCanvas);
+
+      const pMat = new THREE.PointsMaterial({
+        size: 1.4, sizeAttenuation: true,
+        map: spriteTex, vertexColors: true,
+        transparent: true, opacity: 0.55,
+        depthWrite: false, blending: THREE.AdditiveBlending,
+      });
+      const particles = new THREE.Points(geo, pMat);
+      scene.add(particles);
+
+      const rings = [];
+      const ringDefs = [
+        { r: 38, tube: 0.06, col: '#2a8a52', speed: 0.0022, axis: [1, 0.4, 0.2] },
+        { r: 60, tube: 0.04, col: '#5ccc84', speed: 0.0014, axis: [0.3, 1, 0.15] },
+        { r: 22, tube: 0.09, col: '#8ddfa9', speed: 0.0038, axis: [0.1, 0.3, 1] },
+        { r: 80, tube: 0.03, col: '#b8edcc', speed: 0.0009, axis: [0.7, 0.2, 0.5] },
+      ];
+      ringDefs.forEach(d => {
+        const g = new THREE.TorusGeometry(d.r, d.tube, 16, 140);
+        const m = new THREE.MeshBasicMaterial({ color: d.col, transparent: true, opacity: 0.28 });
+        const mesh = new THREE.Mesh(g, m);
+        mesh.userData = { speed: d.speed, axis: new THREE.Vector3(...d.axis).normalize() };
+        scene.add(mesh);
+        rings.push(mesh);
       });
 
-      /* Camera gentle drift */
-      camera.position.x += (mouseX * 8 - camera.position.x) * 0.02;
-      camera.position.y += (-mouseY * 4 - camera.position.y) * 0.02;
-      camera.position.z = 80 + scrollY * 0.01;
-      camera.lookAt(0, 0, 0);
+      const leafGeo = new THREE.SphereGeometry(0.8, 8, 6);
+      const leafMat = new THREE.MeshBasicMaterial({ color: '#5ccc84', transparent: true, opacity: 0.4, wireframe: true });
+      const leaves = [];
+      for (let i = 0; i < 12; i++) {
+        const mesh = new THREE.Mesh(leafGeo, leafMat);
+        mesh.position.set(
+          (Math.random() - 0.5) * 100,
+          (Math.random() - 0.5) * 80,
+          (Math.random() - 0.5) * 50
+        );
+        mesh.scale.setScalar(Math.random() * 2 + 0.5);
+        mesh.userData.floatSpeed = Math.random() * 0.3 + 0.1;
+        mesh.userData.floatOffset = Math.random() * Math.PI * 2;
+        scene.add(mesh);
+        leaves.push(mesh);
+      }
 
-      renderer.render(scene, camera);
-    };
-    animate();
+      let mX = 0, mY = 0, scrollY = 0;
+      const onMouseMove = e => {
+        mX = (e.clientX / window.innerWidth - 0.5) * 2;
+        mY = (e.clientY / window.innerHeight - 0.5) * 2;
+      };
+      const onScroll = () => { scrollY = window.scrollY; };
+      window.addEventListener('mousemove', onMouseMove);
+      window.addEventListener('scroll', onScroll);
 
-    return () => {
-      cancelAnimationFrame(frameId);
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onResize);
-      renderer.dispose();
-      geo.dispose();
-      mat.dispose();
-      spriteTex.dispose();
-    };
-  }, [canvasRef]);
-}
+      const onResize = () => {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+      };
+      window.addEventListener('resize', onResize);
 
-/* ─────────────────────────────────────────────
-   Intersection Observer hook
-───────────────────────────────────────────── */
-function useReveal() {
+      const clock = new THREE.Clock();
+      let frameId;
+      const animate = () => {
+        frameId = requestAnimationFrame(animate);
+        const t = clock.getElapsedTime();
+        const pos = geo.attributes.position.array;
+        for (let i = 0; i < COUNT; i++) {
+          const i3 = i * 3;
+          pos[i3 + 1] += speeds[i];
+          if (pos[i3 + 1] > 90) pos[i3 + 1] = -90;
+          pos[i3] += Math.sin(t * 0.2 + i * 0.1) * 0.003;
+        }
+        geo.attributes.position.needsUpdate = true;
+        rings.forEach(r => { r.quaternion.setFromAxisAngle(r.userData.axis, t * r.userData.speed); });
+        leaves.forEach(l => {
+          l.position.y += Math.sin(t * l.userData.floatSpeed + l.userData.floatOffset) * 0.008;
+          l.rotation.y += 0.002;
+          l.rotation.x += 0.001;
+        });
+        camera.position.x += (mX * 6 - camera.position.x) * 0.015;
+        camera.position.y += (-mY * 3 - camera.position.y) * 0.015;
+        camera.position.z = 90 + scrollY * 0.008;
+        camera.lookAt(0, 0, 0);
+        renderer.render(scene, camera);
+      };
+      animate();
+
+      return () => {
+        cancelAnimationFrame(frameId);
+        window.removeEventListener('mousemove', onMouseMove);
+        window.removeEventListener('scroll', onScroll);
+        window.removeEventListener('resize', onResize);
+        renderer.dispose();
+      };
+    }
+  }, []);
+
   useEffect(() => {
-    const els = document.querySelectorAll('[data-reveal]');
+    // Nav scroll + scroll-to-top
+    const onScroll = () => {
+      if (navRef.current) navRef.current.classList.toggle('scrolled', window.scrollY > 50);
+      if (scrollBtnRef.current) scrollBtnRef.current.classList.toggle('visible', window.scrollY > 500);
+    };
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    // Intersection observer for reveal
     const obs = new IntersectionObserver(entries => {
       entries.forEach(e => {
         if (e.isIntersecting) {
-          const delay = e.target.dataset.delay || 0;
-          setTimeout(() => e.target.classList.add('visible'), delay * 1000);
+          const delay = parseInt(e.target.dataset.delay || 0);
+          setTimeout(() => e.target.classList.add('visible'), delay);
+          obs.unobserve(e.target);
         }
       });
-    }, { threshold: 0.15 });
-    els.forEach(el => obs.observe(el));
+    }, { threshold: 0.12 });
+    document.querySelectorAll('[data-reveal]').forEach(el => obs.observe(el));
     return () => obs.disconnect();
   }, []);
-}
 
-/* ─────────────────────────────────────────────
-   Main Component
-───────────────────────────────────────────── */
-const Landing = () => {
-  const { t } = useTranslation();
-  const canvasRef = useRef(null);
-  const [scrolled, setScrolled] = useState(false);
-  useThreeScene(canvasRef);
-  useReveal();
-
-  useEffect(() => {
-    const style = document.createElement('style');
-    style.textContent = GLOBAL_CSS;
-    document.head.appendChild(style);
-    return () => document.head.removeChild(style);
-  }, []);
-
-  useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 40);
-    window.addEventListener('scroll', fn);
-    return () => window.removeEventListener('scroll', fn);
-  }, []);
-
-  const features = [
-    { icon: '🌱', num: '01', title: 'Crop Intelligence', desc: 'AI-driven soil analysis and microclimate modelling tailors every recommendation to the unique fingerprint of your land.' },
-    { icon: '⛅', num: '02', title: 'Climate Foresight', desc: 'Hyperlocal weather intelligence that sees beyond tomorrow, giving you strategic weeks of advance planning.' },
-    { icon: '📈', num: '03', title: 'Market Oracle', desc: 'Real-time commodity pricing and demand signals so you harvest when margins peak, not when they trough.' },
-    { icon: '🤖', num: '04', title: 'AI Agronomist', desc: 'An expert advisor available at every hour of every season, fluent in the language of soil, sun, and seed.' },
-  ];
-
-  const steps = [
-    { num: '01', title: 'Connect Your Land', desc: 'Map your fields, input your soil profile, and link your local weather station in minutes.' },
-    { num: '02', title: 'Receive Insights', desc: 'Our models process thousands of variables to surface the decisions that matter most to your season.' },
-    { num: '03', title: 'Grow & Prosper', desc: 'Act on precise guidance and watch your yields, efficiency, and margins transform over each harvest.' },
-  ];
-
-  const tickerItems = ['Smart Farming', 'Precision Agriculture', 'AI-Powered Yields', 'Climate Resilience', 'Market Intelligence', 'Soil Analytics', 'Crop Forecasting', 'Farm Digitisation'];
+  const scrollToSection = (e, id) => {
+    e.preventDefault();
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   return (
-    <>
-      <canvas ref={canvasRef} className="kr-canvas" />
-      <div className="kr-root">
+    <div className="kc-body">
+      <canvas id="three-canvas" ref={canvasRef} />
 
-        {/* NAV */}
-        <nav className={`kr-nav ${scrolled ? 'scrolled' : ''}`}>
-          <Link to="/" className="kr-logo">
-            <div className="kr-logo-leaf">🌿</div>
-            Krishi<em>Connect</em>
-          </Link>
-          <div className="kr-nav-links">
-            <a href="#features" className="kr-nav-link">Features</a>
-            <a href="#how" className="kr-nav-link">How It Works</a>
-            <Link to="/login" className="kr-nav-link">Sign In</Link>
-            <Link to="/signup" className="kr-cta-btn">Get Started</Link>
+      {/* NAV */}
+      <nav id="main-nav" ref={navRef} className="kc-nav">
+        <a href="#" className="kc-nav-logo">
+          <div className="kc-nav-logo-mark">
+            <svg viewBox="0 0 24 24" fill="none" width="20" height="20">
+              <path d="M12 3C12 3 6 8 6 13C6 16.3 8.7 19 12 19C15.3 19 18 16.3 18 13C18 8 12 3 12 3Z" fill="rgba(255,255,255,0.9)" />
+              <path d="M12 10V21M12 21C10 18 8 16 8 16M12 21C14 18 16 16 16 16" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
           </div>
-        </nav>
+          Krishi<span className="em">Connect</span>
+        </a>
+        <div className="kc-nav-links">
+          <a href="#features" className="kc-nav-link" onClick={e => scrollToSection(e, 'features')}>Features</a>
+          <a href="#how" className="kc-nav-link" onClick={e => scrollToSection(e, 'how')}>How It Works</a>
+          <a href="#testimonials" className="kc-nav-link" onClick={e => scrollToSection(e, 'testimonials')}>Testimonials</a>
+          <a href="#" className="kc-nav-link">Sign In</a>
+          <a href="#" className="kc-nav-btn">Get Started →</a>
+        </div>
+      </nav>
 
-        {/* HERO */}
-        <section className="kr-hero">
-          <div className="kr-hero-eyebrow">
-            <span className="kr-hero-eyebrow-line" />
-            The Future of Agriculture
-            <span className="kr-hero-eyebrow-line" />
+      {/* HERO */}
+      <section className="kc-hero kc-section">
+        <div className="kc-hero-badge">
+          <div className="kc-hero-badge-dot" />
+          AI-Powered Agriculture Platform — 2026
+        </div>
+        <h1 className="kc-hero-title">Grow Smarter.<br /><em>Harvest More.</em></h1>
+        <span className="kc-hero-title-line2">For the Modern Farmer</span>
+        <p className="kc-hero-desc">
+          KrishiConnect delivers AI-driven crop insights, hyperlocal climate forecasting, and smart market access — empowering every farmer to maximise yields and build lasting prosperity.
+        </p>
+        <div className="kc-hero-btns">
+          <a href="#" className="kc-btn-primary">Start for Free — No Card Needed</a>
+          <a href="#features" className="kc-btn-outline" onClick={e => scrollToSection(e, 'features')}>Explore Features</a>
+        </div>
+        <div className="kc-hero-trust">
+          <div className="kc-trust-item">
+            <div className="kc-trust-icon">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1L8.5 5H13L9.5 7.5L11 12L7 9.5L3 12L4.5 7.5L1 5H5.5L7 1Z" fill="#2a8a52" /></svg>
+            </div>
+            Trusted by 50K+ Farmers
           </div>
-          <h1 className="kr-hero-title">
-            Farming<br />
-            <em>Reimagined</em>
-          </h1>
-          <span className="kr-hero-title-accent">for the Modern Era</span>
-          <p className="kr-hero-sub">
-            {t('pages.landing.hero.subtitle', 'KrishiConnect brings AI-driven insights, advanced climate tracking, and smart marketplace access directly to your fingertips. Empowering farmers to grow more, with less.')}
-          </p>
-          <div className="kr-hero-btns">
-            <Link to="/signup" className="kr-btn-primary">Begin Your Journey</Link>
-            <Link to="/login"  className="kr-btn-ghost">Sign Back In</Link>
+          <div className="kc-trust-divider" />
+          <div className="kc-trust-item">
+            <div className="kc-trust-icon">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#2a8a52" strokeWidth="1.5" /><path d="M7 4.5V7.5L9 9" stroke="#2a8a52" strokeWidth="1.5" strokeLinecap="round" /></svg>
+            </div>
+            Real-Time AI Insights
           </div>
-          <div className="kr-scroll-hint">
-            <div className="kr-scroll-line" />
-            <span className="kr-scroll-text">Scroll</span>
-          </div>
-        </section>
-
-        {/* TICKER */}
-        <div className="kr-ticker">
-          <div className="kr-ticker-inner">
-            {[...tickerItems, ...tickerItems].map((item, i) => (
-              <span key={i} className="kr-ticker-item">
-                <span className="kr-ticker-dot" />
-                {item}
-              </span>
-            ))}
+          <div className="kc-trust-divider" />
+          <div className="kc-trust-item">
+            <div className="kc-trust-icon">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 10L5.5 6.5L7.5 8.5L12 3" stroke="#2a8a52" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </div>
+            37% Avg. Yield Increase
           </div>
         </div>
+      </section>
 
-        {/* STATS */}
-        <div className="kr-stats">
-          {[
-            { num: '50', unit: 'K+', label: 'Farmers Empowered' },
-            { num: '37', unit: '%',  label: 'Average Yield Increase' },
-            { num: '12', unit: '+',  label: 'Languages Supported' },
-          ].map((s, i) => (
-            <div key={i} className="kr-stat" data-reveal data-delay={i * 0.15}>
-              <div className="kr-stat-num">{s.num}<span className="kr-stat-unit">{s.unit}</span></div>
-              <div className="kr-stat-label">{s.label}</div>
-            </div>
+      {/* MARQUEE */}
+      <div className="kc-marquee-section">
+        <div className="kc-marquee-inner">
+          {[...marqueeItems, ...marqueeItems].map((text, i) => (
+            <span className="kc-marquee-item" key={i}>
+              <span className="kc-marquee-dot" />{text}
+            </span>
           ))}
         </div>
-
-        {/* FEATURES */}
-        <section className="kr-features" id="features">
-          <div className="kr-section-label">Platform Features</div>
-          <h2 className="kr-section-title">
-            Intelligence at<br /><em>every level</em>
-          </h2>
-          <div className="kr-features-grid">
-            {features.map((f, i) => (
-              <div key={i} className="kr-feature-card" data-reveal data-delay={i * 0.1}>
-                <span className="kr-feature-num">{f.num}</span>
-                <div className="kr-feature-icon">{f.icon}</div>
-                <h3 className="kr-feature-title">{f.title}</h3>
-                <p className="kr-feature-desc">{f.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* VISUAL BREAK / QUOTE */}
-        <div className="kr-visual-break">
-          <div className="kr-vb-bg">
-            {[80,160,240,320].map((r,i) => (
-              <div key={i} className="kr-vb-circle" style={{
-                width: r*2, height: r*2,
-                top: '50%', left: '50%',
-                transform: `translate(-50%,-50%)`,
-                opacity: 0.06 + i * 0.02,
-              }} />
-            ))}
-          </div>
-          <div className="kr-vb-inner">
-            <div className="kr-vb-quote" data-reveal>
-              "The farmer is the only man in our economy who buys everything at retail, sells everything at wholesale — <em>until now.</em>"
-            </div>
-            <div className="kr-vb-attr" data-reveal>KrishiConnect, 2026</div>
-          </div>
-        </div>
-
-        {/* HOW IT WORKS */}
-        <section className="kr-how" id="how">
-          <div className="kr-section-label">Simple Process</div>
-          <h2 className="kr-section-title">
-            Three steps to<br /><em>transformation</em>
-          </h2>
-          <div className="kr-steps">
-            {steps.map((s, i) => (
-              <div key={i} className="kr-step" data-reveal data-delay={i * 0.15}>
-                <span className="kr-step-num">{s.num}</span>
-                <h3 className="kr-step-title">{s.title}</h3>
-                <p className="kr-step-desc">{s.desc}</p>
-                {i < steps.length - 1 && <div className="kr-step-connector" />}
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* CTA */}
-        <div className="kr-cta">
-          {[
-            {size:300, dur:'18s', top:'50%', left:'15%'},
-            {size:200, dur:'25s', top:'30%', left:'75%'},
-            {size:400, dur:'30s', top:'70%', left:'50%'},
-          ].map((r,i) => (
-            <div key={i} className="kr-cta-ring" style={{
-              width: r.size, height: r.size,
-              top: r.top, left: r.left,
-              transform: 'translate(-50%,-50%)',
-              animationDuration: r.dur,
-            }} />
-          ))}
-          <h2 className="kr-cta-title">
-            Ready to transform<br />
-            your <em>harvest?</em>
-          </h2>
-          <p className="kr-cta-sub">
-            Join thousands of modern farmers leveraging data and AI to secure their future and their legacy.
-          </p>
-          <div className="kr-cta-btns">
-            <Link to="/signup" className="kr-btn-primary">Create Your Account</Link>
-            <Link to="/login"  className="kr-btn-ghost">Sign In</Link>
-          </div>
-        </div>
-
-        {/* FOOTER */}
-        <footer className="kr-footer">
-          <div>
-            <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
-              <span style={{ color:'var(--gold)', fontSize:16 }}>🌿</span>
-              <span style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:18, color:'var(--cream)' }}>
-                Krishi<em style={{ color:'var(--gold)', fontStyle:'italic' }}>Connect</em>
-              </span>
-            </div>
-            <div className="kr-footer-copy">© 2026 Krishi Connect. All rights reserved.</div>
-          </div>
-          <div className="kr-footer-links">
-            <a href="#" className="kr-footer-link">Privacy</a>
-            <a href="#" className="kr-footer-link">Terms</a>
-            <a href="#" className="kr-footer-link">Contact</a>
-          </div>
-        </footer>
-
       </div>
-    </>
-  );
-};
 
-export default Landing;
+      {/* STATS */}
+      <section className="kc-stats-section kc-section">
+        <div className="kc-stats-grid">
+          {[
+            { num: '50', unit: 'K+', label: 'Farmers Empowered', delay: 0 },
+            { num: '37', unit: '%', label: 'Average Yield Increase', delay: 120 },
+            { num: '18', unit: '+', label: 'Indian States Covered', delay: 240 },
+            { num: '12', unit: '+', label: 'Languages Supported', delay: 360 },
+          ].map((s, i) => (
+            <div className="kc-stat-card" data-reveal data-delay={s.delay} key={i}>
+              <div className="kc-stat-num">{s.num}<span className="kc-stat-unit">{s.unit}</span></div>
+              <div className="kc-stat-label">{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* FEATURES */}
+      <section className="kc-features-section kc-section" id="features">
+        <div className="kc-container">
+          <div className="kc-section-eyebrow">Platform Capabilities</div>
+          <h2 className="kc-section-title">Intelligence at<br /><em>every level</em></h2>
+          <p className="kc-section-sub">Four pillars of precision agriculture, unified in one seamless platform built for Indian farmers.</p>
+          <div className="kc-features-grid">
+            {[
+              {
+                num: '01', delay: 0,
+                icon: <svg viewBox="0 0 24 24" fill="none" stroke="var(--green-700)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2C6.5 2 2 6.5 2 12C2 14.4 2.9 16.6 4.4 18.3L12 22L19.6 18.3C21.1 16.6 22 14.4 22 12C22 6.5 17.5 2 12 2Z" /><path d="M12 8V16M8 12H16" /></svg>,
+                title: 'Crop Intelligence',
+                desc: 'AI-driven soil analysis and microclimate modelling tailors every recommendation to the unique fingerprint of your land — from pH levels to crop rotation timing.',
+              },
+              {
+                num: '02', delay: 100,
+                icon: <svg viewBox="0 0 24 24" fill="none" stroke="var(--green-700)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 15C3 15 5 10 9 10C13 10 11 14 15 14C19 14 21 9 21 9" /><path d="M3 19H21" /></svg>,
+                title: 'Climate Foresight',
+                desc: 'Hyperlocal weather intelligence beyond tomorrow — giving you strategic weeks of advance planning so no monsoon or dry spell ever catches you off guard.',
+              },
+              {
+                num: '03', delay: 200,
+                icon: <svg viewBox="0 0 24 24" fill="none" stroke="var(--green-700)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17" /><polyline points="16 7 22 7 22 13" /></svg>,
+                title: 'Market Oracle',
+                desc: 'Real-time commodity pricing and demand signals so you harvest when margins peak. Connect directly with buyers across mandis and modern trade networks.',
+              },
+              {
+                num: '04', delay: 300,
+                icon: <svg viewBox="0 0 24 24" fill="none" stroke="var(--green-700)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4 20C4 17.8 7.6 16 12 16C16.4 16 20 17.8 20 20" /><path d="M18 2L19.5 3.5M20.5 5.5H22M18 9L19.5 7.5" /></svg>,
+                title: 'AI Agronomist',
+                desc: 'An expert advisor fluent in the language of soil, sun, and seed — available every hour of every season. Ask in Hindi, Tamil, Marathi, and 12+ languages.',
+              },
+            ].map((f, i) => (
+              <div className="kc-feature-card" data-reveal data-delay={f.delay} key={i}>
+                <span className="kc-feature-num">{f.num}</span>
+                <div className="kc-feature-icon-wrap">{f.icon}</div>
+                <h3 className="kc-feature-title">{f.title}</h3>
+                <p className="kc-feature-desc">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* QUOTE */}
+      <section className="kc-quote-section kc-section">
+        <div style={{ position: 'absolute', inset: 0 }}>
+          <div className="kc-quote-decorative" style={{ width: 500, height: 500, top: '50%', left: '20%', transform: 'translate(-50%,-50%)' }} />
+          <div className="kc-quote-decorative" style={{ width: 300, height: 300, top: '30%', left: '80%', transform: 'translate(-50%,-50%)' }} />
+          <div className="kc-quote-decorative" style={{ width: 180, height: 180, top: '70%', left: '60%', transform: 'translate(-50%,-50%)' }} />
+        </div>
+        <div className="kc-container" style={{ position: 'relative', zIndex: 2 }}>
+          <div className="kc-quote-text" data-reveal>
+            "The farmer who feeds a nation should also be able to <em>command a fair price</em> for his labour. KrishiConnect makes that possible."
+          </div>
+          <div className="kc-quote-attr" data-reveal>Piyush Desai, Kharif Farmer, Nashik — 2026</div>
+        </div>
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section className="kc-how-section kc-section" id="how">
+        <div className="kc-container">
+          <div className="kc-section-eyebrow">Simple Process</div>
+          <h2 className="kc-section-title">Three steps to<br /><em>transformation</em></h2>
+          <div className="kc-steps-grid">
+            {[
+              { num: '1', title: 'Connect Your Land', desc: 'Map your fields, input your soil profile, and link your local weather station in minutes. Works offline with sync when you\'re back online.', delay: 0 },
+              { num: '2', title: 'Receive Insights', desc: 'Our models process thousands of variables — soil, climate, market data — to surface the decisions that matter most this season.', delay: 150 },
+              { num: '3', title: 'Grow & Prosper', desc: 'Act on precise guidance and watch your yields, efficiency, and margins transform across each harvest cycle. Track your progress over time.', delay: 300 },
+            ].map((s, i) => (
+              <div className="kc-step-card" data-reveal data-delay={s.delay} key={i}>
+                {i < 2 && <div className="kc-step-connector" />}
+                <div className="kc-step-num-badge">{s.num}</div>
+                <h3 className="kc-step-title">{s.title}</h3>
+                <p className="kc-step-desc">{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* TESTIMONIALS */}
+      <section className="kc-testimonials-section kc-section" id="testimonials">
+        <div className="kc-container">
+          <div className="kc-section-eyebrow">Farmer Stories</div>
+          <h2 className="kc-section-title">Voices from<br /><em>the field</em></h2>
+          <div className="kc-testimonials-grid">
+            {[
+              {
+                quote: '"I doubled my tomato yield in one season using the soil recommendations. The AI told me exactly when to irrigate and which fertiliser to use. It speaks Marathi so my whole family understands."',
+                initials: 'RP', name: 'Ramesh Patil', role: 'Vegetable Farmer, Pune District',
+                avatarBg: 'var(--green-700)', delay: 0,
+              },
+              {
+                quote: '"The market price alerts saved me from selling my cotton at a loss. I waited three days after the KrishiConnect notification and got 18% more per quintal. Incredible tool."',
+                initials: 'SK', name: 'Sunita Khanna', role: 'Cotton Farmer, Vidarbha',
+                avatarBg: 'var(--green-600)', delay: 120,
+              },
+              {
+                quote: '"Finally an app that understands our land. The 14-day weather forecast for my specific village helped me plan the entire rabi season. No more guessing. My father can\'t believe the difference."',
+                initials: 'AM', name: 'Arjun Mehta', role: 'Wheat Farmer, Punjab',
+                avatarBg: 'var(--green-500)', delay: 240,
+              },
+            ].map((t, i) => (
+              <div className="kc-testimonial-card" data-reveal data-delay={t.delay} key={i}>
+                <Stars />
+                <p className="kc-testimonial-quote">{t.quote}</p>
+                <div className="kc-testimonial-author">
+                  <div className="kc-author-avatar" style={{ background: t.avatarBg }}>{t.initials}</div>
+                  <div>
+                    <div className="kc-author-name">{t.name}</div>
+                    <div className="kc-author-role">{t.role}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="kc-cta-section kc-section">
+        <div className="kc-cta-inner">
+          <div className="kc-cta-ring kc-cta-ring-1" style={{ width: 600, height: 600, top: '50%', left: '15%' }} />
+          <div className="kc-cta-ring kc-cta-ring-2" style={{ width: 380, height: 380, top: '20%', left: '80%' }} />
+          <h2 className="kc-cta-title">
+            Ready to transform<br />your <em>harvest?</em>
+          </h2>
+          <p className="kc-cta-sub">Join 50,000+ modern farmers leveraging AI to secure their season, their income, and their legacy.</p>
+          <div className="kc-cta-btns">
+            <a href="#" className="kc-btn-white">Create Free Account</a>
+            <a href="#" className="kc-btn-ghost-white">Watch Demo</a>
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="kc-footer">
+        <div className="kc-footer-top">
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+              <div style={{ width: 34, height: 34, background: 'var(--green-600)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 3C12 3 6 8 6 13C6 16.3 8.7 19 12 19C15.3 19 18 16.3 18 13C18 8 12 3 12 3Z" fill="rgba(255,255,255,0.9)" />
+                </svg>
+              </div>
+              <span style={{ fontFamily: "'Playfair Display',serif", fontSize: 20, fontWeight: 700, color: '#fff' }}>
+                Krishi<em style={{ color: 'var(--green-400)', fontStyle: 'italic' }}>Connect</em>
+              </span>
+            </div>
+            <p className="kc-footer-brand-desc">AI-powered agriculture intelligence for India's modern farmers. From soil to sale, we've got your season covered.</p>
+          </div>
+          <div>
+            <div className="kc-footer-col-title">Platform</div>
+            {['Crop Intelligence', 'Climate Foresight', 'Market Oracle', 'AI Agronomist'].map(l => (
+              <a href="#" className="kc-footer-link" key={l}>{l}</a>
+            ))}
+          </div>
+          <div>
+            <div className="kc-footer-col-title">Company</div>
+            {['About Us', 'Careers', 'Press Kit', 'Blog'].map(l => (
+              <a href="#" className="kc-footer-link" key={l}>{l}</a>
+            ))}
+          </div>
+          <div>
+            <div className="kc-footer-col-title">Support</div>
+            {['Help Centre', 'Community', 'Contact', 'Privacy Policy'].map(l => (
+              <a href="#" className="kc-footer-link" key={l}>{l}</a>
+            ))}
+          </div>
+        </div>
+        <div className="kc-footer-bottom">
+          <div>© 2026 KrishiConnect Technologies Pvt. Ltd. All rights reserved.</div>
+          <div className="kc-footer-bottom-links">
+            {['Privacy', 'Terms', 'Cookies'].map(l => (
+              <a href="#" style={{ color: 'rgba(255,255,255,0.25)', textDecoration: 'none', fontSize: 13 }} key={l}>{l}</a>
+            ))}
+          </div>
+        </div>
+      </footer>
+
+      {/* SCROLL TO TOP */}
+      <button
+        className="kc-scroll-top"
+        ref={scrollBtnRef}
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+      >
+        <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M18 15L12 9L6 15" />
+        </svg>
+      </button>
+    </div>
+  );
+}
